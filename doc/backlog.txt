@@ -1,0 +1,2 @@
+- tener un endpoint andando que devuelva algo fijo
+- mapear una clase en Mongoose hasta reemplazar el endpoint por una consulta
