@@ -1,0 +1,67 @@
+Requisitos
+------------------------------------------------
+tsc (si no lo tenés, npm install -g typescript)
+node
+cuenta en repl.it (recomendada)
+
+
+
+0. Intro a TS - entornos de ejecución
+------------------------------------------------
+TS es un compiler (¿o transpiler?), el código que se ejecuta es JS.
+Qué nos da:
+- chequeos estáticos (descomentar la asignación a "hola" en cuentas.ts, idem nombre.jaja)
+- intellisense en los editores (un aspecto al que cada vez se le da más importancia)
+  poner "nombre." y esperar.  
+
+Probemos con un ejemplito: tiposBasicos.ts.
+- node tiposBasicos.ts 
+  tira error en el : ... node no puede ejecutar .ts.
+- tsc tiposBasicos.ts
+  genera tiposBasicos.js, lo miramos.
+- node tiposBasicos.js
+  ahora sí
+- node solito
+  - const pepe = 4 
+    OK
+  - const pepe: number = 4 
+    no lo entiende
+
+Las tareas de los proyectos inicializados para Nest o para React Native hacen la transpilación; 
+levantan la app sobre el resultado de esa transpilación.
+
+Para evitar el paso de traspilación, y tener un entorno ágil de prueba, podemos usar repl.it.
+Tarda para arrancar, pero es un REPL con todas las de la ley.
+
+(y nos movemos a repl.it por un ratito)
+
+
+1. Un poquito de tipado
+--------------------------------
+Lo que ya vimos: al definir un identificador se le puede, o no, poner un tipo.
+A partir del tipo, el intellisense entiende qué operaciones se pueden hacer sobre un objeto.
+Ya que estamos ... ¿sabemos la diferencia entre let y const, no?
+
+Le quiero asignar un String a la variable a ... no anda.
+¿Qué pasa con b?
+    => Moraleja: **inferencia de tipo**.
+
+¿Y si le quiero asignar un String a b?
+    - ¿Un String o cualquier cosa? Diferencia entre any y (number | string)
+    => Moraleja: complejidad del sistema de tipos.
+
+
+
+2. Literal de objeto.
+--------------------------------
+Nos basamos en object literals ... pero lo vamos armando.
+Repaso
+- acá es donde el intellisense se pone más pulenta
+
+¿Y cuál es el tipo de un object literal?
+
+Ya que estamos: por más que sea const, los componentes los puedo cambiar.
+
+(repaso de referencias con copiedRequest - efecto raro con anyRequest ... ¡puedo romper firstRequest!)
+
+interface: especificación de tipo (agregarmos AccountRequest)
