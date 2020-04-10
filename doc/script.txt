@@ -33,20 +33,31 @@ levantan la app sobre el resultado de esa transpilación.
 Para evitar el paso de traspilación, y tener un entorno ágil de prueba, podemos usar repl.it.
 Tarda para arrancar, pero es un REPL con todas las de la ley.
 
-(y nos movemos a repl.it por un ratito)
+Antes de pasar a otro tema ... definamos un String nombre2, y después agreguemos arriba
+  export const basicTypesModule = null
+¿por qué se puso en gris nombre2?
+(si no ponés ni import ni export, toma como scope global)
+
+
+(
+  y nos movemos a repl.it por un ratito ...
+  ... en rigor, editamos en VSCode para mostrar el intellisense, probamos en repl.it.
+)
+
 
 
 1. Un poquito de tipado
 --------------------------------
+(abrimos tipos basicos)
 Lo que ya vimos: al definir un identificador se le puede, o no, poner un tipo.
 A partir del tipo, el intellisense entiende qué operaciones se pueden hacer sobre un objeto.
-Ya que estamos ... ¿sabemos la diferencia entre let y const, no?
+Ya que estamos ... ¿sabemos la diferencia entre var, let y const, no?
 
 Le quiero asignar un String a la variable a ... no anda.
 ¿Qué pasa con b?
     => Moraleja: **inferencia de tipo**.
 
-¿Y si le quiero asignar un String a b?
+¿Y si le quiero asignar un String a b2?
     - ¿Un String o cualquier cosa? Diferencia entre any y (number | string)
     => Moraleja: complejidad del sistema de tipos.
 
@@ -62,6 +73,103 @@ Repaso
 
 Ya que estamos: por más que sea const, los componentes los puedo cambiar.
 
-(repaso de referencias con copiedRequest - efecto raro con anyRequest ... ¡puedo romper firstRequest!)
+interface: especificación de tipo (agregamos AccountRequest y tipamos firstRequest y otherRequest)
 
-interface: especificación de tipo (agregarmos AccountRequest)
+(repaso de referencias con copiedRequest - efecto raro con anyRequest ... ¡puedo romper firstRequest!
+ asimilarlo a una especie de casteo ... no exactamente un casteo, eso lo vemos después)
+
+
+
+3. Interfaces
+--------------------------------
+Qué es una interface, repasamos a partir del ejemplo.
+
+Duck typing.
+
+Componentes opcionales.
+- ¿cómo sé si el dato opcional viene o no? Recordando lo de truthy y falsy.
+- ya que estamos, herencia de interfaces.
+  - oh, con herencia explícita de interfaces sí acepta más campos ... hablar un poco 
+    de las limitaciones y misterios del type system TS. 
+    Lo queremos como es, confiamos en que es mejor que nada.
+    (mi opinión: garpa sobre todo por el intellisense)
+
+Componentes abiertos.
+- qué estamos usando: propiedad indexada, sólo vale indexar con string o con number.
+- para qué sirve: para parámetro de función.
+
+Mostrar la opción del seteo de compilador
+  // esto probarlo agregando "suppressExcessPropertyErrors": true en el tsconfig.json
+  // console.log(isLongAddress2({ street: "Luque", streetNumber: 3434, city: "Reconquista" }))
+Hablar un poquito sobre seteos de compilador, TS es mínimamente maleable.
+Obvio que en BDSol conviene manejarlos en forma unificada, para que no sea un bardo saltar de un microservicio a otro.
+
+
+
+4. Generics
+--------------------------------
+Ver ejemplos con arrays, entenderlos.
+
+Ver ejemplo con array de objetos, no sólo sirve para chequeo de lo que meto, sino (y para mí, al menos igual de importante) para intellisense sobre los elementos del array.
+Igual probemos el push.
+Creo que es interesante mirar el filter, el intellisense dentro de la función, y después sobre el resultado.
+
+Esta capacidad de tener una estructura relacionada con un tipo "abierto", que se define recién en la creación, no es sólo para arrays.
+
+Veamos otro tipo que viene con JS/TS: map.
+Meter el concepto de definición genérica. Map es un tipo genérico.
+
+--------------------------------------------------
+Un pequeño aside: 
+¿qué pasa si pongo createNewRequest(4)? Pensemos en el tipo del customer.
+Auchhhhh se rompe, otra vez la manquea TS, podría darse cuenta que sólo pueden ir argumentos String ahí.
+
+Peeero (nos paramos) el tipo del parámetro es any. Pero ... con un aviso.
+Ahhhh, está claro, es any pero podría ser algo más copado. Tengo a mano el fix y todo. ¡Sa-láaaaaan!
+Agregar esta opción de compilación
+    "noImplicitAny": true
+... esa ... ahora me marca el any como error. El fix sigue estando.
+--------------------------------------------------
+
+Yyyyy atenti que ... ¡¡podemos crear nuestras propias definiciones genéricas!!
+
+Arrancamos con Pair.
+
+OK, pero esto es super fumado. ¿Hay algo más terrenal?
+
+
+
+5. Mis propios Generics
+--------------------------------
+Vemos dos ejemplos.
+
+Vamos a requests genéricos, pedidos de cualquier cosa.
+- de paso vemos enum
+- vemos type, defino una "abreviatura" para un tipo que me viene cómoda para las especificaciones.
+- vemos el intellisense en cada paso de la definición de isLocal.
+- funciones que funcionan para cualquier request: makeMoreStrict. Acá de paso validamos la existencia de un atributo opcional.
+
+Ahora distintas cosas que pueden llevar precio. Este se parece más a herencia de clases ... pero sin clases.
+Definimos distintas cosas con precio.
+Definimos las funciones raisePrice y doubledPrice.
+Andan con todo ... excepto con literales.
+Teníamos la opción de definir un "ExtendedPrice" ... veamos una alternativa con generics.
+
+Ahora una más interesante: moreExpensive.
+- miren el intellisense, sobre el 2do parámetro cuando establezco el 1ro, y (muy importante) sobre el resultado.
+- ¿qué pasa si quiero comparar dos cosas distintas?
+  ... puedo, pero lo único que puedo decir del resultado es que es priced.
+  También lo puedo definir como T | U, si eso sirve para algo.
+
+
+--------------------------------
+
+Cierre: esto es una partecita así de chiquita del sistema de tipos de Typescript, y de los seteos de compilación.
+
+Las intenciones fueron
+- entender mejor algunas anotaciones que vemos en el código
+- darles una base que les haga más fácil buscar más.
+
+
+
+
