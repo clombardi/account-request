@@ -1,5 +1,7 @@
 - tener un endpoint andando que devuelva algo fijo
---------------------------------------------------------------
 - manejar el status con un enum
 - manejar las fechas con momentjs
+--------------------------------------------------------------
 - mapear una clase en Mongoose hasta reemplazar el endpoint por una consulta
+
+
