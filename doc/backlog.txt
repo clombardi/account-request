@@ -1,7 +1,42 @@
 - tener un endpoint andando que devuelva algo fijo
 - manejar el status con un enum
 - manejar las fechas con momentjs
+- tipar resultado de servicio y controller
 --------------------------------------------------------------
 - mapear una clase en Mongoose hasta reemplazar el endpoint por una consulta
+  - ver cómo aprovechar el tipado ¿alcanza con usar @nestjs/mongoose?
 
 
+--------------------------------------------------------------
+- herencia múltiple de interfaces, probar y comentar
+
+- interfaces que incluyen firmas de métodos, probar y comentar. 
+  Relacionar con clases.
+
+- mirá esto
+    interface ICreateUserInput {
+        email: IUser['email'];
+        firstName: IUser['firstName'];
+        lastName: IUser['lastName'];
+    }
+  donde IUser es una interface. Chusmear.
+
+- private keyword in TS: 
+  - ¿sólo en clases?
+  - incluirlo en explicaciones
+  - parámetro private en constructor
+
+- hay que hablar de decorators para entender qué goma estamos haciendo
+
+- entender bien cómo maneja Nest la inyección de dependencias.
+  Nótese que hay un decorator @Injectable.
+  Explicar qué es eso de inyección de dependencias.
+
+
+- entender bien cómo aprovechar el tipado en los datos persistentes.
+  ¿Es suficiente con usar @nestjs/mongoose?
+
+- en algún momento, entender la variante de JOI que usan para validar respuestas y requests de endpoints.
+  Creo que se llama class-validator.
+
+- aprender de linters

@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import * as moment from 'moment';
 import { Status } from 'src/enums/status';
+import { AccountRequest } from './interfaces/account-request.interfaces';
 
 @Injectable()
 export class AccountRequestService {
-    getAccountRequests(): any {
+    getAccountRequests(): AccountRequest[] {
         const requests = [{
             customer: '33445566778',
             status: Status.PENDING,

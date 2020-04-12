@@ -1,13 +1,15 @@
 import { Controller, Get } from '@nestjs/common';
 import { AccountRequestService } from './account-request.service';
+import { GetAccountRequestsDto } from './dto/account-request.dto';
 
 @Controller('account-requests')
 export class AccountRequestController {
     constructor(private readonly service: AccountRequestService) { }
 
     @Get()
-    getAccountRequests(): any {
+    getAccountRequests(): GetAccountRequestsDto {
         const requests = this.service.getAccountRequests()
         return requests.map(request => {return {...request, date: request.date.format("YYYY-MM-DD")}});
+        // return requests.map(request => {return {date: request.date.format("YYYY-MM-DD")}});
     }
 }
