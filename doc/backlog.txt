@@ -8,6 +8,12 @@
 
 
 --------------------------------------------------------------
+- armar un proyecto aparte usando Mongoose directo sobre Node
+
+- no olvidar: anotar cómo se crea un proyecto NestJS
+
+- algo de asincronismo hay que explicar, no hay caso
+
 - herencia múltiple de interfaces, probar y comentar
 
 - interfaces que incluyen firmas de métodos, probar y comentar. 
