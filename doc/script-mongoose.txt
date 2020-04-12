@@ -1,0 +1,68 @@
+Preámbulo: bases basadas en documentos.
+
+BD                BD
+Tabla             Colección
+Fila              Documento
+Columna           Atributo
+Índice            Índice
+
+Diferencias relevantes
+- desnormalizan, se pueden tener arrays y registros dentro de un documento
+- no tienen integridad referencial, al menos en principio
+- se desalienta hacer muchos joins (aunque sí hay sintaxis para join)
+
+Mongo
+- el motor corre una máquina virtual de JS
+  acá podemos meternos a la CLI y hacer algunas operaciones, que se vea la sintaxis JS.
+  P.ej. db.accountrequests.find()[0].status.toLowerCase()
+- obviamente, todas las operaciones son asincrónicas.
+
+
+------------------------------------------------------
+Mongoose: librería que hace un poco más cómodo el manejo de Mongo dentro de un programa JS / TS
+Mucho muy popular (ver hits en npm).
+
+Cuatro conceptos
+- conexión
+- esquema
+- modelo
+- operaciones
+
+Conexión: como cualquier DB, hay que pasarle un String de conexión, en la era moderna es una URL
+Nos conectamos, nos desconectamos. Perfecto.
+
+(esto se puede contar mostrando la doc de Mongoose - https://mongoosejs.com/docs/guide.html)
+Esquema: especificación de una colección.
+Para cada atributo se pueden especificar validaciones, algunas vienen, también (por lo que dice la doc) se pueden especificar como una función JS.
+Tiene tipos básicos.
+Se le pueden agregar chiches varios (veremos alguno)
+
+Modelo: se crea a partir de un esquema, es al modelo al que se le piden las operaciones.
+Funciona como una clase, se le puede hacer new para crear un nuevo documento.
+
+Operaciones - save
+Acá se ven las validaciones - ver addFaultyRequest.
+Si en el registro van datos de más, no salta error, pero mongoose trunca.
+
+Operaciones - find
+La lógica de búsqueda es la de mongo, o sea, pasamos al manual de mongo - https://docs.mongodb.com/manual/reference/operator/query/.
+Find sin condición: trae todos.
+Puedo pedir algunos: find con parámetro. 
+- los de un status.
+- el de un customer: si sé que viene uno, o me sirve uno cualquiera, puedo usar findOne.
+- condición numérica - más de dos aprobaciones.
+- los que no estén aprobados: $not.
+- los de las hermanas Bolena: regex.
+
+
+
+
+
+
+
+
+
+
+
+
+
