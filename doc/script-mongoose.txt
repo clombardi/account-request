@@ -52,9 +52,16 @@ Puedo pedir algunos: find con parámetro.
 - el de un customer: si sé que viene uno, o me sirve uno cualquiera, puedo usar findOne.
 - condición numérica - más de dos aprobaciones.
 - los que no estén aprobados: $not.
-- los de las hermanas Bolena: regex.
+- los de las hermanas Bolena: regex - https://devopedia.org/images/article/173/6028.1557317770.jpg.
 
-
+Un chiche - methods
+Decíamos que al esquema le podemos poner chiches varios, y que el modelo funciona como una clase.
+Una de las cosas que le podemos poner al esquema son métodos que van a tener las instancias del modelo.
+Lo vamos a usar para manejar setear la fecha desde un String, y obtenerla como un moment.
+Agregamos dos métodos: setDateFromString / dateAsMoment.
+- usamos el setDateFromString al grabar
+- usamos dateAsMoment para obtenerla. Acá vemos lo que nos devuelve el find, que es una lista de documentos,
+  que son las instancias del modelo, por lo tanto tienen los métodos agregados.
 
 
 
