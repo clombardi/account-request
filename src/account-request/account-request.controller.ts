@@ -7,9 +7,8 @@ export class AccountRequestController {
     constructor(private readonly service: AccountRequestService) { }
 
     @Get()
-    getAccountRequests(): GetAccountRequestsDto {
-        const requests = this.service.getAccountRequests()
+    async getAccountRequests(): Promise<GetAccountRequestsDto> {
+        const requests = await this.service.getAccountRequests()
         return requests.map(request => {return {...request, date: request.date.format("YYYY-MM-DD")}});
-        // return requests.map(request => {return {date: request.date.format("YYYY-MM-DD")}});
     }
 }

@@ -37,7 +37,7 @@ Para cada atributo se pueden especificar validaciones, algunas vienen, también 
 Tiene tipos básicos.
 Se le pueden agregar chiches varios (veremos alguno)
 
-Modelo: se crea a partir de un esquema, es al modelo al que se le piden las operaciones.
+Modelo: se crea (específicamente, se compila) a partir de un esquema, es al modelo al que se le piden las operaciones.
 Funciona como una clase, se le puede hacer new para crear un nuevo documento.
 
 Operaciones - save
@@ -47,6 +47,10 @@ Si en el registro van datos de más, no salta error, pero mongoose trunca.
 Operaciones - find
 La lógica de búsqueda es la de mongo, o sea, pasamos al manual de mongo - https://docs.mongodb.com/manual/reference/operator/query/.
 Find sin condición: trae todos.
+- Acá ver qué te trae: objetos Document, tengo toObject() y toJSON(), que para datos simples coinciden
+  (ya veremos diferencias).
+  Vemos opciones: https://mongoosejs.com/docs/api/document.html#document_Document-toObject
+  usamos una para probar, { versionKey: false }
 Puedo pedir algunos: find con parámetro. 
 - los de un status.
 - el de un customer: si sé que viene uno, o me sirve uno cualquiera, puedo usar findOne.
@@ -57,13 +61,29 @@ Puedo pedir algunos: find con parámetro.
 Un chiche - methods
 Decíamos que al esquema le podemos poner chiches varios, y que el modelo funciona como una clase.
 Una de las cosas que le podemos poner al esquema son métodos que van a tener las instancias del modelo.
-Lo vamos a usar para manejar setear la fecha desde un String, y obtenerla como un moment.
-Agregamos dos métodos: setDateFromString / dateAsMoment.
+Cfr. https://mongoosejs.com/docs/guide.html#methods.
+Una pavada para probar: isDecided().
+Lo vamos a usar para manejar la fecha.
+
+Manejo de fechas
+Un toque de fechas en Java / JavaScript.
+En JS / TS tenemos moment, que es muy popular, y nos da varias operaciones: comparar, sumar, obtener atributos.
+(podemos probar con un repl.it - buscar el repl "utc con moment").
+- obtener un dato: día / mes / año / día de la semana
+- clonar para ...
+- ... sumar / restar días / semanas / meses a una fecha
+- diferencia entre dos fechas ... ok me da un número ...
+- ... que se puede interpretar como duration, y ahí le saco la data
+
+OK ¿y cómo manejamos la fecha?
+Decido guardarla como número, y exponerla como String / moment.
+Agregamos los setters y getters.
 - usamos el setDateFromString al grabar
 - usamos dateAsMoment para obtenerla. Acá vemos lo que nos devuelve el find, que es una lista de documentos,
   que son las instancias del modelo, por lo tanto tienen los métodos agregados.
 
-
+Lo que viene - cómo usamos Mongoose dentro de un proyecto NestJS
+(va en script aparte)
 
 
 

@@ -1,0 +1,5 @@
+Seguimos la guía de NestJS - https://docs.nestjs.com/techniques/mongodb
+
+Primer paso - nos instalamos lo necesario
+- ¿se entiende qué es eso de @types/mongoose, y qué es eso de save--dev?
+

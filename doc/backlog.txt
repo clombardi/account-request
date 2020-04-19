@@ -2,17 +2,24 @@
 - manejar el status con un enum
 - manejar las fechas con momentjs
 - tipar resultado de servicio y controller
+- armar un proyecto aparte usando Mongoose directo sobre Node
 --------------------------------------------------------------
 - mapear una clase en Mongoose hasta reemplazar el endpoint por una consulta
-  - ver cómo aprovechar el tipado ¿alcanza con usar @nestjs/mongoose?
+  - ver cómo aprovechar el tipado  en los datos persistentes ¿alcanza con usar @nestjs/mongoose?
+  - entender si la validación de tipos en un request se hacen por tipo de DTO o cómo.
+    (esto va a interesar cuando se agregue un post)
+  - en particular, si puedo aprovechar el enum que ya lo tengo en TS.
 
 
 --------------------------------------------------------------
-- armar un proyecto aparte usando Mongoose directo sobre Node
+- agregarle un post para agregar un accountRequest
 
+--------------------------------------------------------------
 - no olvidar: anotar cómo se crea un proyecto NestJS
 
 - algo de asincronismo hay que explicar, no hay caso
+
+- hay que hablar de decorators para entender qué goma estamos haciendo
 
 - herencia múltiple de interfaces, probar y comentar
 
@@ -27,20 +34,18 @@
     }
   donde IUser es una interface. Chusmear.
 
+- averiguar hot redeploy para Nest
+
+- probar Typegoose en algún momento, tal vez simplifique la vida.
+
 - private keyword in TS: 
   - ¿sólo en clases?
   - incluirlo en explicaciones
   - parámetro private en constructor
 
-- hay que hablar de decorators para entender qué goma estamos haciendo
-
 - entender bien cómo maneja Nest la inyección de dependencias.
   Nótese que hay un decorator @Injectable.
   Explicar qué es eso de inyección de dependencias.
-
-
-- entender bien cómo aprovechar el tipado en los datos persistentes.
-  ¿Es suficiente con usar @nestjs/mongoose?
 
 - en algún momento, entender la variante de JOI que usan para validar respuestas y requests de endpoints.
   Creo que se llama class-validator.
