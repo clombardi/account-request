@@ -6,3 +6,7 @@ export interface AccountRequestDto {
 }
 
 export type GetAccountRequestsDto = AccountRequestDto[]
+
+export interface AddResponseDto {
+    id: string
+}

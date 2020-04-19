@@ -3,13 +3,12 @@
 - manejar las fechas con momentjs
 - tipar resultado de servicio y controller
 - armar un proyecto aparte usando Mongoose directo sobre Node
---------------------------------------------------------------
 - mapear una clase en Mongoose hasta reemplazar el endpoint por una consulta
   - ver cómo aprovechar el tipado  en los datos persistentes ¿alcanza con usar @nestjs/mongoose?
+  - en particular, si puedo aprovechar el enum que ya lo tengo en TS.
+--------------------------------------------------------------
   - entender si la validación de tipos en un request se hacen por tipo de DTO o cómo.
     (esto va a interesar cuando se agregue un post)
-  - en particular, si puedo aprovechar el enum que ya lo tengo en TS.
-
 
 --------------------------------------------------------------
 - agregarle un post para agregar un accountRequest

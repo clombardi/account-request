@@ -1,3 +1,7 @@
+antes que naaaaadaaaaa
+renombrar AccountRequest a AccountApplication
+
+
 Requisitos
 ------------------------------------------------
 tsc (si no lo tenés, npm install -g typescript)
