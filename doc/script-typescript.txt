@@ -27,6 +27,12 @@ Probemos con un ejemplito: tiposBasicos.ts.
   - const pepe: number = 4 
     no lo entiende
 
+Para ser más prolis, cambiamos la compilación a
+  tsc -p .
+esto compila todo lo que tengamos ... y usa tsconfig.json, que tiene las opciones de compilación
+(son muchas, iremos viendo algunas)
+De paso, vemos que deja los .js en otra carpeta entonces queda más ordenadito.
+
 Las tareas de los proyectos inicializados para Nest o para React Native hacen la transpilación; 
 levantan la app sobre el resultado de esa transpilación.
 

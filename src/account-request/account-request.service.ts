@@ -6,10 +6,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 
-function statusFromString(str: string): Status {
-    return Status[str.toUpperCase()]
-}
-
 @Injectable()
 export class AccountRequestService {
     constructor(@InjectModel('AccountRequest') private accountRequestModel: Model<AccountRequestMongoose>) {}
@@ -22,7 +18,13 @@ export class AccountRequestService {
         const mongooseRequests = await this.getAccountRequestsMongoose()
         return mongooseRequests.map(mongooseReq => { return {
             customer: mongooseReq.customer,
-            status: statusFromString(mongooseReq.status),
+            status: mongooseReq.status as Status,
+            // status: Status[mongooseReq.status.toUpperCase()],
+            /* this version does not work if either of TS compiler options "strict" or "noImplicitAny" are enabled
+               since non-literal subscripts to search into an enum
+               (or more generally, inta the set of keys of an object type)
+               are not accepted.
+             */
             date: moment.utc(mongooseReq.date),
             requiredApprovals: mongooseReq.requiredApprovals
         }})

@@ -21,6 +21,9 @@
 
 - hay que hablar de decorators para entender qué goma estamos haciendo
 
+- confirmar política respecto de strictness en el TS compiler
+- verificar qué versión de compilador TS se está usando
+
 - herencia múltiple de interfaces, probar y comentar
 
 - interfaces que incluyen firmas de métodos, probar y comentar. 

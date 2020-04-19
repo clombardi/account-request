@@ -3,3 +3,60 @@ Seguimos la guía de NestJS - https://docs.nestjs.com/techniques/mongodb
 Primer paso - nos instalamos lo necesario
 - ¿se entiende qué es eso de @types/mongoose, y qué es eso de save--dev?
 
+Repasamos los cuatro pasos, vamos de a uno sabiendo que
+- queremos usar el tipado de TS
+- nos conviene que la integración de Mongoose la maneje NestJS
+
+Paso 1: conexión
+En el app.module
+
+Paso 2: esquema
+lo meto con interfaces ... a debatir.
+El esquema es una especificación que tiene sentido solamente a efectos de Mongoose.
+Ahora, los documentos que me va a dar no quiero que sean Any, entonces ... defino un tipo para lo que me va a devolver.
+A su vez, este tipo es distinto al que venía manejando en la app. Ufa, dos interfaces, más las de los DTO.
+Por ahora aceptamos la multiplicación de las interfaces, una vez que tenemos el paso "make it work" volvemos sobre esto para un poquito de "make it right".
+
+Paso 3: model
+Se inserta así como dice en el servicio en donde voy a usar el esquema. 
+    constructor(@InjectModel('AccountRequest') private accountRequestModel: Model<AccountRequestMongoose>) {}
+Dice algo de qué pasa si quiero el mismo modelo en varios módulos NestJS ... lo vemos más adelante.
+
+Por ahora, prefiero ponerle foco en los tipos. Los modelos, son modelos de documentos, ya vimos que traen documentos.
+Entonces ... mi interface tiene que extender la interface Document que viene con Mongoose.
+
+Paso 4: operaciones
+Listo, tengo el modelo, le hago el find. 
+Pero ... uh esta definición tan bonita
+    getAccountRequestsMongoose(): AccountRequestMongoose[] {
+        return this.accountRequestModel.find({});
+    }
+no tipa ni a ganchos, el find me devuelve un DocumentQuery. ¿Qué falta? Esoooo el asincronismo.
+    async getAccountRequestsMongoose(): AccountRequestMongoose[] {
+        return await this.accountRequestModel.find({});
+    }
+y todavía no, no me devuelve la lista, me devuelve una promesa de que eventualmente va a venir una lista.
+Eso lo tengo que poner explícito en el tipo de respuesta
+    async getAccountRequestsMongoose(): Promise<AccountRequestMongoose[]> {
+        return await this.accountRequestModel.find({});
+    }
+OK, TS podría darse cuenta que si una función es async es obvio que va a manejar promesas y evitarme tener que poner Promise ... pero no lo hace, y punto.
+El tipo de retorno de toda operación asincrónica es Promise<tipo-que-me-interesa>, de acá hasta el request.
+Podemos generar de prepo la promesa en la versión fija, e ir cambiando la firma de los métodos hasta el controller.
+
+Listo, ya tengo el asincronismo manejado, nos falta un detalle.
+Obviamente, me da documentos de Mongoose, que además de faltarle una adaptación de tipos, tienen mucho más de lo que quiero.
+Entonces -> map y aprovecho para recortar y transformar.
+
+Y ... casi!!! ... estamos, nos falta el status.
+
+Aside: tipado del Status.
+Primero entender el problema: en la base hay un String, en JS es un String. Peeeero en TS el status es un enum, entonces no le puedo asignar un string, me da error de tipos.
+Después de darle mil (pero mil) vueltas, descubrí que el casteo derecho viejo sirve.
+Síiii estoy casteando, pero qué mal. ¿Hay alternativas sin casteo? No encontré (y miren que busqué) ninguna que funcione si pongo estricto al compilador. Mostrar la versión con el str.toUpperCase(), anda, le habilito noImplicitAny o strict, auch, dejó de compilar.
+
+¿Y cómo vamos con el tipado?
+Bien, notemos que el resultado del find está bien tipado, y me ayuda en el editor.
+Por otro lado, también estoy casteando correctamente el resultado del servicio.
+
+

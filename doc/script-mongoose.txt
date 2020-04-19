@@ -41,6 +41,8 @@ Modelo: se crea (específicamente, se compila) a partir de un esquema, es al mod
 Funciona como una clase, se le puede hacer new para crear un nuevo documento.
 
 Operaciones - save
+Todas las operaciones son asincrónicas, vamos con el async/await a full.
+(se podría aprovechar acá para introducir asincronismo, y después verlo en detalle)
 Acá se ven las validaciones - ver addFaultyRequest.
 Si en el registro van datos de más, no salta error, pero mongoose trunca.
 

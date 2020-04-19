@@ -6,7 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose'
   imports: [
     AccountRequestModule, 
     MongooseModule.forRoot(
-      'mongodb://localhost/accountRequestTs', { useNewUrlParser: true, useUnifiedTopology: true }
+      'mongodb://localhost/accountRequestJs', { useNewUrlParser: true, useUnifiedTopology: true }
     )
   ],
   controllers: [],
