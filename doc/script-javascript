@@ -1,0 +1,215 @@
+Jugamos un poquito en repl.it. Es como probar en la consola o en node, un poco más lindo nomás.
+
+Arranquemos con un repaso de algunas cuestiones de JS, para nivelar. Si se aburren avisen. Espero que cada uno se lleve al menos algún bit de data nueva.
+
+
+Fuentes de la verdad JS
+-----------------------
+
+Docs Mozilla
+https://developer.mozilla.org/en-US/docs/Web/JavaScript
+
+y por las dudas
+
+Spec ECMAScript
+https://www.ecma-international.org/ecma-262/10.0/index.html
+
+
+
+
+Disclaimer
+----------
+
+yo **no** soy el mega-hacker JS, y TS lo estoy aprendiendo.
+Lo que creo que me sale bien es organizar información y transmitirla. A eso le sumo el registro de 30+ años en el gremio, lo que me da una intuición de qué contenidos pueden ser útiles y/o interesantes.
+
+
+
+Una intro
+---------
+vamos a trabajar con expresiones JS, descubriendo variantes que nos pueden venir bien, y en la esperanza de que se genere un poco de debate
+
+obvio que esto es una revisión, de ninguna manera pretende ser una intro que no tendría sentido.
+
+en todo caso, si se aburren me avisan
+
+
+
+
+Truthy y falsy - expresiones booleanas - expresión ternaria
+-----------------------------------------------------------
+Hablemos sobre booleanos ... o "booleanos".
+
+¿Cuánto da 20 || 500? ¿Por qué?
+
+¡¡Atenti!! no se cumple que las operaciones lógicas son simétricas. ¿Cuánto da 500 || 20?
+
+¿Cuál devuelve, el operando izquierdo o el derecho? 
+¿Qué onda el &&?
+
+Spec JS valores falsy y truthy: https://developer.mozilla.org/en-US/docs/Glossary/Falsy .
+En la spec ECMAScript (https://www.ecma-international.org/ecma-262/10.0/index.html) 
+ver secciones 13.6.7 (runtime semantics de la alternativa) y 7.1.2 (coerción a boooleano).
+
+Notar que "" es falsy, pero [] y {} son truthy.
+
+
+El || nos viene cómodo para definir valores por defecto.
+
+let persona = fnQuePuedeDevolverNull() || { nombre: "Carolina", apellido: "Casiraghi" }
+
+Así podemos definir una función que resuelva el default
+function diasQueLlovio(periodo) {
+    return periodo.diasQueLlovio || []
+}
+
+Pensar por qué anda esto: {}.diasQueLlovio.
+
+¿cómo haríamos cantidadDeDiasQueLlovio? Una forma
+function diasQueLlovio(periodo) {
+    return (periodo.diasQueLlovio || []).length
+}
+
+
+El && nos viene cómodo para navegar en un objeto.
+
+function inicialDelApellido(persona) {
+    return persona && persona.apellido && persona.apellido[0].toUpperCase()
+}
+
+probar ... se va a romper con { apellido: 4 } ...
+interpretar el error  ¿qué es lo undefined? ... lo forzamos a tener un [0]
+
+probar ... se va a romper con { apellido: [4] } ...
+ahora existe un apellido[0] pero eso no entiende toUpperCase() ... le agregamos que tenga un toUpperCase
+
+¿oia? ¿qué es persona.apellido[0].toUpperCase? Es una función.
+
+
+Notar cómo se está usando que el || devuelve el primer valor significativo, y el && el último.
+
+
+
+Truco del !! para obtener la expresión booleana "limpia". P.ej.
+
+function tieneNombreYApellido(persona) {
+    return persona.nombre && persona.apellido
+}
+... no quiero que me devuelva "Casiraghi", quiero que me devuelva true.
+
+
+Una antes de los desafíos
+
+function alturaConBorde(spec) {
+  return (spec.altura || 300) + 10
+}
+(no anda siempre-siempre, después volvemos)
+
+
+Desafíos:
+Atenti - no vale if, no vale expresión ternaria, todo con || y &&.
+1.
+fn superficie(spec): altura * ancho. Si no hay altura o no hay ancho, devolver 0.
+Ayuda: 0 * x = x * 0 = 0
+2.
+fn importeTotal(factura)
+- neto + iva - descuento, los que estén.
+- si no hay descuento puede haber porcDescuento, que hay que usarlo solamente si hay neto.
+- si no se informa iva, tomar iva 20% del neto (si hay neto, claro)
+  ... no se le puede anular el iva, ufa ... pensar por qué ... después lo arreglamos ...
+- vale informar un porcIva, si se informa, va ese en lugar del 20%
+  (sigue siendo imposible anular el iva)
+
+
+
+Expresión ternaria: es una expresión, da un resultado (que no es undefined).
+
+P.ej. 
+function minimoNoImponible(persona) {
+    return persona.tieneHijos ? 50000 : 35000
+}
+
+¿Cómo lo arreglamos si los hijos son una lista? Tiene hijos si la lista tiene al menos un elemento.
+(versión hackerosa con !).
+
+**muy útil** en el render() de React.
+
+<p>Familia {pers.hijos > 2 ? "numerosa" : "standard" }</p>
+
+Recordemos este.
+function alturaConBorde(spec) {
+  return (spec.altura || 300) + 10
+}
+
+... uh problema ... si lo llamo con { altura: 0 }
+
+Dos formas
+1. saco el caso de 0 aparte
+   ((spec.altura === 0) ? 0 : (spec.altura || 300)) + 10
+2. mando el default solamente si es null o undefined
+   ((spec.altura == null) ? 300 : spec.altura) + 10
+
+se rompe si spec es null o undefined ... aplico lo que vimos arriba (no repito el "+10")
+    (spec == null || spec.altura == null) ? 300 : spec.altura
+o equivalente (en resultados, no en especificación)
+    (!spec || spec.altura == null) ? 300 : spec.altura
+aplicando De Morgan
+    (spec && spec.altura != null) ? spec.altura : 300
+
+
+Desafíos - no vale if
+- calorías de un plato de fideos representado por un objeto. 
+  Puede tener caloriasBase, default 200. Si tieneSalsa 20 más. Si tiene queso 30 más.
+  En una expresión booleana.
+- nombre completo: lo que haya de nombre y apellido. Si están los dos, un " " en el medio.
+  Truco: .trim().
+
+
+
+Let, var, const
+---------------
+¿Tenemos la palabra "scope"? 
+
+La diferencia entre let y var está en sus alcances, para funciones con inner scopes.
+
+ver repl "letVarConst"
+
+hay un detalle más que no sé qué tan relevante es en la era de React/Angular
+
+ver repl "varInWindow"
+
+vamos a const ... está claro
+
+pero ¿puedo tocar atributos, puedo tocar "adentro"?  reflexión sobre referencias. 
+Id si asigno
+  let refToConst = myConst
+
+¿Hay algo en TS que les suene similar a const? Claro, readonly.
+
+Peeeeero ... esa indicación (como todas las del sistema de tipos TS) está **solamente** en el tipo de la referencia, ya sea inferido o explícito.
+
+ver repl "readonly"
+
+acá va un desafío
+
+
+
+Object literals y clases
+------------------------
+Ya los conocemos de sobra.
+
+El valor de un atributo puede ser una función.
+
+(para reforzar) qué pasa si apuntamos dos identificadores al mismo objeto.
+
+Interesante: diferencia entre thePerson y theFixedPerson, ver en repl "object literal notation - 2"
+
+Pavadas: diferencias entre area, { area } y { ...area }. Hablar de shallow copy vs deep copy.
+
+Variante: { ...area, height: 300 }
+
+Ya que estamos, podemos hablar de == vs ===
+
+Vamos a clases (sin que entienda yo mucho) ... no es otra cosa que un syntax sugar
+
+
