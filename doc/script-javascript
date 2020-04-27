@@ -210,6 +210,12 @@ Variante: { ...area, height: 300 }
 
 Ya que estamos, podemos hablar de == vs ===
 
-Vamos a clases (sin que entienda yo mucho) ... no es otra cosa que un syntax sugar
+Vamos a clases (sin que entienda yo mucho) ... no es otra cosa que un syntax sugar.
+
+
+
+Array functions
+---------------
+Cortita, repasar la sintaxis, ver la diferencia respecto del this. Está en el repl "array functions"
 
 
