@@ -147,6 +147,23 @@ Arrancamos con Pair.
 
 OK, pero esto es super fumado. ¿Hay algo más terrenal?
 
+--------------------------------------------------
+Aside: ver esto
+function triple(n: number) { return n * 3 }
+
+let myFn = triple
+
+let selfCompose = function(fn: (arg0: any) => any) { return function (n: any) { return fn(fn(n)) } }
+
+let selfCompose2 = function<T> (fn: (arg0: T) => T) { return function (n: T) { return fn(fn(n)) } }
+
+let composeTriple = selfCompose(triple)
+
+let compose2Triple = selfCompose2(triple)
+
+Comparar el tipo inferido de composeTriple y compose2Triple
+--------------------------------------------------
+
 
 
 5. Mis propios Generics

@@ -214,8 +214,53 @@ Vamos a clases (sin que entienda yo mucho) ... no es otra cosa que un syntax sug
 
 
 
-Array functions
----------------
-Cortita, repasar la sintaxis, ver la diferencia respecto del this. Está en el repl "array functions"
+Functions, array functions, array "functional" methods
+------------------------------------------------------
+Antes que nada, las funciones son ciudadanos de primer orden. 
 
+De hecho la definición function <name>(<params>) { <body> } es medio un shortcut para
+  let <name> = function()(<params>) { <body> }
+let (o var), ni siquiera const. Sí se puede cambiar. Ver https://stackoverflow.com/questions/33040703/proper-use-of-const-for-defining-functions-in-javascript, la ventaja está en el alcance.
+En TS parece que cambia la cosa (ver def de triple y triple2 en typedArrays.ts), tal vez se defina como const ... aunque no encontré ninguna referencia al respecto ... no veo una spec de TS grrrr.
+
+Variante de array function, repasar la sintaxis, ver la diferencia respecto del this. Está en el repl "array functions".
+
+Reflexionar sobre el "scope volador" (en la doc de TS se habla de captura de variables). Si defino esta fn
+  doubledMaxFn() {
+    return () => Math.max(this.height, this.width) * 2
+  }
+1. está claro que estoy devolviendo una función
+2. esta función se "lleva" el contexto, y eso es dinámico
+
+> let spec1 = new WindowSpec(28,45)
+undefined
+> let f = spec1.doubledMaxFn()
+undefined
+> f
+[Function]
+> f()
+90
+> spec1.height = 80
+80
+> f()
+160
+
+... y no importa qué tan lejos o cerca esté el objeto al que le llega una referencia a la función ... lo que es una fuente posible de memory leaks.
+
+> spec1 = null
+null
+> f()
+160
+
+En JS parece relevante la separación entre los valores que son funciones (los que se pueden invocar con ()) y los que no. P.ej. 4().
+
+Una más: las funciones son componentes de las clases / objetos. Ergo se pueden acceder con la notación array-like obj["prop"].
+
+Tal vez no es lo más probable que definas componentes que reciben fns por parámetro ... pero sí que los uses.
+
+Sin ir más lejos, los arrays, que nos dan filter / map / find / every / y tanta felicidad.
+
+Hacer el ejemplo del DataCruncher, acá hay de todo. Desafíos
+- control panel
+- analizador de regularidad de window specs.
 
