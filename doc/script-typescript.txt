@@ -40,6 +40,13 @@ De paso, vemos que deja los .js en otra carpeta entonces queda más ordenadito.
 Las tareas de los proyectos inicializados para Nest o para React Native hacen la transpilación; 
 levantan la app sobre el resultado de esa transpilación.
 
+Hablar del tsconfig.json. Se puede agregar
+        "noImplicitAny": true
+y ver que no compila la definición de triple.
+
+En la definición de triple, también se puede ver cómo VSCode infiere tipos de parámetros.
+La inferencia del tipo de retorno la hace TS nomás, por eso no es necesario ponerla.
+
 Para evitar el paso de traspilación, y tener un entorno ágil de prueba, podemos usar repl.it.
 Tarda para arrancar, pero es un REPL con todas las de la ley.
 
@@ -61,16 +68,20 @@ Antes de pasar a otro tema ... definamos un String nombre2, y después agreguemo
 (abrimos tipos basicos)
 Lo que ya vimos: al definir un identificador se le puede, o no, poner un tipo.
 A partir del tipo, el intellisense entiende qué operaciones se pueden hacer sobre un objeto.
-Ya que estamos ... ¿sabemos la diferencia entre var, let y const, no?
 
 Le quiero asignar un String a la variable a ... no anda.
 ¿Qué pasa con b?
     => Moraleja: **inferencia de tipo**.
 
+Hablar de inferencia de TS y del editor (parámetro de triple)
+
 ¿Y si le quiero asignar un String a b2?
     - ¿Un String o cualquier cosa? Diferencia entre any y (number | string)
     => Moraleja: complejidad del sistema de tipos.
 
+Mostrar casos en los que el TS me traba de más: si el ident es any, por más que el valor sea un número, no lo voy a poder pasar por la función.
+
+Hablar del tipo de las funciones.
 
 
 2. Literal de objeto.
