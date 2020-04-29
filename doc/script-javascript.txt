@@ -260,7 +260,11 @@ Tal vez no es lo más probable que definas componentes que reciben fns por pará
 
 Sin ir más lejos, los arrays, que nos dan filter / map / find / every / y tanta felicidad.
 
-Hacer el ejemplo del DataCruncher, acá hay de todo. Desafíos
+Hacer el ejemplo del DataCruncher, acá hay de todo. 
+
+Desafíos
 - control panel
 - analizador de regularidad de window specs.
+- usar data cruncher con WindowSpec
+- getValue que se banque attr o method
 
