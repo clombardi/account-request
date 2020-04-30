@@ -84,20 +84,42 @@ Mostrar casos en los que el TS me traba de más: si el ident es any, por más qu
 Hablar del tipo de las funciones.
 
 
+
 2. Literal de objeto.
 --------------------------------
 Nos basamos en object literals ... pero lo vamos armando.
-Repaso
-- acá es donde el intellisense se pone más pulenta
 
-¿Y cuál es el tipo de un object literal?
+1. 
+escribimos firstRequest sin poner tipo. Ah, infiere el tipo.
+¿Eso es "un tipo"? ¿Qué quiere decir este tipo? 
+Lo que quiere decir un tipo es qué valores son de ese tipo.
 
-Ya que estamos: por más que sea const, los componentes los puedo cambiar.
+Acá es donde el intellisense se pone más pulenta.
 
-interface: especificación de tipo (agregamos AccountRequest y tipamos firstRequest y otherRequest)
+Si no digo nada, el tipo está "sellado": no se le pueden agregar más atributos.
+Cómo hacerlo más flexible: viene en un ratito.
 
-(repaso de referencias con copiedRequest - efecto raro con anyRequest ... ¡puedo romper firstRequest!
- asimilarlo a una especie de casteo ... no exactamente un casteo, eso lo vemos después)
+Entre paréntesis: el significado de const es el mismo que vimos en JS
+
+2. 
+Quiero escribir una función que reciba un registro de estos. Ponele, isDemandingApplication.
+¿Qué le paso como tipo?
+Acá tengo dos opciones
+- cualquier cosa que tenga demandingApprovals
+- quiero que sea una application.
+
+¿Cómo pongo? En el segundo caso, uh qué largo.
+
+3.
+interface: especificación de tipo (agregamos AccountRequest y tipamos firstRequest)
+
+4.
+Repaso de referencias con copiedRequest - efecto raro con anyRequest ... ¡puedo romper firstRequest!
+
+Es una forma alternativa de hacer un casteo.
+
+También puedo castear derecho viejo -> función doSomethingBad()
+(no entiendo por qué no lo puedo poner suelto)
 
 
 
