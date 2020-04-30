@@ -44,6 +44,9 @@ Hablar del tsconfig.json. Se puede agregar
         "noImplicitAny": true
 y ver que no compila la definición de triple.
 
+Otra opción de compilador linda es --noImplicitReturns, de hecho no estaría **tan** mal usarla.
+function pepe(n) { if (n > 5) { return n }}
+
 En la definición de triple, también se puede ver cómo VSCode infiere tipos de parámetros.
 La inferencia del tipo de retorno la hace TS nomás, por eso no es necesario ponerla.
 
