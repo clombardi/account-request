@@ -212,6 +212,8 @@ Ya que estamos, podemos hablar de == vs ===
 
 Vamos a clases (sin que entienda yo mucho) ... no es otra cosa que un syntax sugar.
 
+Sobre clases un detalle: las inicializaciones al constructor. Hay una sección sobre eso en el sitio.
+
 
 
 Functions, array functions, array "functional" methods

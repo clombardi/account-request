@@ -52,6 +52,7 @@ La inferencia del tipo de retorno la hace TS nomás, por eso no es necesario pon
 
 Para evitar el paso de traspilación, y tener un entorno ágil de prueba, podemos usar repl.it.
 Tarda para arrancar, pero es un REPL con todas las de la ley.
+Y tiene algo loquísimo: la consola admite TS. Truco: pega lo que se escribe a la consola al programa que se corre ... ver los números de línea en los mensajes de error que tira.
 
 Antes de pasar a otro tema ... definamos un String nombre2, y después agreguemos arriba
   export const basicTypesModule = null
@@ -132,6 +133,16 @@ Qué es una interface, repasamos a partir del ejemplo.
 
 Duck typing.
 
+El colador del any.
+
+Mostrar la opción del seteo de compilador
+  // esto probarlo agregando "suppressExcessPropertyErrors": true en el tsconfig.json
+  // console.log(isLongAddress2({ street: "Luque", streetNumber: 3434, city: "Reconquista" }))
+Hablar un poquito sobre seteos de compilador, TS es mínimamente maleable.
+Obvio que en BDSol conviene manejarlos en forma unificada, para que no sea un bardo saltar de un microservicio a otro.
+
+Componentes readonly.
+
 Componentes opcionales.
 - ¿cómo sé si el dato opcional viene o no? Recordando lo de truthy y falsy.
 - ya que estamos, herencia de interfaces.
@@ -144,11 +155,9 @@ Componentes abiertos.
 - qué estamos usando: propiedad indexada, sólo vale indexar con string o con number.
 - para qué sirve: para parámetro de función.
 
-Mostrar la opción del seteo de compilador
-  // esto probarlo agregando "suppressExcessPropertyErrors": true en el tsconfig.json
-  // console.log(isLongAddress2({ street: "Luque", streetNumber: 3434, city: "Reconquista" }))
-Hablar un poquito sobre seteos de compilador, TS es mínimamente maleable.
-Obvio que en BDSol conviene manejarlos en forma unificada, para que no sea un bardo saltar de un microservicio a otro.
+Extensión de interfaces.
+
+Uf, tipos función, varianza/covarianza/contravarianza. Esto está detallado en la página, ver los ejemplos que están en interfaces.ts.
 
 
 
@@ -179,7 +188,10 @@ Agregar esta opción de compilación
 
 Yyyyy atenti que ... ¡¡podemos crear nuestras propias definiciones genéricas!!
 
-Arrancamos con Pair.
+Arrancamos con Pair. Podemos transicionar de RestrictedPair a Pair.
+Mostrar que no se pierde detección de tipo.
+
+La papota está en que no se pierde el tipado en las funciones, y no es necesario especificar un tipo específico.
 
 OK, pero esto es super fumado. ¿Hay algo más terrenal?
 
@@ -191,13 +203,24 @@ let myFn = triple
 
 let selfCompose = function(fn: (arg0: any) => any) { return function (n: any) { return fn(fn(n)) } }
 
-let selfCompose2 = function<T> (fn: (arg0: T) => T) { return function (n: T) { return fn(fn(n)) } }
+let selfComposeT = function<T> (fn: (arg0: T) => T) { return function (n: T) { return fn(fn(n)) } }
 
 let composeTriple = selfCompose(triple)
 
-let compose2Triple = selfCompose2(triple)
+let composeTripleT = selfComposeT(triple)
 
 Comparar el tipo inferido de composeTriple y compose2Triple
+
+function removeHeadToEach(reg: { a: string, b: string }) {
+    return { a: reg.a.slice(1), b: reg.b.slice(1) }
+}
+selfCompose(removeHeadToEach)(5)                                              // compila
+selfCompose(removeHeadToEach)({ a: "Alicia", b: "Gris" }).c.toUpperCase()     // compila
+
+acá vemos los problemas de falta de chequeo por poner `any`.
+
+
+
 --------------------------------------------------
 
 
@@ -206,23 +229,52 @@ Comparar el tipo inferido de composeTriple y compose2Triple
 --------------------------------
 Vemos dos ejemplos.
 
-Vamos a requests genéricos, pedidos de cualquier cosa.
-- de paso vemos enum
-- vemos type, defino una "abreviatura" para un tipo que me viene cómoda para las especificaciones.
-- vemos el intellisense en cada paso de la definición de isLocal.
-- funciones que funcionan para cualquier request: makeMoreStrict. Acá de paso validamos la existencia de un atributo opcional.
-
-Ahora distintas cosas que pueden llevar precio. Este se parece más a herencia de clases ... pero sin clases.
+El primero: distintas cosas que pueden llevar precio. Este se parece más a herencia de clases ... pero sin clases.
 Definimos distintas cosas con precio.
-Definimos las funciones raisePrice y doubledPrice.
-Andan con todo ... excepto con literales.
-Teníamos la opción de definir un "ExtendedPrice" ... veamos una alternativa con generics.
 
-Ahora una más interesante: moreExpensive.
+En funciones que toman un priced, pongo Priced. 
+
+En funciones que **devuelven** un priced ... me corta el tipo ... .
+Esto se ve con withRaisedPricePriced.
+
+Solución: bounded = constrained generics.
+
+Ahora una más interesante: moreExpensive (en el sitio quedó para que lo vean elles)
 - miren el intellisense, sobre el 2do parámetro cuando establezco el 1ro, y (muy importante) sobre el resultado.
 - ¿qué pasa si quiero comparar dos cosas distintas?
   ... puedo, pero lo único que puedo decir del resultado es que es priced.
   También lo puedo definir como T | U, si eso sirve para algo.
+
+Ver la página, ahí metí también tipos intersección.
+El caso es setPrice, el tipo es lo mismo que recibo "más Priced".
+
+
+
+Vamos a applications genéricas, pedidos de cualquier cosa.
+
+- de paso vemos enum
+- vemos type, defino una "abreviatura" para un tipo que me viene cómoda para las especificaciones.
+- vemos el intellisense en cada paso de la definición de isLocal.
+- funciones que funcionan para cualquier request: makeMoreStrict. Acá de paso validamos la existencia de un atributo opcional (requiredApproval).
+
+Los ejercicios tienen mucho jugo
+- función no genérica sobre tipo genérico
+  como makeMoreStrict no devuelve, no perdemos nada poniendo Application<any> o Application<unknown>
+- incorporamos clases
+  un ejemplo del get <method> para que una clase implemente 
+  una interface que pide un dato.
+  Acá da para discutir si atributos públicos o privados.
+- las ventajas de poner tipos
+  si tipo todo, cuando hago un cambio ya el editor me marca cuando toco algo, p.ej. el nombre de un atributo, o el carácter opcional, en Application.
+  en el proyecto en VSCode tengo otro archivo que usa Application, para que se note el efecto de un cambio at large.
+- listas con elementos genéricos
+  si el atributo es homogéneo, engancha bien el parámetro de tipo, y lo respeta en el resultado.
+  si el atributo es heterogéneo, hay que explicitar que es una lista de Application<unknown>, o al definir la lista, o al invocar a la función. Probar qué pasa si no se especifica.
+- uno más
+  para practicar interfaces que piden métodos.
+- ultra desafío
+  una especie de hacky-decorator. Con {...} anda para registros, no para instancias de clases. Con Object.create anda en ambos casos ... pero creo que es una bomba atómica respecto de la performance.
+  
 
 
 --------------------------------
