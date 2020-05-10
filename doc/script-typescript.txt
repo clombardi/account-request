@@ -94,7 +94,7 @@ Hablar del tipo de las funciones.
 Nos basamos en object literals ... pero lo vamos armando.
 
 1. 
-escribimos firstRequest sin poner tipo. Ah, infiere el tipo.
+escribimos firstApplication sin poner tipo. Ah, infiere el tipo.
 ¿Eso es "un tipo"? ¿Qué quiere decir este tipo? 
 Lo que quiere decir un tipo es qué valores son de ese tipo.
 
@@ -115,10 +115,10 @@ Acá tengo dos opciones
 ¿Cómo pongo? En el segundo caso, uh qué largo.
 
 3.
-interface: especificación de tipo (agregamos AccountRequest y tipamos firstRequest)
+interface: especificación de tipo (agregamos AccountApplication y tipamos firstApplication)
 
 4.
-Repaso de referencias con copiedRequest - efecto raro con anyRequest ... ¡puedo romper firstRequest!
+Repaso de referencias con copiedApplication - efecto raro con anyApplication ... ¡puedo romper firstApplication!
 
 Es una forma alternativa de hacer un casteo.
 
@@ -176,7 +176,7 @@ Meter el concepto de definición genérica. Map es un tipo genérico.
 
 --------------------------------------------------
 Un pequeño aside: 
-¿qué pasa si pongo createNewRequest(4)? Pensemos en el tipo del customer.
+¿qué pasa si pongo createNewApplication(4)? Pensemos en el tipo del customer.
 Auchhhhh se rompe, otra vez la manquea TS, podría darse cuenta que sólo pueden ir argumentos String ahí.
 
 Peeero (nos paramos) el tipo del parámetro es any. Pero ... con un aviso.
@@ -255,7 +255,7 @@ Vamos a applications genéricas, pedidos de cualquier cosa.
 - de paso vemos enum
 - vemos type, defino una "abreviatura" para un tipo que me viene cómoda para las especificaciones.
 - vemos el intellisense en cada paso de la definición de isLocal.
-- funciones que funcionan para cualquier request: makeMoreStrict. Acá de paso validamos la existencia de un atributo opcional (requiredApproval).
+- funciones que funcionan para cualquier application: makeMoreStrict. Acá de paso validamos la existencia de un atributo opcional (requiredApproval).
 
 Los ejercicios tienen mucho jugo
 - función no genérica sobre tipo genérico
@@ -274,7 +274,7 @@ Los ejercicios tienen mucho jugo
   para practicar interfaces que piden métodos.
 - ultra desafío
   una especie de hacky-decorator. Con {...} anda para registros, no para instancias de clases. Con Object.create anda en ambos casos ... pero creo que es una bomba atómica respecto de la performance.
-  
+
 
 
 --------------------------------
@@ -290,7 +290,7 @@ Las intenciones fueron
 6. Decorators
 --------------------------------
 En TS podemos definir clases, como en JS, obviamente agregando todo el tipado.
-Miremos un controller Nest, que es una clas. Además del tipado, ¿qué vemos que no poníamos en una clase JS?
+Miremos un controller Nest, que es una clase. Además del tipado, ¿qué vemos que no poníamos en una clase JS?
 Exacto, las arrobas esas. Esos son los decorators.
 Para los que vienen de Java, tienen una sintaxis similar (si no igual) y el mismo propósito que las annotation de Java.
 Piensen p.ej. en Spring, SpringBoot, Hibernate.

@@ -11,7 +11,7 @@
     (esto va a interesar cuando se agregue un post)
 
 --------------------------------------------------------------
-- agregarle un post para agregar un accountRequest
+- agregarle un post para agregar un accountApplication
 
 --------------------------------------------------------------
 - no olvidar: anotar cómo se crea un proyecto NestJS

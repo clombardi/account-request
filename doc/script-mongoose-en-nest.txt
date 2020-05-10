@@ -28,7 +28,7 @@ Por ahora aceptamos la multiplicación de las interfaces, una vez que tenemos el
 Paso 3: model
 --------------------------
 Se inserta así como dice en el servicio en donde voy a usar el esquema. 
-    constructor(@InjectModel('AccountRequest') private accountRequestModel: Model<AccountRequestMongoose>) {}
+    constructor(@InjectModel('AccountApplication') private accountApplicationModel: Model<AccountApplicationMongoose>) {}
 Dice algo de qué pasa si quiero el mismo modelo en varios módulos NestJS ... lo vemos más adelante.
 
 Por ahora, prefiero ponerle foco en los tipos. Los modelos, son modelos de documentos, ya vimos que traen documentos.
@@ -39,17 +39,17 @@ Paso 4: operaciones
 --------------------------
 Listo, tengo el modelo, le hago el find. 
 Pero ... uh esta definición tan bonita
-    getAccountRequestsMongoose(): AccountRequestMongoose[] {
-        return this.accountRequestModel.find({});
+    getAccountApplicationsMongoose(): AccountApplicationMongoose[] {
+        return this.accountApplicationModel.find({});
     }
 no tipa ni a ganchos, el find me devuelve un DocumentQuery. ¿Qué falta? Esoooo el asincronismo.
-    async getAccountRequestsMongoose(): AccountRequestMongoose[] {
-        return await this.accountRequestModel.find({});
+    async getAccountApplicationsMongoose(): AccountApplicationMongoose[] {
+        return await this.accountApplicationModel.find({});
     }
 y todavía no, no me devuelve la lista, me devuelve una promesa de que eventualmente va a venir una lista.
 Eso lo tengo que poner explícito en el tipo de respuesta
-    async getAccountRequestsMongoose(): Promise<AccountRequestMongoose[]> {
-        return await this.accountRequestModel.find({});
+    async getAccountApplicationsMongoose(): Promise<AccountApplicationMongoose[]> {
+        return await this.accountApplicationModel.find({});
     }
 OK, TS podría darse cuenta que si una función es async es obvio que va a manejar promesas y evitarme tener que poner Promise ... pero no lo hace, y punto.
 El tipo de retorno de toda operación asincrónica es Promise<tipo-que-me-interesa>, de acá hasta el request.
@@ -73,12 +73,12 @@ Bien, notemos que el resultado del find está bien tipado, y me ayuda en el edit
 Por otro lado, también estoy casteando correctamente el resultado del servicio.
 
 
-Post: agregamos un AccountRequest
+Post: agregamos un AccountApplication
 --------------------------
 Primero hagamos un dibujito de los tipos
 
                     en el Controller                en el Service               en la persistencia 
-                    AccountRequestDto               AccountRequest              AccountRequestMongoose
+                    AccountApplicationDto           AccountApplication          AccountApplicationMongoose
 --------------------------------------------------------------------------------------------------------            
 date                string YYYY-MM-DD               moment                      number
 status              string                          Status                      string
@@ -98,7 +98,7 @@ Digamos que queremos devolver el id del objeto creado. A quién se lo vamos a pe
 
 Listo, anda.
 
-Mejora: tipar el data object que creamos. No le podemos poner AccountRequest, porque no tiene todo lo de document. Pero tenemos definido qué queremos. Solución: AccountRequestMongooseData y definir AccountRequestMongoose usando herencia múltiple de interfaces.
+Mejora: tipar el data object que creamos. No le podemos poner AccountApplication, porque no tiene todo lo de document. Pero tenemos definido qué queremos. Solución: AccountApplicationMongooseData y definir AccountApplicationMongoose usando herencia múltiple de interfaces.
 
 Problema: si se agrega un dato simple que va por todos lados, hay que tocar en tres lados.
-Cómo podríamos resolverlo: AccountRequestBasicData y que todos extiendan de ese.
+Cómo podríamos resolverlo: AccountApplicationBasicData y que todos extiendan de ese.

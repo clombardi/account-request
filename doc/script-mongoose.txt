@@ -14,7 +14,7 @@ Diferencias relevantes
 Mongo
 - el motor corre una máquina virtual de JS
   acá podemos meternos a la CLI y hacer algunas operaciones, que se vea la sintaxis JS.
-  P.ej. db.accountrequests.find()[0].status.toLowerCase()
+  P.ej. db.accountapplications.find()[0].status.toLowerCase()
 - obviamente, todas las operaciones son asincrónicas.
 
 
@@ -43,7 +43,7 @@ Funciona como una clase, se le puede hacer new para crear un nuevo documento.
 Operaciones - save
 Todas las operaciones son asincrónicas, vamos con el async/await a full.
 (se podría aprovechar acá para introducir asincronismo, y después verlo en detalle)
-Acá se ven las validaciones - ver addFaultyRequest.
+Acá se ven las validaciones - ver addFaultyApplication.
 Si en el registro van datos de más, no salta error, pero mongoose trunca.
 
 Operaciones - find
