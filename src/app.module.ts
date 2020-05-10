@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { AccountRequestModule } from './account-request/account-request.module';
+import { AccountApplicationModule } from './account-application/account-application.module';
 import { MongooseModule } from '@nestjs/mongoose'
 
 @Module({
   imports: [
-    AccountRequestModule, 
+    AccountApplicationModule, 
     MongooseModule.forRoot(
-      'mongodb://localhost/accountRequestJs', { useNewUrlParser: true, useUnifiedTopology: true }
+      'mongodb://localhost/accountApplicationJs', { useNewUrlParser: true, useUnifiedTopology: true }
     )
   ],
   controllers: [],

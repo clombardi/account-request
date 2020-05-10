@@ -1,22 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import * as moment from 'moment';
 import { Status } from 'src/enums/status';
-import { AccountRequest, AccountRequestMongoose, dateStringFormat, AccountRequestMongooseData } from './interfaces/account-request.interfaces';
+import { AccountApplication, AccountApplicationMongoose, dateStringFormat, AccountApplicationMongooseData } from './interfaces/account-application.interfaces';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 
 @Injectable()
-export class AccountRequestService {
-    constructor(@InjectModel('AccountRequest') private accountRequestModel: Model<AccountRequestMongoose>) {}
+export class AccountApplicationService {
+    constructor(@InjectModel('AccountApplication') private accountApplicationModel: Model<AccountApplicationMongoose>) {}
 
-    async getAccountRequestsMongoose(): Promise<AccountRequestMongoose[]> {
-        return await this.accountRequestModel.find({});
+    async getAccountApplicationsMongoose(): Promise<AccountApplicationMongoose[]> {
+        return await this.accountApplicationModel.find({});
     }
 
-    async getAccountRequests(): Promise<AccountRequest[]> {
-        const mongooseRequests = await this.getAccountRequestsMongoose()
-        return mongooseRequests.map(mongooseReq => { return {
+    async getAccountApplications(): Promise<AccountApplication[]> {
+        const mongooseApplications = await this.getAccountApplicationsMongoose()
+        return mongooseApplications.map(mongooseReq => { return {
             customer: mongooseReq.customer,
             status: mongooseReq.status as Status,
             // status: Status[mongooseReq.status.toUpperCase()],
@@ -30,8 +30,8 @@ export class AccountRequestService {
         }})
     }
 
-    async getAccountRequestsFixed(): Promise<AccountRequest[]> {
-        const requests: AccountRequest[] = [{
+    async getAccountApplicationsFixed(): Promise<AccountApplication[]> {
+        const applications: AccountApplication[] = [{
             customer: '33445566778',
             status: Status.PENDING,
             date: moment.utc("2020-01-22", dateStringFormat),
@@ -43,19 +43,19 @@ export class AccountRequestService {
             date: moment.utc('2020-03-05', dateStringFormat),
             requiredApprovals: 5
         }]
-        return Promise.resolve(requests)
+        return Promise.resolve(applications)
     }
 
-    async addAccountRequest(req: AccountRequest): Promise<string> {
-        const dataForMongoose: AccountRequestMongooseData = {
+    async addAccountApplication(req: AccountApplication): Promise<string> {
+        const dataForMongoose: AccountApplicationMongooseData = {
             customer: req.customer,
             status: req.status,
             date: req.date.valueOf(),
             requiredApprovals: req.requiredApprovals
         }
-        const newMongooseRequest = new this.accountRequestModel(dataForMongoose)
-        const savedRequest = await newMongooseRequest.save()
-        return savedRequest._id
+        const newMongooseApplication = new this.accountApplicationModel(dataForMongoose)
+        const savedApplication = await newMongooseApplication.save()
+        return savedApplication._id
     }
 }
 

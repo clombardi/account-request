@@ -4,23 +4,23 @@ import * as mongoose from "mongoose";
 
 export const dateStringFormat = "YYYY-MM-DD"
 
-export interface AccountRequest {
+export interface AccountApplication {
     customer: string,
     status: Status,
     date: Moment, 
     requiredApprovals: number
 }
 
-export interface AccountRequestMongooseData {
+export interface AccountApplicationMongooseData {
     customer: string,
     status: string,
     date: number,
     requiredApprovals: number
 }
 
-export interface AccountRequestMongoose extends mongoose.Document, AccountRequestMongooseData { }
+export interface AccountApplicationMongoose extends mongoose.Document, AccountApplicationMongooseData { }
 
-export const AccountRequestSchema = new mongoose.Schema({
+export const AccountApplicationSchema = new mongoose.Schema({
     customer: String,
     status: String,
     date: Number,

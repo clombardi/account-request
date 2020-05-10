@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
-import { AccountRequestController } from './account-request.controller';
-import { AccountRequestService } from './account-request.service';
+import { AccountApplicationController } from './account-application.controller';
+import { AccountApplicationService } from './account-application.service';
 import { MongooseModule } from '@nestjs/mongoose'
-import { AccountRequestSchema } from './interfaces/account-request.interfaces';
+import { AccountApplicationSchema } from './interfaces/account-application.interfaces';
 
 @Module({
     imports: [MongooseModule.forFeature([
-        { name: 'AccountRequest', schema: AccountRequestSchema }
+        { name: 'AccountApplication', schema: AccountApplicationSchema }
     ])],
-    controllers: [AccountRequestController],
-    providers: [AccountRequestService]
+    controllers: [AccountApplicationController],
+    providers: [AccountApplicationService]
 })
-export class AccountRequestModule { }
+export class AccountApplicationModule { }
