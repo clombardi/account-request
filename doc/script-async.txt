@@ -1,0 +1,69 @@
+-------------------------
+Procesamiento asincrónico
+-------------------------
+
+Intro
+-------------------------
+
+Plantear problemática, idea de "operación externa" (está definida en el sitio).
+
+Vamos a jugar con un servicio API REST de info de países, lo presentamos. 
+Por qué este: porque es cómoda, anda, y está estable desde 2017 que la empecé a usar para capacitaciones.
+Da siempre la misma info, da distintas formas de accederla.
+Mostramos algunos endpoints, p.ej.
+https://restcountries.eu/rest/v2/alpha/ARG
+https://restcountries.eu/rest/v2/all
+https://restcountries.eu/rest/v2/lang/es
+
+Esto como ejemplo, podría ser: otro microservicio nuestro, acceso a BD, aplicación externa por API REST o Web Service.
+
+Acá entrar a mirar promises.js, se pueden ir copiando cachos. Es buena la de usar promiseUtils, ya le metemos el require de axios y las constantes de países.
+
+Armamos la estructura de showCountryData, puede ser con el try-catch y todo. Nos queda cómo obtener el countryData.
+
+Lo hacemos ingenuo (el SynchroIllusion), claro, no anda. Llegar a por qué.
+
+
+
+async-await y promises
+-------------------------
+Cómo arreglar esto: creo que ya sabemos, await a la llamada + async a la función.
+Probamos rápido ... eh no anda, qué pasó. Ahora que transformamos la función en async, tenemos que poner await cuando la llamamos.
+
+Antes ... fijémonos qué es el response si **no** ponemos el await ... es un Promise. Ajhá.
+
+Agregamos el await que falta, anda, somos felices.
+
+Notita sobre bloqueo de Node.
+
+Podríamos decir "terminamos acá" pero no. Quiero que entendamos qué esto de "Promise". En particular, porque en el código de los servicios y controllers NestJs sí dice "Promise". ¿Se acuerdan dónde? ... mostrar el service de countryData.
+
+Es el mismo Promise que vimos en el console.log.
+Mostrar la firma de Axios.get.
+
+Atenti!! es un tipo genérico, esto permite no perder el tipo de lo que a nosotros nos interesa devolver.
+
+Los Promise nos dan otro esquema para manejar operaciones asincrónicas. Lo mostramos: showCountryDataPromise y getCountryDataPromise.
+Anda igual de lindo.
+Estos los dejaría aparte en el código, que se vean las versiones async/await y promise.
+
+Y ... ooooh podemos llamar a getCountryDataPromise desde showCountryData. O sea, podemos hacer await a una función que no tiene "async" ... la condición es que devuelva una promise.
+
+Develamos el misterio: async-await es un syntax sugar.
+- `async` se puede interpretar como "envolvé esto en una Promise y devolvé la Promise". Ahí entendemos el tipo de retorno de los métodos async en TS. En el service de countryData, probar poner y sacar el async y ver qué tipo deduce para la función getCountryData.
+- `await` se puede interpretar como "desempaquetame el Promise y accedé a lo que hay adentro". En el controller de countryData, poner y sacar el await en la línea 
+        const countryData: CountryData = await this.service.getCountryData(params.countryCode)
+sacándole el tipo, y ver qué tipo deduce.
+
+Repaso rápido por secuencia y manejo de errores: async/await vs Promise.
+
+
+
+
+
+
+
+
+
+
+
