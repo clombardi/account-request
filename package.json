@@ -24,6 +24,7 @@
     "@nestjs/core": "^6.10.14",
     "@nestjs/mongoose": "^6.4.0",
     "@nestjs/platform-express": "^6.10.14",
+    "axios": "^0.19.2",
     "moment": "^2.24.0",
     "mongoose": "^5.9.9",
     "reflect-metadata": "^0.1.13",
