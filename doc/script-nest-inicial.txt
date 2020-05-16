@@ -1,0 +1,5 @@
+Qué hacer (un poco de meta-script)
+- terminar el texto de intro
+- armar la app de ejemplo, ir anotando títulos de las páginas
+- armar páginas
+- armar script
