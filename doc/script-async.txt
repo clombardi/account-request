@@ -59,7 +59,54 @@ Repaso rápido por secuencia y manejo de errores: async/await vs Promise.
 
 
 
+promiseAll
+-------------------------
+(ahora entramos a copiar desde promiseAll.js)
 
+Primero un poco de contexto.
+1.
+Presentamos las nuevas funciones getCountryCodeAndData y logCodeAndData. Esto es para cuando manejemos errores.
+2.
+Queremos mostrar la data de varios países.
+La estructura general es showSeveralCountries, ya con el try-catch, y la medición de tiempo.
+Lo que nos falta es una función que obtenga la data de varios países en una lista.
+
+Primera opción: sequentialAsyncAwait.
+Anda. Pero tarda. 
+Pregunta de paso ¿nos podremos evitar la definición de constantes?
+Sí, pero no lo hace más rápido.
+
+Segunda opción: 
+arrayAsyncAwait_2. Es lo que nos gustaría, pero ... no anda.
+
+Tercera opción:
+promiseAll. Esta es la que va, ver que tarda menos. Pensar por qué, entender lo que dice la página.
+
+Desafío 1: como tenemos el código, está separado.
+- en promiseAll, que diga una sola vez getCountryCodeAndData
+- en showSeveralCountries, cambiar el forEach por logFourCountries, y el desafío es no tener que acceder a los índices de countryData. Acá es donde aplican los tres-puntos.
+
+Desafío 2: manejo de errores
+1: 
+mostrar qué pasa si una de las consultas fallas - se cae todo el Promise.all.
+Puede que sea el comportamiento esperado, puede que no.
+2:
+Si queremos que no, tenemos que definir qué queremos que devuelva si falla la operación.
+En este caso queremos mantener el código, y pongamos null en data, igual logCountryData se lo banca.
+¡Éxitos!
+
+Desafío 3: info consolidada de un país
+Qué se puede obtener
+- nombres y población total de los países vecinos
+- conversión de moneda contra USD
+- datos más actuales de covid con: fecha / total / activos / recuperados / fallecidos
+Fuentes de info
+- https://restcountries.eu/rest/v2/alpha/<codigo>
+- https://api.covid19api.com/countries para sacar el slug
+- https://api.covid19api.com/countries/<slug> para data covid
+- https://free.currconv.com/api/v7/convert?q=USD_<codigo_de_moneda_pais>&compact=ultra&apiKey=<key> para conversión
+  la key se pide en https://free.currencyconverterapi.com/
+  
 
 
 
