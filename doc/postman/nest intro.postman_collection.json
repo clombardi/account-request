@@ -1,0 +1,107 @@
+{
+	"info": {
+		"_postman_id": "0c87ad78-b75f-4b0c-8e88-9c6814e1bca3",
+		"name": "nest intro",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "country data",
+			"item": [
+				{
+					"name": "country - text description",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/country-data/MEX/textDescription",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"country-data",
+								"MEX",
+								"textDescription"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "country - short summary",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/country-data/MEX/shortSummary",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"country-data",
+								"MEX",
+								"shortSummary"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "country - short summary - mexico",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:3000/country-data/MEX/shortSummary",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"country-data",
+										"MEX",
+										"shortSummary"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "154"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"9a-ONK3dPc65qTwFwBCwo6e3bX0Xpk\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 17 May 2020 19:39:25 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"countryNames\": {\n        \"es\": \"México\",\n        \"en\": \"Mexico\"\n    },\n    \"population\": 122273473,\n    \"currencyCode\": \"MXN\",\n    \"neighborCountries\": [\n        \"BLZ\",\n        \"GTM\",\n        \"USA\"\n    ],\n    \"internetDomain\": \".mx\"\n}"
+						}
+					]
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

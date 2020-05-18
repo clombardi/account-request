@@ -1,21 +1,31 @@
 import { Injectable } from '@nestjs/common';
-import { CountryData } from './country-data.interfaces'
+import { CountryRawData, CountryExtendedData } from './country-data.interfaces'
+import { CurrencyService } from '../currencies/currencies.service';
 import axios from 'axios'
 
 @Injectable()
 export class CountryDataService {
-    async getCountryData(countryCode: string): Promise<CountryData> {
-        const response = await axios.get(this.buildUri(countryCode))
-        const rawCountryData = response.data
+    constructor(private readonly currencyService: CurrencyService) { }
+
+    async getRawData(countryCode: string): Promise<CountryRawData> {
+        const externalSeviceData = (await axios.get(this.buildUri(countryCode))).data
         return {
-            countryNames: {es: rawCountryData.translations.es, en: rawCountryData.name},
-            population: rawCountryData.population,
-            currencyCode: rawCountryData.currencies[0].code,
-            neighborCountries: rawCountryData.borders,
-            internetDomain: rawCountryData.topLevelDomain[0]
+            countryCode,
+            countryNames: externalSeviceData.translations,
+            population: externalSeviceData.population,
+            currency: externalSeviceData.currencies[0],
+            neighborCountryCodes: externalSeviceData.borders,
+            internetDomain: externalSeviceData.topLevelDomain[0]
         }
     }
 
+    async getExtendedData(countryCode: string): Promise<CountryExtendedData> {
+        const rawData = await this.getRawData(countryCode)
+        const usdRate: number = await this.currencyService.conversionToUSD(rawData.currency.code)
+        const neighborData = await Promise.all(rawData.neighborCountryCodes.map(code => this.getRawData(code)))
+        return {...rawData, currency: {...rawData.currency, byUSD: usdRate}, neighbors: neighborData}
+    }
+    
     buildUri(countryCode: string) {
         return 'https://restcountries.eu/rest/v2/alpha/' + countryCode
     }

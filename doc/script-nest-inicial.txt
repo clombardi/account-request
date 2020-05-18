@@ -1,5 +1,16 @@
 Qué hacer (un poco de meta-script)
 - terminar el texto de intro
+--------------------------------------
 - armar la app de ejemplo, ir anotando títulos de las páginas
 - armar páginas
 - armar script
+
+
+
+(de acá para abajo, el script)
+Speech inicial, está en el texto. 
+La pregunta de para qué sirve Nest si ya tengo Express en particular me la hice yo, con Express alcanza para levantar un servidor HTTP sobre Node. Entonces, hay algo que no es simplemente tener-un-servidor-andando que nos aporta Nest, vayamos entendiendo qué es.
+
+Para crear el proyecto y correrlo, eso lo saben mejor que yo (que todavía no me sé cómo hacer hot reload), y si no está en la doc.
+
+Podemos arrancar por planear los endpoints.

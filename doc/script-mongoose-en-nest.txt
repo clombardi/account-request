@@ -15,6 +15,9 @@ Paso 1: conexión
 --------------------------
 En el app.module
 
+Una cosa linda de ver es que la app Nest no levanta si no está Mongo levantado, te avisa con un mensaje claro, y no se cae enseguida, espera que levantes la base y sigue.
+Esto es otro servicio que nos da Nest, para seguir entendiendo la utilidad de Nest.
+
 
 Paso 2: esquema
 --------------------------
