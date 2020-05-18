@@ -14,3 +14,34 @@ La pregunta de para qué sirve Nest si ya tengo Express en particular me la hice
 Para crear el proyecto y correrlo, eso lo saben mejor que yo (que todavía no me sé cómo hacer hot reload), y si no está en la doc.
 
 Podemos arrancar por planear los endpoints.
+
+Cosas para mostrar
+- agregar un atributo a la interface y ver cómo marca dónde falta
+- cambiar la ruta en @Controller y ver cómo cambian todos los endpoints
+- módulo que sólo tiene provider, y los exporta
+- circular reference entre módulos
+- magia del tipo de _.pick, eso me gustaría entenderlo mejor
+- ir pensando en cache ¿no? al menos para los countryCodes
+  - ¿cómo hacer para no buscar siempre para traducir de iso3code a iso2code?
+- armar un proxy de axios que muestre las URL llamadas
+- entender la sintaxis (await axios.get(url)).data
+- la magia de cómo tipa el resultado de Promise.all en CovidDataService.getRecords
+  - hay que ayudarlo en CountryDataController.getLongSummary, por qué
+- el find en en CovidDataService.getRecords, uf, puede ser undefined
+  cómo hago que pase strict: casteo (hasta que veamos manejo de errores)
+
+
+----------------------------------------------
+con qué seguir
+- endpoint que falta de countries: :countryCode/neighbors
+- definir qué endpoints vamos a seguir en clase, y qué se les deja para hacer
+- implementar endpoints de fechas
+- ver cómo se sigue, creo que lo siguiente sería meter
+  - manejo de errores con exception handling
+  - validación del formato de la fecha con interceptor
+  - transformación de la fecha con un pipe
+  - agregado del saludo también con middleware
+  y después
+  - refinar definición de qué hacemos en clase y qué es ejercicio
+  - armar script
+  - armar páginas

@@ -14,13 +14,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:3000/country-data/MEX/textDescription",
+							"raw": "localhost:3000/countries/MEX/textDescription",
 							"host": [
 								"localhost"
 							],
 							"port": "3000",
 							"path": [
-								"country-data",
+								"countries",
 								"MEX",
 								"textDescription"
 							]
@@ -98,6 +98,17 @@
 							"body": "{\n    \"countryNames\": {\n        \"es\": \"México\",\n        \"en\": \"Mexico\"\n    },\n    \"population\": 122273473,\n    \"currencyCode\": \"MXN\",\n    \"neighborCountries\": [\n        \"BLZ\",\n        \"GTM\",\n        \"USA\"\n    ],\n    \"internetDomain\": \".mx\"\n}"
 						}
 					]
+				},
+				{
+					"name": "country - long summary",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": ""
+						}
+					},
+					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}

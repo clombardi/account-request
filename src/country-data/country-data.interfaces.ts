@@ -1,5 +1,8 @@
+import { CovidRecord } from "../covid-data/covid-data.interfaces";
+
 export interface CountryRawData {
     countryCode: string,
+    countryIso2Code: string,
     countryNames: { es: string, en: string },
     population: number,
     currency: {code: string, name: string, symbol: string},
@@ -28,7 +31,8 @@ export interface CountryLongSummary {
     currency: { code: string, name: string, byUSD: number },
     internetDomain: string  
     neighbors: NeighborDataInLongSummary[],
-    totalNeighborPopulation: number
+    totalNeighborPopulation: number,
+    covid19LastRecord?: CovidRecord
 }
 
 export interface NeighborDataInLongSummary {

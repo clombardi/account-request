@@ -11,6 +11,7 @@ export class CountryDataService {
         const externalSeviceData = (await axios.get(this.buildUri(countryCode))).data
         return {
             countryCode,
+            countryIso2Code: externalSeviceData.alpha2Code,
             countryNames: externalSeviceData.translations,
             population: externalSeviceData.population,
             currency: externalSeviceData.currencies[0],

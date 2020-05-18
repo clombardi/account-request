@@ -9,8 +9,6 @@ export class CurrencyService {
         const pairOfCurrencies = `USD_${currencyCode}`
         const url = `https://free.currconv.com/api/v7/convert?q=${pairOfCurrencies}&compact=ultra&apiKey=${this.freeCurrencyApiKey}`
         const response = await axios.get(url)
-        console.log('... response obtained')
-        console.log(response.data)
         return Number(response.data[pairOfCurrencies])
     }
 }
