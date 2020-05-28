@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios'
 import * as _ from 'lodash'
-import { CovidCountryIdentifier, CovidRecord, MaybeCovidRecord } from './covid-data.interfaces';
+import * as moment from 'moment';
+import { CovidCountryIdentifier, CovidRecord, MaybeCovidRecord, MaybeCovidDto } from './covid-data.interfaces';
 import { CountryDataService } from '../country-data/country-data.service';
 
 interface Covid19ApiCountryIdentifier {
@@ -48,10 +49,10 @@ export class CovidDataService {
         const covid19ApiCountrySlug = covid19ApiCountryId.slug
 
         // now get and transform the records
-        const countryDataUrl = `https://api.covid19api.com/country/${covid19ApiCountrySlug}`
+        const countryDataUrl = `https://api.covid19api.com/total/country/${covid19ApiCountrySlug}`
         const covid19ApiData: Covid19ApiRecord[] = (await axios.get(countryDataUrl)).data
         return covid19ApiData.map((countryData) => { return {
-            date: countryData.Date.substring(0,10),
+            date: moment.utc(countryData.Date.substring(0,10), "YYYY-MM-DD"),
             confirmed: countryData.Confirmed,
             active: countryData.Active,
             recovered: countryData.Recovered,
@@ -61,5 +62,13 @@ export class CovidDataService {
 
     async getLastRecord(countryIso3Code: string): Promise<MaybeCovidRecord> {
         return _.last(await this.getRecords(countryIso3Code))
+    }
+
+    async getRecordsInDateRange(
+        countryIso3Code: string, initialDate: moment.Moment, endDate: moment.Moment
+    ): Promise<CovidRecord[]> {
+        return (await this.getRecords(countryIso3Code)).filter(
+            record => record.date.isBetween(initialDate, endDate)
+        )
     }
 }

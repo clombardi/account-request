@@ -1,0 +1,22 @@
+---------------------------------
+módulo /countries
+---------------------------------
+
+:countryCode/description
+una descripción textual - usa sólo data de REST countries
+
+:countryCode/shortSummary
+un objeto sencillo - usa sólo data de REST countries
+
+:countryCode/neighbors
+el shortSummary de cada vecino - usa data de REST countries de los vecinos
+
+:countryCode/longSummary
+un objeto complejo - mezcla data de 
+- REST countries del país por el que se consulta
+- REST countries de los vecinos
+- conversión de monedas
+- data COVID
+
+:countryCode/covid
+(seguir por acá)

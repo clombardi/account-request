@@ -1,3 +1,10 @@
+Track intro a nest
+
+
+
+
+Track nest+mongoose
+
 - tener un endpoint andando que devuelva algo fijo
 - manejar el status con un enum
 - manejar las fechas con momentjs

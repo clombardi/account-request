@@ -1,4 +1,4 @@
-import { CovidRecord } from "../covid-data/covid-data.interfaces";
+import { CovidDto } from "../covid-data/covid-data.interfaces";
 
 export interface CountryRawData {
     countryCode: string,
@@ -32,11 +32,15 @@ export interface CountryLongSummary {
     internetDomain: string  
     neighbors: NeighborDataInLongSummary[],
     totalNeighborPopulation: number,
-    covid19LastRecord?: CovidRecord
+    covid19LastRecord?: CovidDto
 }
 
 export interface NeighborDataInLongSummary {
     countryCode: string,
     countryName: string,
     population: number
+}
+
+export interface CountryWithCovidDataDTO extends CountryShortSummary {
+    covidData: CovidDto[]
 }
