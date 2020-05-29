@@ -19,4 +19,29 @@ un objeto complejo - mezcla data de
 - data COVID
 
 :countryCode/covid
-(seguir por acá)
+parámetros de query: fromDate / toDate
+shortSummary más lista de data COVID - usa REST countries + data COVID
+
+
+
+---------------------------------
+módulo /dates
+---------------------------------
+today
+hoy
+
+:date/weekDay
+'Lunes' ... 'Domingo'
+
+:date/dateInfo
+de este es interesante dejarles nextMonday, por la cuentita
+
+(más ideas)
+:date/plus/:days
+
+:date/daysUntil/:date
+
+si es laborable
+
+si es feriado
+

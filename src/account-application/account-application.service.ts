@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import * as moment from 'moment';
 import { Status } from 'src/enums/status';
-import { AccountApplication, AccountApplicationMongoose, dateStringFormat, AccountApplicationMongooseData } from './interfaces/account-application.interfaces';
+import { AccountApplication, AccountApplicationMongoose, AccountApplicationMongooseData } from './interfaces/account-application.interfaces';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { stdDateFormat } from 'src/dates/dates.constants';
 
 
 @Injectable()
@@ -34,13 +35,13 @@ export class AccountApplicationService {
         const applications: AccountApplication[] = [{
             customer: '33445566778',
             status: Status.PENDING,
-            date: moment.utc("2020-01-22", dateStringFormat),
+            date: moment.utc("2020-01-22", stdDateFormat),
             requiredApprovals: 4
         },
         {
             customer: '99887766554',
             status: Status.REJECTED,
-            date: moment.utc('2020-03-05', dateStringFormat),
+            date: moment.utc('2020-03-05', stdDateFormat),
             requiredApprovals: 5
         }]
         return Promise.resolve(applications)

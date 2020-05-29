@@ -9,6 +9,7 @@ import {
 } from './country-data.interfaces';
 import { MaybeCovidRecord, CovidRecord, CovidDto } from 'src/covid-data/covid-data.interfaces';
 import { CovidDataService } from 'src/covid-data/covid-data.service';
+import { stdDateFormat } from 'src/dates/dates.constants';
 
 function transformCountryRawDataIntoShortSummary(countryRawData: CountryRawData): CountryShortSummary {
     return {
@@ -22,7 +23,7 @@ function transformCountryRawDataIntoShortSummary(countryRawData: CountryRawData)
 }
 
 function transformCovidRecordIntoCovidDto(covidData: CovidRecord): CovidDto {
-    return {...covidData, date: covidData.date.format("YYYY-MM-DD") }     
+    return {...covidData, date: covidData.date.format(stdDateFormat) }     
 }
 
 @Controller('countries')

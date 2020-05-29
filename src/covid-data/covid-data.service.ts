@@ -4,6 +4,7 @@ import * as _ from 'lodash'
 import * as moment from 'moment';
 import { CovidCountryIdentifier, CovidRecord, MaybeCovidRecord, MaybeCovidDto } from './covid-data.interfaces';
 import { CountryDataService } from '../country-data/country-data.service';
+import { stdDateFormat } from 'src/dates/dates.constants';
 
 interface Covid19ApiCountryIdentifier {
     Country: string,
@@ -52,7 +53,7 @@ export class CovidDataService {
         const countryDataUrl = `https://api.covid19api.com/total/country/${covid19ApiCountrySlug}`
         const covid19ApiData: Covid19ApiRecord[] = (await axios.get(countryDataUrl)).data
         return covid19ApiData.map((countryData) => { return {
-            date: moment.utc(countryData.Date.substring(0,10), "YYYY-MM-DD"),
+            date: moment.utc(countryData.Date.substring(0,10), stdDateFormat),
             confirmed: countryData.Confirmed,
             active: countryData.Active,
             recovered: countryData.Recovered,

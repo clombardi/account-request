@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AccountApplicationModule } from './account-application/account-application.module';
 import { MongooseModule } from '@nestjs/mongoose'
 import { CountryDataModule } from './country-data/country-data.module';
+import { DateModule } from './dates/dates.module';
 
 @Module({
   imports: [
@@ -9,7 +10,8 @@ import { CountryDataModule } from './country-data/country-data.module';
     MongooseModule.forRoot(
       'mongodb://localhost/accountApplicationJs', { useNewUrlParser: true, useUnifiedTopology: true }
     ),
-    CountryDataModule
+    CountryDataModule,
+    DateModule
   ],
   controllers: [],
   providers: [],

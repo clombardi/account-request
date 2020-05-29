@@ -2,8 +2,6 @@ import { Status } from "src/enums/status";
 import { Moment } from "moment";
 import * as mongoose from "mongoose";
 
-export const dateStringFormat = "YYYY-MM-DD"
-
 export interface AccountApplication {
     customer: string,
     status: Status,
