@@ -1,8 +1,8 @@
 import { Weekday, Month } from "./dates.constants";
 import moment = require("moment");
 
-export interface TodayDTO {
-    today: string
+export interface DateDTO {
+    date: string
 }
 
 export interface WeekdayDTO {
@@ -30,4 +30,10 @@ export interface DateInfo extends DateInfoNoDates {
 export interface DateInfoDTO extends DateInfoNoDates {
     nextMonday: string,
     inAWeek: string
+}
+
+export interface DaysUntilDTO {
+    date: string,
+    futureDate: string,
+    daysElapsed: number
 }
