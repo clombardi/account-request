@@ -44,3 +44,22 @@ export interface NeighborDataInLongSummary {
 export interface CountryWithCovidDataDTO extends CountryShortSummary {
     covidData: CovidDto[]
 }
+
+export interface CountryInfoDTO {
+    code: string,
+    name: string,
+    population: number,
+    internetDomain: string
+}
+
+export interface CountryInfoWithCovidDataDTO extends CountryInfoDTO {
+    covidData: CovidDto[]
+}
+
+export interface CountryInfo {
+    code: string,
+    names: { en: string, es: string },
+    population: number,
+    internetDomain: string,
+    currencyCode: string
+}

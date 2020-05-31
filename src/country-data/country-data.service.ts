@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { CountryRawData, CountryExtendedData } from './country-data.interfaces'
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CountryRawData, CountryExtendedData, CountryInfo } from './country-data.interfaces'
 import { CurrencyService } from '../currencies/currencies.service';
 import axios from 'axios'
 
@@ -8,7 +8,10 @@ export class CountryDataService {
     constructor(private readonly currencyService: CurrencyService) { }
 
     async getRawData(countryCode: string): Promise<CountryRawData> {
-        const externalSeviceData = (await axios.get(this.buildUri(countryCode))).data
+        const externalSeviceData = (
+            await axios.get(this.buildUri(countryCode))
+            .catch(() => { throw new NotFoundException(`Country ${countryCode} unknown`) })
+        ).data
         return {
             countryCode,
             countryIso2Code: externalSeviceData.alpha2Code,
@@ -34,6 +37,19 @@ export class CountryDataService {
 
     getRawDataAboutMultipleCountries(countryCodes: string[]): Promise<CountryRawData[]> {
         return Promise.all(countryCodes.map(code => this.getRawData(code)))
+    }
+
+    async getInfo(countryCode: string): Promise<CountryInfo> {
+        const url = this.buildUri(countryCode)
+        const externalServiceResponse = await axios.get(url)
+        const externalServiceData = externalServiceResponse.data
+        return {
+            code: countryCode,
+            names: externalServiceData.translations,
+            population: externalServiceData.population,
+            internetDomain: externalServiceData.topLevelDomain[0],
+            currencyCode: externalServiceData.currencies[0].code
+        }
     }
 
     buildUri(countryCode: string) {

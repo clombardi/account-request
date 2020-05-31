@@ -9,6 +9,7 @@ export interface WeekdayDTO {
     weekday: Weekday
 }
 
+
 interface DateInfoNoDates {
     date: number,
     monthIndex: number,

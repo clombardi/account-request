@@ -36,12 +36,13 @@ hoy
 :date/dateInfo
 de este es interesante dejarles nextMonday, por la cuentita
 
-(más ideas)
 :date/plus/:days
+la fecha 
 
-:date/daysUntil/:date
+:date1/daysUntil/:date2
+daysElapsed
 
-si es laborable
-
-si es feriado
+(más ideas)
+- si es laborable
+- si es feriado
 

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import axios from 'axios'
 import * as _ from 'lodash'
 import * as moment from 'moment';
@@ -37,7 +37,6 @@ export class CovidDataService {
         } })
     }
 
-
     async getRecords(countryIso3Code: string): Promise<CovidRecord[]> {
         // must obtain the country slug.
         // this depends on the list of codes, and the iso2Code for the country
@@ -61,8 +60,16 @@ export class CovidDataService {
         }})
     }
 
-    async getLastRecord(countryIso3Code: string): Promise<MaybeCovidRecord> {
-        return _.last(await this.getRecords(countryIso3Code))
+    async getLastRecord(countryIso3Code: string): Promise<CovidRecord> {
+        if (countryIso3Code === 'NIC') {
+            throw new NotFoundException(`COVID data not found for country ${countryIso3Code}`)
+        }
+        const theRecords = await this.getRecords(countryIso3Code)
+        if (theRecords.length === 0) {
+            throw new NotFoundException(`COVID data not found for country ${countryIso3Code}`)
+        } else {
+            return _.last(await this.getRecords(countryIso3Code)) as CovidRecord
+        }
     }
 
     async getRecordsInDateRange(

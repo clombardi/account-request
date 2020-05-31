@@ -5,7 +5,10 @@ import { CountryDataService } from './country-data.service'
 import { 
     CountryRawData, CountryShortSummary, CountryExtendedData, CountryLongSummary, 
     NeighborDataInLongSummary,
-    CountryWithCovidDataDTO
+    CountryWithCovidDataDTO,
+    CountryInfoDTO,
+    CountryInfo,
+    CountryInfoWithCovidDataDTO
 } from './country-data.interfaces';
 import { MaybeCovidRecord, CovidRecord, CovidDto } from 'src/covid-data/covid-data.interfaces';
 import { CovidDataService } from 'src/covid-data/covid-data.service';
@@ -28,10 +31,14 @@ function transformCovidRecordIntoCovidDto(covidData: CovidRecord): CovidDto {
 
 @Controller('countries')
 export class CountryDataController {
+    readonly countryDataService: CountryDataService
+
     constructor(
         private readonly service: CountryDataService,
         private readonly covidDataService: CovidDataService
-    ) { }
+    ) { 
+        this.countryDataService = service
+    }
 
     @Get(':countryCode/textDescription')
     async getTextDescription(@Param() params: {countryCode: string}): Promise<string> {
@@ -46,6 +53,15 @@ export class CountryDataController {
         return await this.getShortSummary(params.countryCode)
     }
 
+    @Get(':countryCode/info')
+    async getInfo(@Param("countryCode") countryCode: string): Promise<CountryInfoDTO> {
+        const serviceData: CountryInfo = await this.service.getInfo(countryCode)
+        return Object.assign({}, 
+            _.pick(serviceData, ['code', 'population', 'internetDomain']), 
+            { name: serviceData.names.es }
+        )
+    }
+
     async getShortSummary(countryCode: string): Promise<CountryShortSummary> {
         const countryData: CountryRawData = await this.service.getRawData(countryCode)
         return transformCountryRawDataIntoShortSummary(countryData)
@@ -58,9 +74,17 @@ export class CountryDataController {
                 {}, _.pick(rawData, ["countryCode", "population"]), 
                 { countryName: rawData.countryNames.es }
             )
+        // const getCovidLastRecord: () => Promise<MaybeCovidRecord> = async () => {
+        //     try {
+        //         return await this.covidDataService.getLastRecord(params.countryCode)
+        //     } catch (err) {
+        //         return undefined
+        //     }
+        // }
         const [countryData, covidData] = await Promise.all <CountryExtendedData, MaybeCovidRecord> ([
             this.service.getExtendedData(params.countryCode),
-            this.covidDataService.getLastRecord(params.countryCode)
+            // getCovidLastRecord()
+            this.covidDataService.getLastRecord(params.countryCode).catch(() => undefined)
         ])
         const result: CountryLongSummary = {
             countryCode: countryData.countryCode,
@@ -76,6 +100,28 @@ export class CountryDataController {
         }
         return result
     }
+
+    @Get(':countryCode/infoWithCovid')
+    async getInfoWithCovid(@Param("countryCode") countryCode: string): Promise<CountryInfoWithCovidDataDTO> {
+        const [countryData, covidData] = await Promise.all<CountryInfo, CovidRecord | undefined>([
+            this.countryDataService.getInfo(countryCode),
+            this.covidDataService.getLastRecord(countryCode).catch(() => undefined)
+        ])
+        return Object.assign({},
+            _.pick(countryData, ['code', 'population', 'internetDomain']),
+            { name: countryData.names.es },
+            { covidData: [] }
+        )
+    }
+
+    async getCovidLastRecord(countryCode: string): Promise<MaybeCovidRecord> {
+        try {
+            return await this.covidDataService.getLastRecord(countryCode)
+        } catch (err) {
+            return undefined
+        }
+    }
+
 
     @Get(':countryCode/neighbors')
     async getNeighborsShortSummary(@Param() params: { countryCode: string }): Promise<CountryShortSummary[]> {

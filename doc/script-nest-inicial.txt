@@ -9,9 +9,83 @@ Qué hacer (un poco de meta-script)
 
 (de acá para abajo, el script)
 Speech inicial, está en el texto. 
+
+Primero: rol de NestJS.
 La pregunta de para qué sirve Nest si ya tengo Express en particular me la hice yo, con Express alcanza para levantar un servidor HTTP sobre Node. Entonces, hay algo que no es simplemente tener-un-servidor-andando que nos aporta Nest, vayamos entendiendo qué es.
 
+Y ahí salen las ideas de
+- organización (para justificar los módulos)
+- simplificación (en la mayor parte del código, uno se olvida de los objetos request y response; también simplificación p.ej. del manejo de errores)
+- concepto más trabajado de middleware (en lugar de un tipo solo, distintas variantes)
+- conectores que simplifican el uso p.ej. de Mongoose o TypeORM
+- componentes que simplifican el testing
+
+Van los disclaimers, al que se agrega que yo no soy nada parecido a un experto de NestJS.
+
+(saltamos a conceptos iniciales)
+Repasamos nociones de controller/provider/módulo
+Podemos agarrar un repo BDS (pedir permiso para esto), yo estoy mirando people-hub que tiene varios módulos.
+1. Controller - maneja rutas
+   El persons.controller.ts tiene varios get.
+2. Provider - provee
+3. Module - organiza
+   además de los imports/exports/controllers/providers, podría tener
+   configuraciones (p.ej. de middleware) específicas para el módulo.
+
+Receta - paso 1
+Relación entre módulos: el SignUpRequestModule importa al PersonsModule.
+
+Receta - paso 2
+Ver en el app.module que están todos.
+
+Receta - paso 3
+Ver la inyección del servicio en PersonsController.
+
+Bueno, ahora vamos a armar uno de cero.
+
+(pasamos a "Arranquemos por algún lado")
 Para crear el proyecto y correrlo, eso lo saben mejor que yo (que todavía no me sé cómo hacer hot reload), y si no está en la doc.
+
+Vamos con un endpoint. 
+Pueden arrancar haciendo que devuelva algo fijo, para tener el circo armado.
+
+Listo, ahora alcanza con acomodar algo del código que habíamos hecho en el ejercicio de async. Vamos con lo mínimo, una consulta sola.
+
+Repasamos la necesidad de async/await, y los tipos.
+
+Objetivo 1 entonces: un endpoint que busque info de RESTCountries.
+En el servicio: que tome 
+    export interface CountryRawData {
+        countryCode: string,
+        countryIso2Code: string,
+        countryNames: { es: string, en: string },
+        population: number,
+        currency: {code: string, name: string, symbol: string},
+        internetDomain: string
+        neighborCountryCodes: string[],
+    }
+En el controller: que exponga
+    export interface CountryInfoDTO {
+        code: string,
+        name: string,
+        population: number,
+        internetDomain: string
+    }
+
+Después manejo de errores.
+Sobre esto probar
+- ExceptionFilter que no hice
+- en particular, 
+  - si puede haber varios ExceptionFilter que apliquen, p.ej. uno global y otro para un controller. Si son de distinto ámbito (uno local, uno global) cuál se ejecuta primero.
+  - si un ExceptionFilter puede no tocar el response, p.ej. sólo loguear, y que le lleguen request y response igualitos al siguiente ExceptionFilter. 
+En la página va a contar
+- si el país es CHN entonces forbidden
+- 
+Ejercicios sobre esto:
+
+- que si la población es < 100000 entonces tire un error de "país insignificante"
+- 
+
 
 Podemos arrancar por planear los endpoints.
 
