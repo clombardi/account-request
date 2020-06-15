@@ -43,7 +43,7 @@ Ver la inyección del servicio en PersonsController.
 
 Bueno, ahora vamos a armar uno de cero.
 
-(pasamos a "Arranquemos por algún lado")
+(pasamos a "Empezamos a armar una app")
 Para crear el proyecto y correrlo, eso lo saben mejor que yo (que todavía no me sé cómo hacer hot reload), y si no está en la doc.
 
 Vamos con un endpoint. 
@@ -55,7 +55,7 @@ Repasamos la necesidad de async/await, y los tipos.
 
 Objetivo 1 entonces: un endpoint que busque info de RESTCountries.
 En el servicio: que tome 
-    export interface CountryRawData {
+    export interface CountryInfo {
         countryCode: string,
         countryIso2Code: string,
         countryNames: { es: string, en: string },
@@ -71,6 +71,45 @@ En el controller: que exponga
         population: number,
         internetDomain: string
     }
+
+Insistir mucho en que no pongan any en ningún lado, y que verifiquen que está chequeando, o sea, que si mandan datos de menos en el provider, o en lo que devuelve el controller, salte en el VSCode.
+
+Ah, y usen lodash.pick con el tipado, es zarpado.
+
+
+Bien, lo tenemos andando. 
+Ahora agreguemos los datos de COVID.
+(vamos a "Combinar datos de distintas fuentes")
+... la info está en la página, tal vez convenga contarla en un orden distinto.
+
+Tenemos dos tareas nuevas: resolver la consulta de datos COVID, y juntar todo en la respuesta del controller.
+
+Antes que nada, creo que conviene aclarar lo de los códigos. 
+Primero, que se entienda el problema, y que es algo que puede pasar cuando se interactúa con otros sistemas.
+Aunque suene duro, les pido que repitan la consulta para obtener el Iso2Code. Por tres razones
+1. creo que es más prolijo que en una aplicación, el id de una entidad que se expone sea coherente, o sea que no dependa de a qué servicio se llame. Los id de países que ponemos como parte de los URL, claramente se están exponiendo. 
+2. que el servicio que obtiene el iso2Code a partir del iso3Code sea el mismo que se consulta para obtener los datos del país, es incidental.
+3. nos va a servir para establecer una cache en el CovidDataService.
+
+Para ser mínimamente prolijos, pongamos la consulta COVID en un método aparte, que va a estar en un provider. Y de ahí plantear los tres casos: 
+- otro método en el mismo provider
+- otro provider en el mismo módulo
+- otro módulo
+
+Ahora, dada la decisión de que el covid service se encarga de traducir de iso3Code a iso2Code, las consultas a los providers son independientes. No dejen de usar Promise.all.
+
+Para la integración ¿qué pasa si la hacemos en el controller? Prueben. 
+
+Yo diría, estén un rato probando distintas opciones.
+Si definen dos módulos, tal vez lo que dice al final del forward ref les puede servir.
+
+En algún momento, plantear/repasar qué pasa si el COVID service no da respuesta. Esta es otra faceta común que aparece cuando integramos datos: 
+La primera pregunta es ¿qué hacemos, tiramos un 500? En este caso decidamos que no, que simplemente no incluimos el atributo con la info COVID en la respuesta.
+
+Mirar lo que dice de incluir undefined como posible respuesta en el tipo.
+Si no están usando strict, mostarlo yo que sí me puse strict.
+
+    
 
 Después manejo de errores.
 Sobre esto probar

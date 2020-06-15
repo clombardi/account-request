@@ -2,12 +2,16 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CountryRawData, CountryExtendedData, CountryInfo } from './country-data.interfaces'
 import { CurrencyService } from '../currencies/currencies.service';
 import axios from 'axios'
+import { NastyCountryException } from 'src/errors/customExceptions';
 
 @Injectable()
 export class CountryDataService {
     constructor(private readonly currencyService: CurrencyService) { }
 
     async getRawData(countryCode: string): Promise<CountryRawData> {
+        if (countryCode === 'ZZZ') {
+            throw new NastyCountryException("I just don't like the country ZZZ")
+        }
         const externalSeviceData = (
             await axios.get(this.buildUri(countryCode))
             .catch(() => { throw new NotFoundException(`Country ${countryCode} unknown`) })
