@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ImATeapotException, HttpStatus } from '@nestjs/common';
 import { CountryRawData, CountryExtendedData, CountryInfo } from './country-data.interfaces'
 import { CurrencyService } from '../currencies/currencies.service';
 import axios from 'axios'
@@ -12,9 +12,18 @@ export class CountryDataService {
         if (countryCode === 'ZZZ') {
             throw new NastyCountryException("I just don't like the country ZZZ")
         }
+        if (countryCode === 'TPT') {
+            throw new ImATeapotException('Teapot country not supported')
+        }
         const externalSeviceData = (
             await axios.get(this.buildUri(countryCode))
-            .catch(() => { throw new NotFoundException(`Country ${countryCode} unknown`) })
+            .catch((err) => { 
+                if (err.status === HttpStatus.NOT_FOUND) {
+                    throw new NotFoundException(`Country ${countryCode} unknown`)
+                } else {
+                    throw err
+                }
+            })
         ).data
         return {
             countryCode,
