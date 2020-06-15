@@ -1,5 +1,6 @@
 import { Catch, ExceptionFilter, ArgumentsHost, HttpStatus } from "@nestjs/common";
-import { NastyCountryException } from './customExceptions';
+import { NastyCountryException, BadBadCountryException } from './customExceptions';
+import { HttpExceptionFilter } from "./generalExceptionFilters";
 
 @Catch(NastyCountryException)
 export class NastyCountryExceptionFilter implements ExceptionFilter<NastyCountryException> {
@@ -11,5 +12,17 @@ export class NastyCountryExceptionFilter implements ExceptionFilter<NastyCountry
             status, message: exception.message, 
             greeting: "Qué feo este código de país"
         })
+    }
+}
+
+@Catch(BadBadCountryException)
+export class BadBadCountryExceptionFilter extends HttpExceptionFilter implements ExceptionFilter<BadBadCountryException> {
+    constructor() { super({ includeHostInResponse: true }) }
+    catch(exception: BadBadCountryException, host: ArgumentsHost) {
+        console.log("---------------------------------------")
+        console.log("Beware - bad country query attempt")
+        console.log("---------------------------------------")
+
+        super.catch(exception, host)
     }
 }
