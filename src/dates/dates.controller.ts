@@ -1,6 +1,6 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, UsePipes, ValidationPipe } from '@nestjs/common';
 import { DateService } from './dates.service';
-import { DateDTO, WeekdayDTO, DateInfo, DateInfoDTO, DaysUntilDTO } from './dates.interfaces';
+import { DateDTO, WeekdayDTO, DateInfo, DateInfoDTO, DaysUntilDTO, DatePlusDaysParams } from './dates.interfaces';
 import { stdDateFormat } from './dates.constants';
 import moment = require('moment');
 
@@ -31,11 +31,33 @@ export class DateController {
     }
 
     @Get(':date/plus/:days')
-    getDatePlusDays(@Param("date") rawDate: string, @Param("days") days: number): DateDTO {
+    @UsePipes(new ValidationPipe())
+    getDatePlusDays(@Param() params: DatePlusDaysParams): DateDTO {
+        const days = params.days
+        const rawDate = params.date
+        console.log(days)
+        console.log(days + 1)
         const theDate = moment.utc(rawDate, stdDateFormat)
         return { date: moment(theDate).add(days, 'days').format(stdDateFormat) }
     }
 
+    @Get(':date/plus2/:days')
+    getDatePlusDays2(@Param("date") rawDate: string, @Param("days", ParseIntPipe) days: number): DateDTO {
+        console.log(days)
+        console.log(days + 1)
+        const theDate = moment.utc(rawDate, stdDateFormat)
+        return { date: moment(theDate).add(days, 'days').format(stdDateFormat) }
+    }
+
+    @Get(':date/plus3/:days')
+    getDatePlusDays3(@Param("date") rawDate: string, @Param("days") days: number): DateDTO {
+        console.log(days)
+        console.log(days + 1)
+        const theDate = moment.utc(rawDate, stdDateFormat)
+        return { date: moment(theDate).add(days, 'days').format(stdDateFormat) }
+    }
+
+    
     @Get(':date/daysUntil/:futureDate')
     getDaysUntil(@Param("date") rawDate: string, @Param("futureDate") rawFutureDate: string): DaysUntilDTO {
         const theDate = moment.utc(rawDate, stdDateFormat)

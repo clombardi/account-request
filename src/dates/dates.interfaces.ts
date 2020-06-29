@@ -1,5 +1,6 @@
 import { Weekday, Month } from "./dates.constants";
 import moment = require("moment");
+import { IsNotEmpty, IsNumberString } from 'class-validator';
 
 export interface DateDTO {
     date: string
@@ -37,4 +38,11 @@ export interface DaysUntilDTO {
     date: string,
     futureDate: string,
     daysElapsed: number
+}
+
+export class DatePlusDaysParams {
+    @IsNotEmpty()
+    date: string
+    @IsNumberString()
+    days: number
 }

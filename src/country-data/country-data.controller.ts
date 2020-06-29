@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query, UseFilters, ForbiddenException } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseFilters } from '@nestjs/common';
 import * as _ from 'lodash'
 import * as moment from 'moment';
 import { CountryDataService } from './country-data.service'
@@ -13,7 +13,7 @@ import {
 import { MaybeCovidRecord, CovidRecord, CovidDto } from 'src/covid-data/covid-data.interfaces';
 import { CovidDataService } from 'src/covid-data/covid-data.service';
 import { stdDateFormat } from 'src/dates/dates.constants';
-import { NastyCountryExceptionFilter, BadBadCountryExceptionFilter } from 'src/errors/particularExceptionFilters';
+import { BadBadCountryExceptionFilter } from 'src/errors/particularExceptionFilters';
 import { BadBadCountryException } from 'src/errors/customExceptions';
 
 function transformCountryRawDataIntoShortSummary(countryRawData: CountryRawData): CountryShortSummary {

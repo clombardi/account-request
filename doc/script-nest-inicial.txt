@@ -78,6 +78,17 @@ Ah, y usen lodash.pick con el tipado, es zarpado.
 
 
 Bien, lo tenemos andando. 
+
+
+... acá hay que armar un script para la parte de manejo de errores, el contenido está bastante completo en la página ...
+(pongo lo que estaba anotado acá sobre el tema, borro lo que decía de hacer y ya hice, quedó una cosa sola)
+Probar si un ExceptionFilter puede no tocar el response, p.ej. sólo loguear, y que le lleguen request y response igualitos al siguiente ExceptionFilter. 
+
+
+
+
+
+
 Ahora agreguemos los datos de COVID.
 (vamos a "Combinar datos de distintas fuentes")
 ... la info está en la página, tal vez convenga contarla en un orden distinto.
@@ -111,19 +122,8 @@ Si no están usando strict, mostarlo yo que sí me puse strict.
 
     
 
-Después manejo de errores.
-Sobre esto probar
-- ExceptionFilter que no hice
-- en particular, 
-  - si puede haber varios ExceptionFilter que apliquen, p.ej. uno global y otro para un controller. Si son de distinto ámbito (uno local, uno global) cuál se ejecuta primero.
-  - si un ExceptionFilter puede no tocar el response, p.ej. sólo loguear, y que le lleguen request y response igualitos al siguiente ExceptionFilter. 
-En la página va a contar
-- si el país es CHN entonces forbidden
-- 
-Ejercicios sobre esto:
 
-- que si la población es < 100000 entonces tire un error de "país insignificante"
-- 
+
 
 
 Podemos arrancar por planear los endpoints.
