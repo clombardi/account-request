@@ -16,7 +16,7 @@ import { stdDateFormat } from 'src/dates/dates.constants';
 import { BadBadCountryExceptionFilter } from 'src/errors/particularExceptionFilters';
 import { BadBadCountryException } from 'src/errors/customExceptions';
 import { ForbidDangerousCountries } from './middleware/country-data.guards';
-import { SumPopulationInterceptor } from './middleware/country-data.interceptors';
+import { SumPopulationSmartInterceptor } from './middleware/country-data.interceptors';
 
 function transformCountryRawDataIntoShortSummary(countryRawData: CountryRawData): CountryShortSummary {
     return {
@@ -34,6 +34,7 @@ function transformCovidRecordIntoCovidDto(covidData: CovidRecord): CovidDto {
 }
 
 @Controller('countries')
+@UseInterceptors(new SumPopulationSmartInterceptor())
 export class CountryDataController {
     readonly countryDataService: CountryDataService
 
@@ -63,7 +64,6 @@ export class CountryDataController {
     }
 
     @Get('/many/:countryCodes/shortSummary')
-    @UseInterceptors(new SumPopulationInterceptor())
     async getManyCountriesShortSummary(@Param("countryCodes") countryCodes: string): Promise<CountryShortSummary[]> {
         const countryCodeList: string[] = countryCodes.split(",")
         return Promise.all(countryCodeList.map(countryCode => this.getShortSummary(countryCode)))
@@ -140,7 +140,6 @@ export class CountryDataController {
 
 
     @Get(':countryCode/neighbors')
-    @UseInterceptors(new SumPopulationInterceptor())
     async getNeighborsShortSummary(@Param() params: { countryCode: string }): Promise<CountryShortSummary[]> {
         return (await this.service.getDataAboutNeighbors(params.countryCode)).map(
             countryRawData => transformCountryRawDataIntoShortSummary(countryRawData)

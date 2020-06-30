@@ -3,6 +3,7 @@ import { DateService } from './dates.service';
 import { DateDTO, WeekdayDTO, DateInfo, DateInfoDTO, DaysUntilDTO, DatePlusDaysParams } from './dates.interfaces';
 import { stdDateFormat } from './dates.constants';
 import moment = require('moment');
+import { ParseDatePipe } from 'src/country-data/middleware/country-data.pipes';
 
 @Controller('dates')
 export class DateController {
@@ -42,10 +43,9 @@ export class DateController {
     }
 
     @Get(':date/plus2/:days')
-    getDatePlusDays2(@Param("date") rawDate: string, @Param("days", ParseIntPipe) days: number): DateDTO {
+    getDatePlusDays2(@Param("date", ParseDatePipe) theDate: moment.Moment, @Param("days", ParseIntPipe) days: number): DateDTO {
         console.log(days)
         console.log(days + 1)
-        const theDate = moment.utc(rawDate, stdDateFormat)
         return { date: moment(theDate).add(days, 'days').format(stdDateFormat) }
     }
 
