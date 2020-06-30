@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query, UseFilters } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseFilters, UseGuards, UseInterceptors } from '@nestjs/common';
 import * as _ from 'lodash'
 import * as moment from 'moment';
 import { CountryDataService } from './country-data.service'
@@ -15,6 +15,8 @@ import { CovidDataService } from 'src/covid-data/covid-data.service';
 import { stdDateFormat } from 'src/dates/dates.constants';
 import { BadBadCountryExceptionFilter } from 'src/errors/particularExceptionFilters';
 import { BadBadCountryException } from 'src/errors/customExceptions';
+import { ForbidDangerousCountries } from './middleware/country-data.guards';
+import { SumPopulationInterceptor } from './middleware/country-data.interceptors';
 
 function transformCountryRawDataIntoShortSummary(countryRawData: CountryRawData): CountryShortSummary {
     return {
@@ -52,11 +54,19 @@ export class CountryDataController {
 
     @Get(':countryCode/shortSummary')
     @UseFilters(BadBadCountryExceptionFilter)
+    @UseGuards(ForbidDangerousCountries)
     async getShortSummaryEndpoint(@Param() params: { countryCode: string }): Promise<CountryShortSummary> {
         if (params.countryCode === 'PRK') {
-            throw new BadBadCountryException('Country not allowed for this operation')
+            throw new BadBadCountryException()
         }
         return await this.getShortSummary(params.countryCode)
+    }
+
+    @Get('/many/:countryCodes/shortSummary')
+    @UseInterceptors(new SumPopulationInterceptor())
+    async getManyCountriesShortSummary(@Param("countryCodes") countryCodes: string): Promise<CountryShortSummary[]> {
+        const countryCodeList: string[] = countryCodes.split(",")
+        return Promise.all(countryCodeList.map(countryCode => this.getShortSummary(countryCode)))
     }
 
     @Get(':countryCode/info')
@@ -130,6 +140,7 @@ export class CountryDataController {
 
 
     @Get(':countryCode/neighbors')
+    @UseInterceptors(new SumPopulationInterceptor())
     async getNeighborsShortSummary(@Param() params: { countryCode: string }): Promise<CountryShortSummary[]> {
         return (await this.service.getDataAboutNeighbors(params.countryCode)).map(
             countryRawData => transformCountryRawDataIntoShortSummary(countryRawData)

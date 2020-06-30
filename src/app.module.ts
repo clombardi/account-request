@@ -3,6 +3,7 @@ import { AccountApplicationModule } from './account-application/account-applicat
 import { MongooseModule } from '@nestjs/mongoose'
 import { CountryDataModule } from './country-data/country-data.module';
 import { DateModule } from './dates/dates.module';
+import { ExpensesModule } from './expenses/expenses.module';
 
 @Module({
   imports: [
@@ -11,7 +12,8 @@ import { DateModule } from './dates/dates.module';
       'mongodb://localhost/accountApplicationJs', { useNewUrlParser: true, useUnifiedTopology: true }
     ),
     CountryDataModule,
-    DateModule
+    DateModule,
+    ExpensesModule
   ],
   controllers: [],
   providers: [],
