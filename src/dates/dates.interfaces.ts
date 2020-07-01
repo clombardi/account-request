@@ -6,6 +6,12 @@ export interface DateDTO {
     date: string
 }
 
+export interface DateDTOPlus {
+    date: string
+    daysPlusOne: any
+    parsedDate: moment.Moment
+}
+
 export interface WeekdayDTO {
     weekday: Weekday
 }
