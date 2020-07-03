@@ -1,11 +1,13 @@
-import { Controller, Get, Param, ParseIntPipe, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, UsePipes, ValidationPipe, UseInterceptors } from '@nestjs/common';
 import { DateService } from './dates.service';
 import { DateDTO, WeekdayDTO, DateInfo, DateInfoDTO, DaysUntilDTO, DatePlusDaysParams, DateDTOPlus } from './dates.interfaces';
 import { stdDateFormat } from './dates.constants';
 import moment = require('moment');
 import { ParseDatePipe } from 'src/country-data/middleware/country-data.pipes';
+import { NullInterceptor } from 'src/country-data/middleware/country-data.interceptors';
 
 @Controller('dates')
+@UseInterceptors(NullInterceptor)
 export class DateController {
     constructor(private readonly service: DateService) { }
 

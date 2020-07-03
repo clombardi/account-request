@@ -9,7 +9,6 @@ export class ForbidDangerousCountries implements CanActivate {
         const request = context.switchToHttp().getRequest();
         const country = request.params.countryCode
         const isDangerousCountry = dangerousCountries.includes(country)
-        // return !isDangerousCountry
         if (isDangerousCountry) {
             throw new BadBadCountryException()
         }
