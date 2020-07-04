@@ -76,15 +76,48 @@ Insistir mucho en que no pongan any en ningún lado, y que verifiquen que está 
 
 Ah, y usen lodash.pick con el tipado, es zarpado.
 
+Entender la sintaxis (await axios.get(url)).data
+
 
 Bien, lo tenemos andando. 
 
 
-... acá hay que armar un script para la parte de manejo de errores, el contenido está bastante completo en la página ...
-(pongo lo que estaba anotado acá sobre el tema, borro lo que decía de hacer y ya hice, quedó una cosa sola)
+¿Qué pasa si hay un error? veamos
+- axios me devuelve un error
+- metemos una excepción a mano
+
+¿Qué nos gustaría hacer? Claro, manejar el status code y el mensaje.
+De repente p.ej. un 404 de un servicio al que llamo, en mi respuesta es un 500, o puede ser también un 404.
+Y también hay errores de programa.
+
+Ver qué hace. 
+
+Observar que en principio no "tocamos" la response, el status code lo decide Nest. 
+(se puede probar la posibilidad de cambiarlo, creo que está en la doc)
+
+Nest maneja esto mediante excepciones. Tiramos una ImATeapotException, vemos qué pasa.
+
+¿Cómo hacemos, dónde podemos intervenir? Tres lugares
+- lanzar
+- transformar
+- manejar
+
+Lo de lanzar es fácil y supongo que ya lo hicieron.
+
+Contar lo de transformar, que en rigor no es de Nest, es del oficio.
+
+Lo de manejar sí es particular de Nest, que define un componente llamado ExceptionFilter. Se implementa, y se le dice a Nest dónde se lo quiere aplicar, puede ser: en un endpoint, en un controller, en toda la app. No, para módulo no tiene.
+
+Qué puedo hacer en un ExceptionFilter
+- acciones adicionales, típicamente loguear
+- armar la response. Acá sí armamos la response como si estuviéramos en Express.
+
+Ver el que se usa en los proyectos BdS.
+
+A partir de acá, mostraría los ejemplos en el orden en que están en la página
+
+(esto quedó para probar)
 Probar si un ExceptionFilter puede no tocar el response, p.ej. sólo loguear, y que le lleguen request y response igualitos al siguiente ExceptionFilter. 
-
-
 
 
 
@@ -109,7 +142,15 @@ Para ser mínimamente prolijos, pongamos la consulta COVID en un método aparte,
 
 Ahora, dada la decisión de que el covid service se encarga de traducir de iso3Code a iso2Code, las consultas a los providers son independientes. No dejen de usar Promise.all.
 
+Lo implementamos.
+- el find en en CovidDataService.getRecords, uf, puede ser undefined
+  cómo hago que pase strict: casteo 
+- la magia de cómo tipa el resultado de Promise.all en CovidDataService.getRecords
+  - hay que ayudarlo en CountryDataController.getLongSummary, por qué
+
 Para la integración ¿qué pasa si la hacemos en el controller? Prueben. 
+
+Acá se puede probar agregar un atributo a la interface y ver cómo marca dónde falta
 
 Yo diría, estén un rato probando distintas opciones.
 Si definen dos módulos, tal vez lo que dice al final del forward ref les puede servir.
@@ -120,41 +161,42 @@ La primera pregunta es ¿qué hacemos, tiramos un 500? En este caso decidamos qu
 Mirar lo que dice de incluir undefined como posible respuesta en el tipo.
 Si no están usando strict, mostarlo yo que sí me puse strict.
 
+A esta altura, si tenemos varios endpoints en un controller, cambiar la ruta en @Controller y ver cómo cambian todos los endpoints
     
+Después, pensar qué onda si el endpoint de Covid tira error. Forzar un error (el que está de Nicaragua)
+Plantear opciones, modelarlo.
+Buen momento para pensar dónde generar las HttpException, si en los servicios o en los controller.
+(volver a la página de manejo de errores, que tiene una sección sobre esto)
+
+
+Listo, tenemos dos módulos, varios endpoints, ya vamos entendiendo cómo funciona "esto de Nest".
+Un buen siguiente paso sería volver a pensar **por qué** Nest, por qué no usar Express derecho viejo.
+OJO que no es mala pregunta, pero vamos a defender Nest.
+
+Una es que me ayuda a "subir" a TypeScript, con los chequeos (sobre todo, de que no me olvido de mandar datos en una response)
+
+Otra es que un poco me olvido de request y response.
+Acá hacer el dibujito del kernel de negocio, y lo que rodea para transformar un negocio en una app Web.
+Hay una parte que ya vimos que hace: definición de endpoints, generación de responses en caso feliz, manejo de errores.
+
+Pero hay más cosas en la diferencia app-negocio, los viejos "cross cutting concerns"
+- logueo
+- autenticación
+- validación
+Esto se suele manejar con aspectos / middleware
+(ir a "middleware - en general y en Nest")
+
+De acá, saltar a los tipos específicos de middleware de Nest.
+Uno ya lo vimos, errores.
+Vamos a usar otros tres. Los introducimos. Y después, básicamente vamos a la página de cada uno, mostramos los ejemplos, y que hagan los desafíos.
 
 
 
 
 
-Podemos arrancar por planear los endpoints.
 
-Cosas para mostrar
-- agregar un atributo a la interface y ver cómo marca dónde falta
-- cambiar la ruta en @Controller y ver cómo cambian todos los endpoints
-- módulo que sólo tiene provider, y los exporta
-- circular reference entre módulos
-- magia del tipo de _.pick, eso me gustaría entenderlo mejor
+Cosas para después
 - ir pensando en cache ¿no? al menos para los countryCodes
   - ¿cómo hacer para no buscar siempre para traducir de iso3code a iso2code?
-- armar un proxy de axios que muestre las URL llamadas
-- entender la sintaxis (await axios.get(url)).data
-- la magia de cómo tipa el resultado de Promise.all en CovidDataService.getRecords
-  - hay que ayudarlo en CountryDataController.getLongSummary, por qué
-- el find en en CovidDataService.getRecords, uf, puede ser undefined
-  cómo hago que pase strict: casteo (hasta que veamos manejo de errores)
 
 
-----------------------------------------------
-con qué seguir
-- endpoint que falta de countries: :countryCode/neighbors
-- definir qué endpoints vamos a seguir en clase, y qué se les deja para hacer
-- implementar endpoints de fechas
-- ver cómo se sigue, creo que lo siguiente sería meter
-  - manejo de errores con exception handling
-  - validación del formato de la fecha con interceptor
-  - transformación de la fecha con un pipe
-  - agregado del saludo también con middleware
-  y después
-  - refinar definición de qué hacemos en clase y qué es ejercicio
-  - armar script
-  - armar páginas

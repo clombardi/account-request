@@ -42,13 +42,6 @@ export class SumPopulationInterceptorCompressed implements NestInterceptor {
     }
 }
 
-export class NullInterceptor implements NestInterceptor {
-    intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-        console.log('I am a null guy')
-        return next.handle()
-    }
-}
-
 @Injectable()
 export class SumPopulationSmartInterceptor implements NestInterceptor {
     intercept(context: ExecutionContext, next: CallHandler): Observable<any> {

@@ -4,10 +4,8 @@ import { DateDTO, WeekdayDTO, DateInfo, DateInfoDTO, DaysUntilDTO, DatePlusDaysP
 import { stdDateFormat } from './dates.constants';
 import moment = require('moment');
 import { ParseDatePipe } from 'src/country-data/middleware/country-data.pipes';
-import { NullInterceptor } from 'src/country-data/middleware/country-data.interceptors';
 
 @Controller('dates')
-@UseInterceptors(NullInterceptor)
 export class DateController {
     constructor(private readonly service: DateService) { }
 
