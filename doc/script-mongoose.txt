@@ -1,52 +1,95 @@
-Preámbulo: bases basadas en documentos.
+(Página "Modelos de BD")
+BD relacionales: PK / FK, JOIN, índice, integridad referencial.
 
-BD                BD
-Tabla             Colección
-Fila              Documento
-Columna           Atributo
-Índice            Índice
+Por qué se buscan alternativas (esto no está)
+- se generan cientos de tablas por la imposibilidad de poner datos compuestos en una celda
+- la lógica es de un repositorio de datos centralizado, difícil de distribuir
+- chequeo de integridad referencial puede hacerse pesado
+- en muchos contextos, perder un poco de consistencia no es grave
+- consultas típicas pueden involucrar muchas tablas y hacerse lentas. Solución: vistas materializadas, con la penalización sobre las actualizaciones.
+- la flexibilidad de poder cruzar los datos en cualquier sentido no se usa en la operación diaria, para ese tipo de análisis se vuelcan los datos en otro tipo de herramientas.
 
-Diferencias relevantes
-- desnormalizan, se pueden tener arrays y registros dentro de un documento
+BD de documentos: lo que dice. Diferencia más relevante: desnormalización.
+
+(esto va oral nomás)
+Qué se gana
+- flexibilidad, agilidad en el desarrollo.
+- más preparadas para distribución.
+  - replica
+  - shard
+
+Qué se pierde
 - no tienen integridad referencial, al menos en principio
-- se desalienta hacer muchos joins (aunque sí hay sintaxis para join)
+- los datos internos quedan más "encerrados"
 
-Mongo
+Convergencia (esto sí está)
+Las BD concebidas desde un modelo, van adquiriendo las características favorables del otro.
+
+
+Mongo (esto no está en el material)
 - el motor corre una máquina virtual de JS
   acá podemos meternos a la CLI y hacer algunas operaciones, que se vea la sintaxis JS.
-  P.ej. db.accountapplications.find()[0].status.toLowerCase()
+  P.ej. db.accountrequests.find()[0].status.toLowerCase()
 - obviamente, todas las operaciones son asincrónicas.
 
 
 ------------------------------------------------------
+(Página "Librerías")
 Mongoose: librería que hace un poco más cómodo el manejo de Mongo dentro de un programa JS / TS
 Mucho muy popular (ver hits en npm).
 
+En el sitio verán el bleh de ORM y ODM, lo dejo como referencia.
+En particular, se entiende por qué Mongoose es sólo para Mongo, mientras que TypeORM puede aplicarse a distintas BD relacionales (e incluso al mismo Mongo, aunque nunca lo usé).
+
+(esto no está escrito)
+Comentar que MongoJS ofrece una librería de bajo nivel para usar en JS, y supongo que en TS también (no la probé en TS).
+Simplemente, usar Mongoose resulta más cómodo, y además es lo que hace BdS.
+
+
+------------------------------------------------------
+(Página "Arranquemos con Mongoose")
 Cuatro conceptos
 - conexión
 - esquema
 - modelo
 - operaciones
 
-Conexión: como cualquier DB, hay que pasarle un String de conexión, en la era moderna es una URL
+Conexión: 
+como cualquier DB, hay que pasarle un String de conexión, en la era moderna es una URL
 Nos conectamos, nos desconectamos. Perfecto.
 
-(esto se puede contar mostrando la doc de Mongoose - https://mongoosejs.com/docs/guide.html)
-Esquema: especificación de una colección.
+Esquema: 
+especificación de una colección.
 Para cada atributo se pueden especificar validaciones, algunas vienen, también (por lo que dice la doc) se pueden especificar como una función JS.
 Tiene tipos básicos.
 Se le pueden agregar chiches varios (veremos alguno)
 
-Modelo: se crea (específicamente, se compila) a partir de un esquema, es al modelo al que se le piden las operaciones.
-Funciona como una clase, se le puede hacer new para crear un nuevo documento.
+Modelo: 
+se crea (específicamente, se compila) a partir de un esquema, es al modelo al que se le piden las operaciones.
+
+Operaciones
+Todas las operaciones 
+- son asincrónicas, vamos con el async/await a full.
+- involucran documentos de Mongoose.
 
 Operaciones - save
-Todas las operaciones son asincrónicas, vamos con el async/await a full.
-(se podría aprovechar acá para introducir asincronismo, y después verlo en detalle)
-Acá se ven las validaciones - ver addFaultyApplication.
-Si en el registro van datos de más, no salta error, pero mongoose trunca.
+Acá se ven las validaciones - ver addFaultyApplication (esto que lo prueben).
+Si en el registro van datos de más, no salta error, pero mongoose trunca (esto se los puse para probar).
 
 Operaciones - find
+Find sin condición: trae todos.
+Acá ver qué te trae: objetos Document. Le puedo pedir el valor de un atributo, se muestra bien, pero también tiene otras cosas.
+(eso lo usé para mostrar modificación)
+Tengo toObject().
+
+(hasta acá es la página de "cuatro conceptos", que cierra con algunas pruebas para que hagan)
+
+
+------------------------------------------------------
+(Página "Búsqueda de documentos")
+
+
+
 La lógica de búsqueda es la de mongo, o sea, pasamos al manual de mongo - https://docs.mongodb.com/manual/reference/operator/query/.
 Find sin condición: trae todos.
 - Acá ver qué te trae: objetos Document, tengo toObject() y toJSON(), que para datos simples coinciden
@@ -89,8 +132,8 @@ Lo que viene - cómo usamos Mongoose dentro de un proyecto NestJS
 
 
 
-
-
+(para la etapa 1)
+toJSON(), diferencias con toObject()
 
 
 
