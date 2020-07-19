@@ -87,30 +87,43 @@ Tengo toObject().
 
 ------------------------------------------------------
 (Página "Búsqueda de documentos")
-
-
+Puedo pedir algunos: find con parámetro. 
 
 La lógica de búsqueda es la de mongo, o sea, pasamos al manual de mongo - https://docs.mongodb.com/manual/reference/operator/query/.
-Find sin condición: trae todos.
-- Acá ver qué te trae: objetos Document, tengo toObject() y toJSON(), que para datos simples coinciden
-  (ya veremos diferencias).
-  Vemos opciones: https://mongoosejs.com/docs/api/document.html#document_Document-toObject
-  usamos una para probar, { versionKey: false }
-Puedo pedir algunos: find con parámetro. 
+(esto no dice)
+si da, se puede mencionar que para búsquedas y operaciones más complejas están los aggregation, https://docs.mongodb.com/manual/reference/operator/aggregation-pipeline/ y https://docs.mongodb.com/manual/reference/operator/aggregation/.
+
+Ejemplos
 - los de un status.
 - el de un customer: si sé que viene uno, o me sirve uno cualquiera, puedo usar findOne.
 - condición numérica - más de dos aprobaciones.
 - los que no estén aprobados: $not.
 - los de las hermanas Bolena: regex - https://devopedia.org/images/article/173/6028.1557317770.jpg.
 
-Un chiche - methods
+
+
+------------------------------------------------------
+(Página "Algo más sobre esquemas")
+Chiches
 Decíamos que al esquema le podemos poner chiches varios, y que el modelo funciona como una clase.
-Una de las cosas que le podemos poner al esquema son métodos que van a tener las instancias del modelo.
+Veamos dos de estos chiches
+
+
+- virtuals - atributos calculados
+Ver https://mongoosejs.com/docs/guide.html#virtuals
+isDecided
+Primero lo pedimos.
+Acá vemos lo que nos devuelve el find, que es una lista de documentos, que son las instancias del modelo, por lo tanto tienen los atributos agregados.
+Después, toObject({virtuals: true})
+
+
+
+- methods - para agregar funcionalidad
+También podemos agregar métodos que van a tener las instancias del modelo.
 Cfr. https://mongoosejs.com/docs/guide.html#methods.
-Una pavada para probar: isDecided().
 Lo vamos a usar para manejar la fecha.
 
-Manejo de fechas
+Manejo de fechas (esto no está en el texto)
 Un toque de fechas en Java / JavaScript.
 En JS / TS tenemos moment, que es muy popular, y nos da varias operaciones: comparar, sumar, obtener atributos.
 (podemos probar con un repl.it - buscar el repl "utc con moment").
