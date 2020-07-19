@@ -1,11 +1,11 @@
-export interface AccountApplicationDto {
+export interface AccountRequestDto {
     customer: string,
     status: string,
     date: string,
     requiredApprovals: number
 }
 
-export type GetAccountApplicationsDto = AccountApplicationDto[]
+export type GetAccountRequestsDto = AccountRequestDto[]
 
 export interface AddResponseDto {
     id: string
