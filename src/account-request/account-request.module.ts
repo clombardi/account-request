@@ -9,6 +9,7 @@ import { AccountRequestSchema } from './interfaces/account-request.interfaces';
         { name: 'AccountRequest', schema: AccountRequestSchema }
     ])],
     controllers: [AccountRequestController],
-    providers: [AccountRequestService]
+    providers: [AccountRequestService],
+    exports: [MongooseModule]
 })
 export class AccountRequestModule { }

@@ -2,25 +2,30 @@ import { Status } from "src/enums/status";
 import { Moment } from "moment";
 import * as mongoose from "mongoose";
 
-export interface AccountRequest {
+export interface AccountRequestProposal {
     customer: string,
     status: Status,
     date: Moment, 
     requiredApprovals: number
 }
 
-export interface AccountRequestData {
+export interface AccountRequest extends AccountRequestProposal {
+    id: string
+}
+
+export interface AccountRequestMongooseData {
     customer: string,
     status: string,
     date: number,
     requiredApprovals: number
 }
 
-export interface AccountRequestMongoose extends mongoose.Document, AccountRequestData { }
+export interface AccountRequestMongoose extends mongoose.Document, AccountRequestMongooseData { }
 
 export const AccountRequestSchema = new mongoose.Schema({
-    customer: String,
-    status: String,
+    customer: { type: String, required: true },
+    status: { type: String, enum: Object.values(Status) },
     date: Number,
-    requiredApprovals: Number
+    requiredApprovals: { type: Number, default: 3 }
 })
+

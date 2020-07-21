@@ -1,41 +1,98 @@
-Seguimos la guía de NestJS - https://docs.nestjs.com/techniques/mongodb
+Seguimos la guía de NestJS ¡de la versión 6! - https://docs.nestjs.com/v6/ -> Techniques -> Mongo
+(el link directo no anda, redirecciona al home de la versión actual)
 
 
-Primer paso - nos instalamos lo necesario
------------
-- ¿se entiende qué es eso de @types/mongoose, y qué es eso de save--dev?
+-------------------------------------------------------------------------------------------
+(página "TS + Mongoose + Nest")
+Cerramos la etapa 0 con un ejemplo que integra los temas principales que vimos.
+El discurso puede ser que hay algo nuevo: el soporte para Mongoose que da Nest. 
+Pero aprovechamos para varias cosas
+- hacer un ejemplo integrador
+- ver cómo se puede trabajar "tipado" con Mongo/Mongoose.
+- lo que dice de la diferencia de tipado entre API, servicio y base.
 
-Repasamos los cuatro pasos, vamos de a uno sabiendo que
---------------------------
-- queremos usar el tipado de TS
-- nos conviene que la integración de Mongoose la maneje NestJS
+Aca OJO que en la versión 7 de Nest se agrega una forma más cheta, que no vamos a ver porque BdSol se queda en la versión 6 de Nest por el momento.
+Insistir en que vamos a ir por tipar todo sólo para que se vea cómo queda, no es que necesariamente convenga siempre tipar todo.
+
+Bueno, que armen el módulo así practican. Por lo menos tienen que definir un tipo, no vale que diga any en ningún lado. Digamos AccountRequest.
+Pueden aprovechar para practicar algo de middleware
+- un guard para chequear usuario
+- un interceptor para agregar el promedio de requiredApprovals.
+- un interceptor para que muestre qué endpoint está sirviendo (yo lo tengo como LogEndpointInterceptor).
+
+
+
+-------------------------------------------------------------------------------------------
+(página "Conectando Mongoose con Nest")
+Arrancamos cargando los packages necesarios
+Verificar que se entiende por qué hay que incorporar @types/mongoose, y qué es eso de --save-dev.
 
 
 Paso 1: conexión
 --------------------------
-En el app.module
+En el app.module. Nótese que estamos incorporando un MongooseModule, interesante destacarlo porque es en ese módulo donde van a quedar definidos los esquemas.
 
-Una cosa linda de ver es que la app Nest no levanta si no está Mongo levantado, te avisa con un mensaje claro, y no se cae enseguida, espera que levantes la base y sigue.
+Una cosa linda de ver es que 
+- de crear el objeto conexión se encarga Nest
+- la app Nest no levanta si no está Mongo levantado, te avisa con un mensaje claro, y no se cae enseguida, espera que levantes la base y sigue.
 Esto es otro servicio que nos da Nest, para seguir entendiendo la utilidad de Nest.
 
 
-Paso 2: esquema
---------------------------
-lo meto con interfaces ... a debatir.
-El esquema es una especificación que tiene sentido solamente a efectos de Mongoose.
-Ahora, los documentos que me va a dar no quiero que sean Any, entonces ... defino un tipo para lo que me va a devolver.
-A su vez, este tipo es distinto al que venía manejando en la app. Ufa, dos interfaces, más las de los DTO.
-Por ahora aceptamos la multiplicación de las interfaces, una vez que tenemos el paso "make it work" volvemos sobre esto para un poquito de "make it right".
 
-
-Paso 3: model
+Pasos 2 y 3: esquema + model
 --------------------------
-Se inserta así como dice en el servicio en donde voy a usar el esquema. 
-    constructor(@InjectModel('AccountApplication') private accountApplicationModel: Model<AccountApplicationMongoose>) {}
+Definimos el esquema. 
+Como dijimos, queda en el MongooseModule. Vamos a importar esta definición en el módulo de AccountRequest, como dice el instructivo.
+    imports: [MongooseModule.forFeature([
+        { name: 'AccountRequest', schema: AccountRequestSchema }
+    ])],
+acá entiendo que el "name" ya es el nombre del model.
+
+Ahora insertemos el model en el servicio, como indica el instructivo. 
+    constructor(@InjectModel('AccountRequest') private accountRequestModel: Model<any>) {}
 Dice algo de qué pasa si quiero el mismo modelo en varios módulos NestJS ... lo vemos más adelante.
 
-Por ahora, prefiero ponerle foco en los tipos. Los modelos, son modelos de documentos, ya vimos que traen documentos.
-Entonces ... mi interface tiene que extender la interface Document que viene con Mongoose.
+Qué feo que diga "any" en el modelo. Ya veremos cómo resolverlo.
+
+
+
+Paso 4: operaciones
+--------------------------
+Listo, tengo el modelo, le hago el find. 
+Por ahora no tipo lo que viene de Mongoose ... pero me tengo que acordar del await cuando hago el find.
+Podría usar toObject(), prefiero manejarlo a mano para saber bien qué pongo.
+
+Ver los desafíos en esa página.
+
+
+
+
+
+-------------------------------------------------------------------------------------------
+(página "Tipos: en la API, en el servicio, en la base")
+
+El objetivo inicial de todo esto es tipar el modelo de Mongoose. Qué feo que diga "any" en el modelo. 
+
+Pero antes, pensemos en los tres entornos que maneja un servicio que accede a BD, por sencillo que sea.
+
+A ver la fecha.
+- en el servicio: moment
+- en el controller: string YYYY-MM-DD
+- en la base: number
+
+El status: podría quedar String, igual la validación la va a hacer el esquema, esto es un poco un chiche. Nos sirve para aprender más sobre enums.
+Una vez tomada esta decisión, entender el problema: en la base hay un String, en JS es un String. Peeeero en TS el status es un enum, entonces no le puedo asignar un string, me da error de tipos. Eso mostrarlo, mostrar bien el error que tira.
+Después de darle mil (pero mil) vueltas, descubrí que el casteo derecho viejo sirve.
+Síiii estoy casteando, pero qué mal. ¿Hay alternativas sin casteo? No encontré (y miren que busqué) ninguna que funcione si pongo estricto al compilador. Mostrar la versión con el str.toUpperCase(), anda, le habilito noImplicitAny o strict, auch, dejó de compilar.
+
+Listo, volvamos al "any" en el modelo. Le quiero poner AccountRequestData ... pero no.
+¿Por qué?
+De lo de Mongoose, sabemos que un modelo maneja documentos. Para eso Mongoose define la interface Document.
+Por lo tanto, nuestra interface tiene que extender de Document.
+
+
+Ejercicio: factorizar las definiciones de interfaces usando herencia.
+
 
 
 Paso 4: operaciones
@@ -64,11 +121,12 @@ Entonces -> map y aprovecho para recortar y transformar.
 
 Y ... casi!!! ... estamos, nos falta el status.
 
-Aside: tipado del Status.
---------------------------
-Primero entender el problema: en la base hay un String, en JS es un String. Peeeero en TS el status es un enum, entonces no le puedo asignar un string, me da error de tipos.
-Después de darle mil (pero mil) vueltas, descubrí que el casteo derecho viejo sirve.
-Síiii estoy casteando, pero qué mal. ¿Hay alternativas sin casteo? No encontré (y miren que busqué) ninguna que funcione si pongo estricto al compilador. Mostrar la versión con el str.toUpperCase(), anda, le habilito noImplicitAny o strict, auch, dejó de compilar.
+Ejercicio: transformar AccountRequestDto en clase y aplicar validaciones. Pasar **todas** las interfaces a clases.
+
+
+
+
+
 
 ¿Y cómo vamos con el tipado?
 --------------------------
