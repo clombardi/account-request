@@ -60,7 +60,9 @@ Paso 4: operaciones
 --------------------------
 Listo, tengo el modelo, le hago el find. 
 Por ahora no tipo lo que viene de Mongoose ... pero me tengo que acordar del await cuando hago el find.
-Podría usar toObject(), prefiero manejarlo a mano para saber bien qué pongo.
+También meter asincronismo en el controller.
+
+En la definición del servicio, podría haber usado toObject(), prefiero manejarlo a mano para saber bien qué pongo.
 
 Ver los desafíos en esa página.
 
@@ -81,57 +83,25 @@ A ver la fecha.
 - en la base: number
 
 El status: podría quedar String, igual la validación la va a hacer el esquema, esto es un poco un chiche. Nos sirve para aprender más sobre enums.
-Una vez tomada esta decisión, entender el problema: en la base hay un String, en JS es un String. Peeeero en TS el status es un enum, entonces no le puedo asignar un string, me da error de tipos. Eso mostrarlo, mostrar bien el error que tira.
-Después de darle mil (pero mil) vueltas, descubrí que el casteo derecho viejo sirve.
-Síiii estoy casteando, pero qué mal. ¿Hay alternativas sin casteo? No encontré (y miren que busqué) ninguna que funcione si pongo estricto al compilador. Mostrar la versión con el str.toUpperCase(), anda, le habilito noImplicitAny o strict, auch, dejó de compilar.
 
-Listo, volvamos al "any" en el modelo. Le quiero poner AccountRequestData ... pero no.
+Listo, volvamos al "any" en el modelo. Le quiero poner AccountRequestMongooseData ... pero no.
 ¿Por qué?
 De lo de Mongoose, sabemos que un modelo maneja documentos. Para eso Mongoose define la interface Document.
 Por lo tanto, nuestra interface tiene que extender de Document.
 
+Después, es medio coser y cantar. Salvo lo del status en el servicio.
+Primero, entender el problema: en la base hay un String, en JS es un String. Peeeero en TS el status es un enum, entonces no le puedo asignar un string, me da error de tipos. Eso mostrarlo, mostrar bien el error que tira.
+Después de darle mil (pero mil) vueltas, descubrí que el casteo derecho viejo sirve.
+Síiii estoy casteando, pero qué mal. ¿Hay alternativas sin casteo? No encontré (y miren que busqué) ninguna que funcione si pongo estricto al compilador. Mostrar la versión con el str.toUpperCase(), anda, le habilito noImplicitAny o strict, auch, dejó de compilar.
 
-Ejercicio: factorizar las definiciones de interfaces usando herencia.
 
 
-
-Paso 4: operaciones
---------------------------
-Listo, tengo el modelo, le hago el find. 
-Pero ... uh esta definición tan bonita
-    getAccountApplicationsMongoose(): AccountApplicationMongoose[] {
-        return this.accountApplicationModel.find({});
-    }
-no tipa ni a ganchos, el find me devuelve un DocumentQuery. ¿Qué falta? Esoooo el asincronismo.
-    async getAccountApplicationsMongoose(): AccountApplicationMongoose[] {
-        return await this.accountApplicationModel.find({});
-    }
-y todavía no, no me devuelve la lista, me devuelve una promesa de que eventualmente va a venir una lista.
-Eso lo tengo que poner explícito en el tipo de respuesta
-    async getAccountApplicationsMongoose(): Promise<AccountApplicationMongoose[]> {
-        return await this.accountApplicationModel.find({});
-    }
-OK, TS podría darse cuenta que si una función es async es obvio que va a manejar promesas y evitarme tener que poner Promise ... pero no lo hace, y punto.
-El tipo de retorno de toda operación asincrónica es Promise<tipo-que-me-interesa>, de acá hasta el request.
-Podemos generar de prepo la promesa en la versión fija, e ir cambiando la firma de los métodos hasta el controller.
-
-Listo, ya tengo el asincronismo manejado, nos falta un detalle.
-Obviamente, me da documentos de Mongoose, que además de faltarle una adaptación de tipos, tienen mucho más de lo que quiero.
-Entonces -> map y aprovecho para recortar y transformar.
-
-Y ... casi!!! ... estamos, nos falta el status.
-
-Ejercicio: transformar AccountRequestDto en clase y aplicar validaciones. Pasar **todas** las interfaces a clases.
+-------------------------------------------------------------------------------------------
+(página "Filtros en la búsqueda")
 
 
 
 
-
-
-¿Y cómo vamos con el tipado?
---------------------------
-Bien, notemos que el resultado del find está bien tipado, y me ayuda en el editor.
-Por otro lado, también estoy casteando correctamente el resultado del servicio.
 
 
 Post: agregamos un AccountApplication
@@ -163,3 +133,5 @@ Mejora: tipar el data object que creamos. No le podemos poner AccountApplication
 
 Problema: si se agrega un dato simple que va por todos lados, hay que tocar en tres lados.
 Cómo podríamos resolverlo: AccountApplicationBasicData y que todos extiendan de ese.
+
+Ejercicio: transformar AccountRequestDto en clase y aplicar validaciones. Pasar **todas** las interfaces a clases.

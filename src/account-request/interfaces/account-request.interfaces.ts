@@ -2,6 +2,11 @@ import { Status } from "src/enums/status";
 import { Moment } from "moment";
 import * as mongoose from "mongoose";
 
+export interface AccountRequestFilterConditions {
+    customer?: string,
+    status?: string
+}
+
 export interface AccountRequestProposal {
     customer: string,
     status: Status,

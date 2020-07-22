@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as moment from 'moment';
 import { Status } from 'src/enums/status';
-import { AccountRequest, AccountRequestMongoose, AccountRequestMongooseData, AccountRequestProposal } from './interfaces/account-request.interfaces';
+import { AccountRequest, AccountRequestMongoose, AccountRequestMongooseData, AccountRequestProposal, AccountRequestFilterConditions } from './interfaces/account-request.interfaces';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { stdDateFormat } from 'src/dates/dates.constants';
@@ -11,13 +11,15 @@ import { stdDateFormat } from 'src/dates/dates.constants';
 export class AccountRequestService {
     constructor(@InjectModel('AccountRequest') private accountRequestModel: Model<AccountRequestMongoose>) {}
 
-    async getAccountRequestsMongoose(): Promise<AccountRequestMongoose[]> {
-        return await this.accountRequestModel.find();
-    }
-
-    async getAccountRequests(): Promise<AccountRequest[]> {
-        // const mongooseData = await this.getAccountRequestsMongoose()
-        const mongooseData = await this.accountRequestModel.find();
+    async getAccountRequests(conditions: AccountRequestFilterConditions): Promise<AccountRequest[]> {
+        const findConditions: any = {}
+        if (conditions.status) {
+            findConditions.status = conditions.status
+        }
+        if (conditions.customer) {
+            findConditions.customer = { $regex: `.*${conditions.customer}.*`, $options: 'i'}
+        }
+        const mongooseData = await this.accountRequestModel.find(findConditions);
         return mongooseData.map(mongooseReq => { return {
             id: mongooseReq._id,
             customer: mongooseReq.customer,
