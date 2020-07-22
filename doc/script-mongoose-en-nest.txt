@@ -99,39 +99,24 @@ Síiii estoy casteando, pero qué mal. ¿Hay alternativas sin casteo? No encontr
 -------------------------------------------------------------------------------------------
 (página "Filtros en la búsqueda")
 
+Contarlo en el orden en que se explica en la página
+- primero a dónde vamos. No vamos a agregar un nuevo endpoint, vamos a agregar query params al get que ya tenemos.
+- después qué hay que agregar en el método de controller.
+  - un parámetro decorado con @Query
+  - se le envía el valor como viene al servicio 
+  Pensar en el tipo del parámetro, que va a ser un objeto. 
+  Plantear cómo se podrían validar los datos ... claro, usando ValidationPipe. Esto después.
+- pasamos al servicio
+  - recibe parámetro
+  - qué tiene que ir en el find  
+    - si mandaron status 
+    - si mandaron customer
+- listo, coser y cantar
 
 
+-------------------------------------------------------------------------------------------
+(página "Ejercicio - post")
 
+Es para que lo hagan ellos, en clase o después y se consulta. 
+Sirve para que revuelvan en lo que vimos hasta ahora.
 
-
-Post: agregamos un AccountApplication
---------------------------
-Primero hagamos un dibujito de los tipos
-
-                    en el Controller                en el Service               en la persistencia 
-                    AccountApplicationDto           AccountApplication          AccountApplicationMongoose
---------------------------------------------------------------------------------------------------------            
-date                string YYYY-MM-DD               moment                      number
-status              string                          Status                      string
-customer            string                          string                      string
-requiredApprovals   number                          number                      number
-
-a partir de este dibujito, tengamos claro
-- qué vamos a recibir en el body
-- qué transformaciones hay que hacer en el controller para mandarle al Service lo que espera
-- qué transformaciones hay que hacer en el Service para mandarle a la persistencia lo que espera
-
-Con esto, podemos escribir los métodos en el controller y en el service.
-Recordamos que el documento se obtiene haciendo new model(data).
-Por ahora, no tipamos el objeto data.
-
-Digamos que queremos devolver el id del objeto creado. A quién se lo vamos a pedir: a lo que nos devuelve el save. Así de feo, _id. No encontré nada mejor. Creeeo que al documento que creamos también se le puede pedir.
-
-Listo, anda.
-
-Mejora: tipar el data object que creamos. No le podemos poner AccountApplication, porque no tiene todo lo de document. Pero tenemos definido qué queremos. Solución: AccountApplicationMongooseData y definir AccountApplicationMongoose usando herencia múltiple de interfaces.
-
-Problema: si se agrega un dato simple que va por todos lados, hay que tocar en tres lados.
-Cómo podríamos resolverlo: AccountApplicationBasicData y que todos extiendan de ese.
-
-Ejercicio: transformar AccountRequestDto en clase y aplicar validaciones. Pasar **todas** las interfaces a clases.
