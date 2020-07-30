@@ -1,0 +1,62 @@
+Atenti, antes hay que dar la intro a la etapa 1, para lo cual hay una página en el material. 
+La intención es hacer el salto desde material bien cercano al código operativo, a la visión de todo lo que se necesita para tener un microservicio andando.
+
+API REST
+
+-------------------------------------------------------------------------------------------
+(página "API REST - interface de un microservicio")
+Este es un tema teórico, un poco a propósito, para cambiar la modalidad.
+Igual sí se usa, tengan un poco de paciencia.
+
+Como muchos términos de uso común en el gremio, el de "REST" admite muchas variantes en su definición.
+Prefiero contarlo desde una perspectiva que ayude a visualizar algunas cuestiones de arquitectura, a riesgo de ser incorrecto. Les dejo links para que chusmeen, aparte hay libros que se llaman "API REST JPQ" (que confieso no haber leido).
+Por eso no vamos a ir derecho a la definición de APIs HTTP, sino que vamos a pararnos antes un toque en contenido más teórico.
+
+
+-------------------------------------------------------------------------------------------
+(página "REST")
+La página está escrita como lo quiero contar.
+
+1. 
+Contexto: sistemas altamente distribuidos, en donde la comunicación se hace clave.
+Se puede mencionar que la onda client-server es previa a Internet, hubo una ola de "aplicaciones cliente" que se instalaban en PCs, y que se conectaban con una BD con esteroides mediante protocolos de red ad-hoc (¿alguien recuerda las redes Lan y Novell Netware?).
+
+2.
+Objetivos: qué es lo que queremos ganar con la distribución.
+Está claro qué es lo que perdemos: garantía de consistencia de datos. Lo mismo que hablamos al comparar BD relacionales con BD de documentos.
+
+3.
+Principios.
+No me interesa mucho estudiarlos en detalle, sólo mencionarlos para que al bajar a la definición de endpoints HTTP, lo que digamos tenga sentido.
+
+4.
+Basado en recursos + representación.
+Acá empezamos a bajar a tierra, cosa que vamos a reforzar en la página siguiente. Qué forma tiene un endpoint: URL + método.
+Acá hablar que el zarpe de esto sería HATEOAS, esto no llegué a contarlo en el texto.
+
+
+
+-------------------------------------------------------------------------------------------
+(página "API REST (finalmente)")
+Eso, finalmente. Pedir disculpas por el largo desvío teórico.
+
+De la intro, subrayar que estamos empezando a pensar en arquitectura, los cuatro ítems del principio son decisiones arquitectónicas.
+
+El ejemplo de la operación de creación de una solicitud se puede contar despacito, y relacionar un poco con la característica de idempotent y de poder afectar a otras entidades (chusmear un poco en la documentación de los HTTP methods, en MDN están, de side-effects no dice nada en POST pero sí en PATCH).
+
+Sobre el final, hacer la aclaración de que no necesariamente, el modelo sugerido por la API tiene que coincidir con el modelo que internamente maneja un servicio. Me gustó la frase "On the Internet, no-one knows you are a dog".
+
+
+-------------------------------------------------------------------------------------------
+(página "particularidades")
+
+PUT vs PATCH (vs POST)
+sirve para que se metan a la docu de MDN, que no muerde.
+
+Lo de content negotiation lo cuento, un poco porque es interesante, y un poco como ejemplo de funcionalidades menos usuales asociadas a HTTP.
+
+Al final
+repasar los elementos de arquitectura que vimos
+- los cuatro elementos iniciales
+- menciones al posible uso de headers, y también de query params.
+- manejo de versionado

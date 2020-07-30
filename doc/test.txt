@@ -1,0 +1,160 @@
+------------------------------------------------------
+(página "Test - empezamos")
+
+Algo de intro 
+
+Por qué testeamos
+
+Habrán visto / leido / escuchado mucho sobre por qué testear.
+Sin pretender dar una clase, sólo daré algunas razones que yo veo
+(sólo se mencionó la última en el texto)
+
+1. para estar tranquilo que no se nos colaron errores.
+2. como una forma adicional de documentación.
+3. a veces, para ayudarme a entender cómo conviene organizar un diseño,
+   qué clases/funciones/objetos definir, y cómo engancharlos.
+4. para que dé menos miedo el refactor.
+
+Además, está el tema de la integración de test con CI (de este sí se habla un poco en el texto).
+
+(lo del qué testear y herramientas lo dice en el texto)
+Qué se testea: cualquier cosa
+- desde lo más chiquito, una función.
+- hasta un controller, esto es lo que se llama un test end-to-end o e2e de backend.
+
+Vamos a ver test de distintos niveles.
+
+En testeos de alto nivel va a ser relevante mockear cosas.
+
+Hay muchas herramientas / librerías para test en el mundo JS / TS.
+
+Vamos a basarnos en Jest, el factor decisivo es que tiene soporte directo de NestJS, pero además está bien y es muy popular.
+NestJS sí tiene soporte para testing, ver https://docs.nestjs.com/fundamentals/testing
+(en esto no parece haber cambios de la versión 6 a la 7)
+(en general son bastante parecidas, hay cambio de versión porque se rompe la compatibilidad, pero no hay grandes cambios,
+ lo principal parece ser un soporte mejorado de GraphQL que no sé qué es. Sí le pusieron más cariño a los pipes. 
+ Ver en https://trilon.io/blog/announcing-nestjs-7-whats-new)
+
+
+(lo que sigue no está en el texto)
+Con test como con tantas otras cosas: tanto o más importante que aprenderse los trucos y posibilidades de una herramienta, es entender qué queremos testear. Testear demasiado toma muchísimo tiempo, testear poco va contra los objetivos, hay una cuestión de jedi de encontrar los conjuntos de testeos correctos.
+
+Asociado a esto una cuestión que personalmente creo importante: armar buenos escenarios de test. Esta actividad, en sí misma, nos puede ayudar a entender dominios complejos, lo que decíamos entre las razones de por qué testear.
+
+Por eso va a aparecer en el material, la pregunta de "qué casos testear".
+
+
+
+------------------------------------------------------
+(página "Un test chiquito")
+
+Para nivelar (porque no sé qué/cuánto sabe cada une), hagamos una función bien chiquita y algunos tests.
+
+Para romper el hielo: díganme ustedes qué es un test, en qué consiste, qué se testea en un test.
+Lleguemos a que lo que se testea en un test, es que en una determinada situación, un componente se comporta como decimos que se debe comportar.
+Por lo tanto en un test se debe incluir
+- la descripción de la situación, a esto lo relacionamos con lo que llamamos "escenario".
+- la invocación al componente que queremos testear.
+- una indicación del resultado que esperamos, que puede ser: la respuesta, un efecto, un error.
+
+Función familySize, la presentamos. 
+Mostrar que ya el tipado nos ayuda, no podemos poner
+    return family.children + family.nephewsNieces + family.cousins
+
+
+¿Que sería probarla? crear una familia y decir "si evalúo la función sobre esta familia, tiene que dar tanto".
+
+P.ej. para esta familia
+    const completeFamily: FamilyMembers = {
+        children: 8,
+        nephewsNieces: 4
+    }
+¿cuánto debería dar?
+
+Armamos el test, probamos, oh da verde.
+
+Marcamos la anatomía del test (esto está bien explicado en el texto).
+En particular
+- tres cosas: escenario, ejecución, verificación
+- por qué son funciones
+- qué es eso del describe - test suite.
+
+
+
+
+------------------------------------------------------
+(página "Más sobre el testeo de una función sencilla")
+Podemos ir por el discurso de la página.
+
+OK, tenemos un test verde ¿seguro que está bien la función?
+
+Contar que (esto va por afuera del texto)
+- el test nunca va a dar garantía, que lo único que dice que da garantía es la verificación formal ... para lo que tenés que formalizar los requerimientos.
+Sirve para control de centrales nucleares.
+- pero hay una distancia grande entre "listo, hice un test" y "le di con todo, me extrañaría que fallara".
+
+(y volvemos al texto)
+una idea que me sirve para armar casos de tests es la de caso límite, alguno/s de esos tiene/n que estar.
+
+(volvemos a salir del texto)
+Después, si hago distintos tests, que los resultados sean distintos. Si todos los tests que hago el resultado es (ponele) 12, entonces esta implementación
+function loQueQuieroProbar(params) {
+    return 12;
+}
+va a pasar los tests.
+
+(y volvemos al texto)
+vemos el error, corregimos, somos felices.
+
+
+-------------------------------------------------------
+A meter en algún lado
+
+ejecución de sólo algunos tests / skip tests.
+
+beforeAll / beforeEach.
+
+verificaciones sobre listas
+
+configuración de jest en package.json, al menos contar que existe y linkear con doc https://jestjs.io/docs/en/configuration.
+Probé con testPathIgnorePatterns.
+
+test de errores.
+
+sería lindo poder testear middleware, al menos un ejemplito.
+
+por otro lado, creo que voy a tener que mirar si el soporte de Nest para test se banca *mockear* middleware.
+
+
+-------------------------------------------------------
+A definir
+
+Estrategia para mockear Mongoose. Tres opciones que encontré.
+
+OJO que puse link a la 1 en test-intro.md, si se cambia la decisión, cambiar el link.
+
+
+1. 
+Mockingoose
+https://www.npmjs.com/package/mockingoose
+parece ser lo más cómodo, pero
+- poco popular
+- última versión de hace un año
+
+
+2.
+Mongo Memory Server
+Ver estos dos artículos
+https://dev.to/paulasantamaria/testing-node-js-mongoose-with-an-in-memory-database-32np
+
+https://medium.com/javascript-in-plain-english/how-i-setup-unit-test-for-mongodb-using-jest-mongoose-103b772ee164
+
+Pero atenti que hay que mockear el app module para cambiar la URL de Mongo, que la está manejando Nest.
+
+
+3.
+Sinon, encontré esta guía (un poco viejita)
+
+https://codeutopia.net/blog/2016/06/10/mongoose-models-and-unit-tests-the-definitive-guide/
+
+

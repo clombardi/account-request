@@ -18,7 +18,7 @@ export class CountryDataService {
         const externalSeviceData = (
             await axios.get(this.buildUri(countryCode))
             .catch((err) => { 
-                if (err.response.status === HttpStatus.NOT_FOUND) {
+                if (err && err.response && (err.response.status === HttpStatus.NOT_FOUND)) {
                     throw new NotFoundException({ 
                         message: `Country ${countryCode} unknown`,
                         originalError: err,

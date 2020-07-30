@@ -1,6 +1,7 @@
-import { Controller, Get, Param, Query, UseFilters, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseFilters, UseGuards, UseInterceptors, Headers, Req, NotAcceptableException } from '@nestjs/common';
 import * as _ from 'lodash'
 import * as moment from 'moment';
+import * as accepts from 'accepts';
 import { CountryDataService } from './country-data.service'
 import { 
     CountryRawData, CountryShortSummary, CountryExtendedData, CountryLongSummary, 
@@ -17,6 +18,7 @@ import { BadBadCountryExceptionFilter } from 'src/errors/particularExceptionFilt
 import { BadBadCountryException } from 'src/errors/customExceptions';
 import { ForbidDangerousCountries } from './middleware/country-data.guards';
 import { SumPopulationSmartInterceptor, SumPopulationInterceptor } from './middleware/country-data.interceptors';
+import { get } from 'lodash';
 
 function transformCountryRawDataIntoShortSummary(countryRawData: CountryRawData): CountryShortSummary {
     return {
@@ -33,6 +35,33 @@ function transformCovidRecordIntoCovidDto(covidData: CovidRecord): CovidDto {
     return {...covidData, date: covidData.date.format(stdDateFormat) }     
 }
 
+
+class CountryRepresentation {
+    constructor(private readonly _id, private readonly _resolver) {}
+
+    id() { return this._id; }
+    type() { return `application/vnd.bdsol.${this._id}+json`; }
+    applies(request): boolean { 
+        return !!(accepts(request).type([this.type()]))
+    }
+    resolve(controller: CountryDataController, countryCode: string) { return this._resolver(controller, countryCode) }
+}
+
+const countryRepresentations = [
+    new CountryRepresentation(
+        "countryShortSummary", 
+        (controller: CountryDataController, countryCode: string) => controller.getShortSummaryEndpoint({ countryCode })
+    ), 
+    new CountryRepresentation(
+        "countryTextDescription",
+        (controller: CountryDataController, countryCode: string) => controller.getTextDescription({ countryCode })
+    ), 
+    new CountryRepresentation(
+        "countryLongSummary",
+        (controller: CountryDataController, countryCode: string) => controller.getLongSummary({ countryCode })
+    )
+]
+
 @Controller('countries')
 // @UseInterceptors(new SumPopulationSmartInterceptor())
 export class CountryDataController {
@@ -43,6 +72,16 @@ export class CountryDataController {
         private readonly covidDataService: CovidDataService
     ) { 
         this.countryDataService = service
+    }
+
+    @Get(':countryCode')
+    async getCountryData(@Headers() headers, @Req() request, @Param("countryCode") countryCode: string): Promise<any> {
+        const representation = countryRepresentations.find(repr => repr.applies(request));
+        if (representation) {
+            return representation.resolve(this, countryCode);
+        } else {
+            throw new NotAcceptableException('I can only produce json responses');
+        }
     }
 
     @Get(':countryCode/textDescription')
@@ -62,6 +101,7 @@ export class CountryDataController {
         }
         return await this.getShortSummary(params.countryCode)
     }
+
 
     @Get('/many/:countryCodes/shortSummary')
     async getManyCountriesShortSummary(@Param("countryCodes") countryCodes: string): Promise<CountryShortSummary[]> {
