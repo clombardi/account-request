@@ -77,8 +77,10 @@ Marcamos la anatomía del test (esto está bien explicado en el texto).
 En particular
 - tres cosas: escenario, ejecución, verificación
 - por qué son funciones
-- qué es eso del describe - test suite.
 
+Después, contar el expect (esto tb está en el texto).
+
+Finalmente, qué es eso del describe - test suite (esto tb está en el texto).
 
 
 

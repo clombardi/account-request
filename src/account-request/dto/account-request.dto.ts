@@ -6,10 +6,10 @@ export interface AccountRequestProposalDto {
 }
 
 export interface AccountRequestDto extends AccountRequestProposalDto {
-    id: string
+    id: string,
+    month: number,
+    isDecided: boolean
 }
-
-export type GetAccountRequestsDto = AccountRequestDto[]
 
 export interface AddResponseDto {
     id: string

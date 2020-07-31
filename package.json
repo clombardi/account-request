@@ -51,6 +51,7 @@
     "eslint-config-prettier": "^6.7.0",
     "eslint-plugin-import": "^2.19.1",
     "jest": "^25.2.0",
+    "mongodb-memory-server": "^6.6.3",
     "prettier": "^1.18.2",
     "supertest": "^4.0.2",
     "ts-jest": "25.2.0",
@@ -69,14 +70,23 @@
       "src",
       "test"
     ],
-    "testRegex": "\\.spec.ts$",
+    "testMatch": ["**/account-request.spec.ts"],
     "testPathIgnorePatterns": [
-      "node_modules", "src/app.controller.spec.ts", "basics.spec.ts"
+      "node_modules"
     ],
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "testTimeout": 20000
+  },
+  "carlos_vault": {
+    "testRegex": "\\.spec.ts$",
+    "testPathIgnorePatterns": [
+      "node_modules",
+      "src/app.controller.spec.ts",
+      "basics.spec.ts"
+    ]
   }
 }

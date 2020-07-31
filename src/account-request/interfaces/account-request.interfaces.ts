@@ -1,5 +1,5 @@
-import { Status } from "src/enums/status";
-import { Moment } from "moment";
+import { Status } from "../../enums/status";
+import * as moment from "moment";
 import * as mongoose from "mongoose";
 
 export interface AccountRequestFilterConditions {
@@ -10,12 +10,14 @@ export interface AccountRequestFilterConditions {
 export interface AccountRequestProposal {
     customer: string,
     status: Status,
-    date: Moment, 
+    date: moment.Moment, 
     requiredApprovals: number
 }
 
 export interface AccountRequest extends AccountRequestProposal {
-    id: string
+    id: string,
+    month: number, 
+    isDecided: boolean
 }
 
 export interface AccountRequestMongooseData {
@@ -25,7 +27,10 @@ export interface AccountRequestMongooseData {
     requiredApprovals: number
 }
 
-export interface AccountRequestMongoose extends mongoose.Document, AccountRequestMongooseData { }
+export interface AccountRequestMongoose extends mongoose.Document, AccountRequestMongooseData { 
+    month: () => number,
+    isDecided: boolean
+}
 
 export const AccountRequestSchema = new mongoose.Schema({
     customer: { type: String, required: true },
@@ -33,4 +38,16 @@ export const AccountRequestSchema = new mongoose.Schema({
     date: Number,
     requiredApprovals: { type: Number, default: 3 }
 })
+
+AccountRequestSchema.virtual('isDecided').get(
+    function(): boolean { return ['Accepted', 'Rejected'].includes(this.status) }
+);
+
+AccountRequestSchema.method({
+    hasDate: function(): boolean { return !!(this.date && this.date != 0) },
+    month: function(): number | undefined {
+        return this.hasDate() ? moment(this.date).utc().month() + 1 : undefined 
+    },
+})
+
 

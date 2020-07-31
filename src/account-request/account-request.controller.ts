@@ -2,10 +2,10 @@ import { Controller, Get, Post, Body, Query } from '@nestjs/common';
 import * as moment from 'moment';
 
 import { AccountRequestService } from './account-request.service';
-import { GetAccountRequestsDto, AddResponseDto, AccountRequestDto, AccountRequestProposalDto } from './dto/account-request.dto';
+import { AddResponseDto, AccountRequestDto, AccountRequestProposalDto } from './dto/account-request.dto';
 import { AccountRequestProposal, AccountRequestFilterConditions } from './interfaces/account-request.interfaces';
-import { Status } from 'src/enums/status';
-import { stdDateFormat } from 'src/dates/dates.constants';
+import { Status } from '../enums/status';
+import { stdDateFormat } from '../dates/dates.constants';
 
 @Controller('account-requests')
 export class AccountRequestController {
