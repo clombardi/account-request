@@ -108,25 +108,135 @@ va a pasar los tests.
 (y volvemos al texto)
 vemos el error, corregimos, somos felices.
 
+(seguimos sobre el texto)
+Armar el test sobre objetos, contar un toque lo de igualdad e identidad.
+Puede servir una sesión sobre repl.it.
+
+
+------------------------------------------------------
+(página "Testear una aplicación Nest")
+OK, repasamos lo básico (con las disculpas del caso si eran cosas archi-sabidas).
+
+Vamos rápidamente, que el tiempo es tirano, a ver cómo testear un microservicio Node.
+
+OK, hay herramientas que hay que aprenderse. Pero *antes*, pensemos un toque en *qué* puede tener sentido testear.
+
+De ahí, al discurso del texto: controller / provider / middleware / e2e.
+Tratar de hacerlo participativo respecto de pensar la estrategia para probar cada componente: qué mockear, y a qué invocar.
+
+Otra vez al texto, al final: arrancamos por providers porque me parece que el camino queda más tranca. Vamos.
+
+
+
+------------------------------------------------------
+(página "Un test de controller NestJS")
+Se puede empezar pidiendo que hagan la implementación, pegándole al servicio de REST Countries que usamos antes.
+Para el continentCode usen una tabla fija en el provider, se les puede pasar la que armé yo.
+Arranquen con las dos interfaces y el código del controller, eso está fijo. Lo que tienen que hacer es
+- implementar el provider
+- armar el módulo, tal vez en una app aparte.
+
+Ténganlo andando en el Postman, después seguimos.
+
+Atenti, que el provider tire las excepciones que dice en el texto.
+
+Después, vamos al texto. Hay que contar el armado del TestingModule, y el cambiazo del provider por el fake.
+Quedarnos un toque en por qué no se puede configurar directamente el módulo con el fake provider.
+Dejarles un rato para que armen el test y lo prueben.
+
+(seguimos con el texto)
+Qué pasa si el controller sale por excepción. OJO que es asincrónico, en el caso del reject hay que ser explícito.
+Recordar que una promesa puede ser resolve o reject.
+Escribir el "código largo" de la verificación por resolve.
+
+Si da, pararnos en un caso sincrónico, y contar por qué tiene que ser una función lo que se le pasa al expect en este caso.
+Por qué en el caso asincrónico no hay que hacer este truco: porque se encarga el `await`, si se genera una excepción, devuelve una Promesa de rejection con la excepción como valor asociado. O sea
+    try {
+        return Promise.resolve(codigo)
+    } catch (e) {
+        return Promise.reject(e)
+    }
+
+
+
+------------------------------------------------------
+(página "Agrupando acciones comunes")
+ir con el texto, no más que eso
+
+
+
+------------------------------------------------------
+(página "Un test sobre listas")
+Vamos con el texto. Primero presentamos y mostramos andando el endpoint, después que lo implementen.
+
+Tal vez después de la implementación, debatir algunas decisiones polémicas en el diseño del endpoint; ver https://clombardi.github.io/bdsol-capacitacion-desarrollo/nestjs-basics/distintas-fuentes.html.
+(la lista no está en el texto)
+- hacer un endpoint aparte en vez de una opción que agregue la info de vecinos, en alguno de los formatos discutidos en https://clombardi.github.io/bdsol-capacitacion-desarrollo/api-rest/api-rest-varios.html.
+- no incluir info del país.
+- integrar en el controller.
+- que si hay un vecino sin datos no explote ni avise.
+
+Después de que esté la implementación, si da, volver sobre esta firma.
+    async getCountryDataOrNull(countryCode: string): Promise<CountryData> {
+        return this.countryDataService.getCountryData(countryCode).catch(() => undefined);
+    }
+Recordar (ya lo vimos en https://clombardi.github.io/bdsol-capacitacion-desarrollo/nestjs-basics/distintas-fuentes.html) que si habilitamos el `strict` en las opciones de compilador, esto no funciona; hay que poner
+    Promise<CountryData | undefined>
+probar si en lugar de undefined de pone "hola", ven que ahí no va a pasar.
+Esto está contado en https://clombardi.github.io/bdsol-capacitacion-desarrollo/nestjs-basics/distintas-fuentes.html
+
+Después implementar, primero fake provider, después test. 
+
+En el fake provider, para meter JSON, hay que prender 
+    "resolveJsonModule": true
+en el tsconfig. Ver https://mariusschulz.com/blog/importing-json-modules-in-typescript.
+(acá abajo, un par de cosas que no están en el texto)
+Tal vez tengan que cerrar el VSCode y volverlo a abrir, aunque eso debería ya estar superado, cfr. https://github.com/microsoft/TypeScript/issues/25400.
+Mostrar qué lindo que tipa. (esto está, pero es lindo mostrarlo "en vivo")
+Incluso, al tipar la función, les va a saltar si falta algo en el archivo.
+
+En el test, mostrar los matchers sobre listas. Se pueden hacer ejemplos con listas fijas.
+
+
+------------------------------------------------------
+(página "Test de middleware - end-to-end test")
+Creo que el hilo del texto está bien.
+
+1. por qué hay que ir a un e2e: hay que "despertar" a Nest para que active a los elementos de middleware.
+2. idea de e2e test. Necesitamos dos cosas: una app-para-test de Nest, y una simulación de request.
+3. claro que sí, el middleware que queremos testear.
+4. app-para-test de Nest: fácil.
+5. a qué controller le pegamos el middleware: a uno fake
+6. la estructura de la suite hasta acá
+7. simulación de request - SuperTest 
+
+Un comentario final que no está en el texto.
+Uno podría pensar "che, pero estoy probando con el seteo puesto directamente en el controller, ¿cómo hago para probar middleware seteado globalmente?".
+A eso respondo: ¿qué estaríamos probando si variamos cómo se setea el middleware? 
+Estaríamos probando Nest, eso que lo haga la gente de Nest.
+
+
+
+------------------------------------------------------
+(página "Test de servicio - mockeamos Mongo")
+
+
 
 -------------------------------------------------------
 A meter en algún lado
 
-ejecución de sólo algunos tests / skip tests.
-
-beforeAll / beforeEach.
-
-verificaciones sobre listas
-
 configuración de jest en package.json, al menos contar que existe y linkear con doc https://jestjs.io/docs/en/configuration.
 Probé con testPathIgnorePatterns.
 
-test de errores.
-
-sería lindo poder testear middleware, al menos un ejemplito.
-
 por otro lado, creo que voy a tener que mirar si el soporte de Nest para test se banca *mockear* middleware.
 
+toHaveCalled (https://jestjs.io/docs/en/expect#tohavebeencalled)
+
+toBeCloseTo (para aproximación)
+
+toHaveProperty (para propiedades anidadas)
+
+distintos tsconfig para código y para test, esto tengo que ver cómo se hace.
 
 -------------------------------------------------------
 A definir

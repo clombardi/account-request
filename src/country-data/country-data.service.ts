@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, ImATeapotException, HttpStatus } from '@
 import { CountryRawData, CountryExtendedData, CountryInfo } from './country-data.interfaces'
 import { CurrencyService } from '../currencies/currencies.service';
 import axios from 'axios'
-import { NastyCountryException } from 'src/errors/customExceptions';
+import { NastyCountryException } from '../errors/customExceptions';
 
 @Injectable()
 export class CountryDataService {

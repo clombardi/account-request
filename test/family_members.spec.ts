@@ -1,4 +1,4 @@
-import { FamilyMembers, familySize } from "../src/utils/object_utils"
+import { FamilyMembers, familySize, familySizeAsObject } from "../src/utils/object_utils"
 
 describe('Family size', () => {
     it('children and nieces', () => {
@@ -21,5 +21,13 @@ describe('Family size', () => {
     it('empty family', () => {
         const emptyFamily: FamilyMembers = {}
         expect(familySize(emptyFamily)).toBe(0);
+    });
+
+    it('as object', () => {
+        const standardFamily: FamilyMembers = {
+            children: 8,
+            nephewsNieces: 4
+        }
+        expect(familySizeAsObject(standardFamily)).toEqual({ totalFamilySize: 12 });
     });
 });

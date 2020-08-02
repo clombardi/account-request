@@ -83,6 +83,7 @@
   },
   "carlos_vault": {
     "testRegex": "\\.spec.ts$",
+    "testMatch": ["**/account-request.spec.ts", "**/family*.spec.ts", "**/basics.spec.ts"],
     "testPathIgnorePatterns": [
       "node_modules",
       "src/app.controller.spec.ts",

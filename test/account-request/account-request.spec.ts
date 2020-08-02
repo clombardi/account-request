@@ -1,55 +1,173 @@
-// import * as mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as moment from 'moment';
 import { AccountRequestModule } from '../../src/account-request/account-request.module';
 import { stdDateFormat } from '../../src/dates/dates.constants';
-import { MongooseModule } from '@nestjs/mongoose';
+import { MongooseModule, InjectModel, InjectConnection } from '@nestjs/mongoose';
 import { AccountRequestService } from '../../src/account-request/account-request.service';
 import { Status } from '../../src/enums/status';
-import { AccountRequestProposal } from '../../src/account-request/interfaces/account-request.interfaces';
-import { INestApplication } from '@nestjs/common';
+import { AccountRequestProposal, AccountRequest, AccountRequestMongoose, AccountRequestMongooseData } from '../../src/account-request/interfaces/account-request.interfaces';
+import { AccountRequestProposalDTO } from '../../src/account-request/dto/account-request.dto';
+import { INestApplication, Injectable } from '@nestjs/common';
+import { AccountRequestController } from '../../src/account-request/account-request.controller';
+import { Model, Connection } from 'mongoose';
+
+
+@Injectable()
+class TestAccountRequestService {
+    constructor(
+        @InjectModel('AccountRequest') private accountRequestModel: Model<AccountRequestMongoose>,
+        @InjectConnection() private readonly connection: Connection 
+    ) {}
+
+    async addAccountRequest(req: AccountRequestProposalDTO): Promise<string> {
+        const dataForMongoose: AccountRequestMongooseData = {
+            customer: req.customer,
+            status: req.status,
+            date: moment(req.date, stdDateFormat).valueOf(),
+            requiredApprovals: req.requiredApprovals
+        }
+        const newMongooseRequest = new this.accountRequestModel(dataForMongoose)
+        await newMongooseRequest.save()
+        return newMongooseRequest._id
+    }
+
+    async clearData(): Promise<void> {
+        const collections = this.connection.collections;
+
+        for (const key in collections) {
+            const collection = collections[key];
+            await collection.deleteMany({});
+        }
+    }
+}
+
+
+async function addTestAccountRequest(service: TestAccountRequestService, 
+    customer: string, status: string, date: string, requiredApprovals = 3
+) {
+    await service.addAccountRequest({ customer, status, date, requiredApprovals })
+}
+
+async function addTestAccountRequests(testApp: INestApplication) {
+    const service = testApp.get(TestAccountRequestService);
+    await addTestAccountRequest(service, "Juana Molina", Status.ACCEPTED, "2020-04-08", 8)
+    await addTestAccountRequest(service, "Pedro Almodóvar", Status.REJECTED, "2020-06-15", 2)
+    await addTestAccountRequest(service, "Juana Azurduy", Status.PENDING, "2020-06-12", 4)
+    await addTestAccountRequest(service, "Julieta Lanteri", Status.ACCEPTED, "2020-03-24")
+    await addTestAccountRequest(service, "Juanita Larrauri", Status.ANALYSING, "2020-07-19", 6)
+}
+
+async function clearData(testApp: INestApplication) {
+    const service = testApp.get(TestAccountRequestService);
+    await service.clearData();
+}
+
 
 describe('Account request service', () => {
     let testApp: INestApplication;
-    let testAppModule: TestingModule;
     let mongoServer: MongoMemoryServer;
 
     beforeAll(async () => {
         mongoServer = new MongoMemoryServer();
         const memoryMongoUri = await mongoServer.getConnectionString();
 
-        testAppModule = await Test.createTestingModule({
+        const testAppModule = await Test.createTestingModule({
             imports: [
                 AccountRequestModule,
                 MongooseModule.forRoot(
                     memoryMongoUri, { useNewUrlParser: true, useUnifiedTopology: true }
                 )
             ],
-            exports: [
-                AccountRequestModule
-            ]
+            providers: [TestAccountRequestService],
+            exports: [AccountRequestModule]
         }).compile();
 
         testApp = testAppModule.createNestApplication();
         await testApp.init();
-    })
-
-    it('gets back what was put in', async () => {
-        const accountRequestService = testAppModule.get(AccountRequestService);
-        const requestData: AccountRequestProposal = { 
-            customer: 'Lucía Galluzo', status: Status.ANALYSING, 
-            date: moment.utc('2020-02-26', stdDateFormat), requiredApprovals: 3
-        };
-        const firstId: string = await accountRequestService.addAccountRequest(requestData);
-
-        const obtainedRequests = await accountRequestService.getAccountRequests({})
-        expect(obtainedRequests.length).toBe(1);
-        expect(obtainedRequests[0].id).toEqual(firstId);
     });
+
+    beforeEach(async () => { 
+        await clearData(testApp); 
+        await addTestAccountRequests(testApp);
+    })
 
     afterAll(async () => {
         await testApp.close();
         await mongoServer.stop();
-    })
+    });
+
+    it('get test data through service', async () => {
+        const accountRequestService = testApp.get(AccountRequestService);
+        const obtainedRequests = await accountRequestService.getAccountRequests({})
+        expect(obtainedRequests.length).toBe(5);
+        const findByCustomer = (name) => obtainedRequests.find(req => req.customer === name);
+        expect(findByCustomer("Juana Molina")).toBeDefined();
+        expect(findByCustomer("Pierina Dealessi")).toBeUndefined();
+    });
+
+    it('get test data through controller', async () => {
+        const accountRequestController = testApp.get(AccountRequestController);
+        const obtainedRequests = await accountRequestController.getAccountRequests({})
+        expect(obtainedRequests.length).toBe(5);
+        const findByCustomer = (name) => obtainedRequests.find(req => req.customer === name);
+        expect(findByCustomer("Juana Molina")).toBeDefined();
+        expect(findByCustomer("Pierina Dealessi")).toBeUndefined();
+    });
+
+    it('gets back what was put in', async () => {
+        const accountRequestService = testApp.get(AccountRequestService);
+        const requestData: AccountRequestProposal = { 
+            customer: 'Lucía Galluzo', status: Status.ANALYSING, 
+            date: moment.utc('2020-02-26', stdDateFormat), requiredApprovals: 3
+        };
+        const newId: string = await accountRequestService.addAccountRequest(requestData);
+
+        const obtainedRequests = await accountRequestService.getAccountRequests({})
+        expect(obtainedRequests.length).toBe(6);
+        const lucia = (obtainedRequests.find(req => req.customer === 'Lucía Galluzo')) as AccountRequest;
+        expect(lucia.id).toEqual(newId);
+    });
+
+});
+
+
+
+const fakeAccountRequestService = {
+        getAccountRequests: (): AccountRequest[] => {
+        return [{
+            id: '41',
+            customer: '33445566778',
+            status: Status.PENDING,
+            date: moment.utc("2020-01-22", stdDateFormat),
+            requiredApprovals: 4,
+            month: 1,
+            isDecided: false
+        }]
+    }
+}
+
+
+describe('Account request service - service mock', () => {
+    it('gets country info', async () => {
+        const testModule: TestingModule = await Test.createTestingModule({
+            controllers: [AccountRequestController],
+            providers: [AccountRequestService],
+        })
+            .overrideProvider(AccountRequestService)
+            .useValue(fakeAccountRequestService)
+            .compile();
+
+        const theController = testModule.get(AccountRequestController);
+        const theData = await theController.getAccountRequests({});
+        expect(theData).toEqual([{
+            id: '41',
+            customer: '33445566778',
+            status: Status.PENDING,
+            date: "2020-01-22",
+            requiredApprovals: 4,
+            month: 1,
+            isDecided: false
+        }]);
+    });
 });

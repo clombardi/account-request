@@ -1,16 +1,16 @@
-export interface AccountRequestProposalDto {
+export interface AccountRequestProposalDTO {
     customer: string,
     status: string,
     date: string,
     requiredApprovals: number
 }
 
-export interface AccountRequestDto extends AccountRequestProposalDto {
+export interface AccountRequestDTO extends AccountRequestProposalDTO {
     id: string,
     month: number,
     isDecided: boolean
 }
 
-export interface AddResponseDto {
+export interface AddResponseDTO {
     id: string
 }

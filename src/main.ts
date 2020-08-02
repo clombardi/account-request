@@ -9,6 +9,6 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter({ includeHostInResponse: true }));
   // app.useGlobalFilters(new NastyCountryExceptionFilter());
   app.useGlobalInterceptors(new LogEndpointInterceptor());
-  await app.listen(3000);
+  await app.listen(3001);
 }
 bootstrap();
