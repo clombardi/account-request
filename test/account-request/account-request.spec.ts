@@ -43,30 +43,32 @@ class TestAccountRequestService {
 }
 
 
-async function addTestAccountRequest(service: TestAccountRequestService, 
-    customer: string, status: string, date: string, requiredApprovals = 3
-) {
-    await service.addAccountRequest({ customer, status, date, requiredApprovals })
-}
+// async function addTestAccountRequest(service: TestAccountRequestService, 
+//     customer: string, status: string, date: string, requiredApprovals = 3
+// ) {
+//     await service.addAccountRequest({ customer, status, date, requiredApprovals })
+// }
 
-async function addTestAccountRequests(testApp: INestApplication) {
-    const service = testApp.get(TestAccountRequestService);
-    await addTestAccountRequest(service, "Juana Molina", Status.ACCEPTED, "2020-04-08", 8)
-    await addTestAccountRequest(service, "Pedro Almodóvar", Status.REJECTED, "2020-06-15", 2)
-    await addTestAccountRequest(service, "Juana Azurduy", Status.PENDING, "2020-06-12", 4)
-    await addTestAccountRequest(service, "Julieta Lanteri", Status.ACCEPTED, "2020-03-24")
-    await addTestAccountRequest(service, "Juanita Larrauri", Status.ANALYSING, "2020-07-19", 6)
-}
-
-async function clearData(testApp: INestApplication) {
-    const service = testApp.get(TestAccountRequestService);
-    await service.clearData();
-}
 
 
 describe('Account request service', () => {
     let testApp: INestApplication;
     let mongoServer: MongoMemoryServer;
+
+    const testService = () => testApp.get(TestAccountRequestService);
+    const clearData = async () => {
+        await testService().clearData();
+    }
+    const addTestAccountRequest = async (customer: string, status: string, date: string, requiredApprovals = 3) => {
+        await testService().addAccountRequest({ customer, status, date, requiredApprovals })
+    }
+    const addTestAccountRequests = async () => {
+        await addTestAccountRequest("Juana Molina", Status.ACCEPTED, "2020-04-08", 8)
+        await addTestAccountRequest("Pedro Almodóvar", Status.REJECTED, "2020-06-15", 2)
+        await addTestAccountRequest("Juana Azurduy", Status.PENDING, "2020-06-12", 4)
+        await addTestAccountRequest("Julieta Lanteri", Status.ACCEPTED, "2020-03-24")
+        await addTestAccountRequest("Juanita Larrauri", Status.ANALYSING, "2020-07-19", 6)
+    }
 
     beforeAll(async () => {
         mongoServer = new MongoMemoryServer();
@@ -88,8 +90,8 @@ describe('Account request service', () => {
     });
 
     beforeEach(async () => { 
-        await clearData(testApp); 
-        await addTestAccountRequests(testApp);
+        await clearData(); 
+        await addTestAccountRequests();
     })
 
     afterAll(async () => {
