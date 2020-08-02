@@ -218,7 +218,17 @@ Estaríamos probando Nest, eso que lo haga la gente de Nest.
 
 
 ------------------------------------------------------
-(página "Test de servicio - mockeamos Mongo")
+(página "Test de provider - mockeamos Mongo")
+El hilo del texto está OK.
+
+0. contexto.
+Destacar que no se está mockeando Mongoose.
+
+1. el módulo.
+Es igual, o casi, que el que definimos para practicar mongoose. Háganse una copia (o branch en el repo), ajusten a las interfaces definidas, y háganlo andar.
+
+2. qué vamos a probar.
+
 
 
 

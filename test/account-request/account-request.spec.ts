@@ -43,14 +43,6 @@ class TestAccountRequestService {
 }
 
 
-// async function addTestAccountRequest(service: TestAccountRequestService, 
-//     customer: string, status: string, date: string, requiredApprovals = 3
-// ) {
-//     await service.addAccountRequest({ customer, status, date, requiredApprovals })
-// }
-
-
-
 describe('Account request service', () => {
     let testApp: INestApplication;
     let mongoServer: MongoMemoryServer;
