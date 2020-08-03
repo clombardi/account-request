@@ -228,6 +228,32 @@ Destacar que no se está mockeando Mongoose.
 Es igual, o casi, que el que definimos para practicar mongoose. Háganse una copia (o branch en el repo), ajusten a las interfaces definidas, y háganlo andar.
 
 2. qué vamos a probar.
+(esto no está en el texto)
+Ver sobre el código qué es lo que se va a probar.
+
+3. estrategia
+acá me jugué con los gráficos. Terminado esto, podrían tener andando la estructura (que está transcripta en el texto)
+
+4. un primer test
+Esto es para que jueguen elles
+
+5. datos iniciales
+Puedo plantear "ok, ahora quiero probar con 10 documentos, hacer distintos filtros y ver qué da".
+¿De dónde saco los 10 documentos? Sobre todo dado que estamos usando un mock de BD.
+Hay que crearlos.
+¿Y cómo hacer para crearlos? Ahi enganchar con las cuatro estrategias que se proponen, destacando las dos que vamos a trabajar.
+
+6. conexión a mongo
+la importancia del --save-dev, se supone que mongodb no debe estar (directamente) entre lo que se requiere para la app en producción.
+... vieron qué fácil usar mongo, nos preguntaremos por qué mongoose ... yo también me lo pregunto.
+
+7. necesidad de limpiar la base
+¿se entiende, no?
+
+8. provider de test
+comentar que yo dejé las funciones dentro de la suite, ahora llaman al provider. Como cada une quiera.
+
+
 
 
 

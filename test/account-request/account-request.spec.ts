@@ -14,7 +14,7 @@ import { Model, Connection } from 'mongoose';
 
 
 @Injectable()
-class TestAccountRequestService {
+class TestDataService {
     constructor(
         @InjectModel('AccountRequest') private accountRequestModel: Model<AccountRequestMongoose>,
         @InjectConnection() private readonly connection: Connection 
@@ -47,14 +47,14 @@ describe('Account request service', () => {
     let testApp: INestApplication;
     let mongoServer: MongoMemoryServer;
 
-    const testService = () => testApp.get(TestAccountRequestService);
+    const testService = () => testApp.get(TestDataService);
     const clearData = async () => {
         await testService().clearData();
     }
     const addTestAccountRequest = async (customer: string, status: string, date: string, requiredApprovals = 3) => {
         await testService().addAccountRequest({ customer, status, date, requiredApprovals })
     }
-    const addTestAccountRequests = async () => {
+    const addTestData = async () => {
         await addTestAccountRequest("Juana Molina", Status.ACCEPTED, "2020-04-08", 8)
         await addTestAccountRequest("Pedro Almodóvar", Status.REJECTED, "2020-06-15", 2)
         await addTestAccountRequest("Juana Azurduy", Status.PENDING, "2020-06-12", 4)
@@ -73,8 +73,7 @@ describe('Account request service', () => {
                     memoryMongoUri, { useNewUrlParser: true, useUnifiedTopology: true }
                 )
             ],
-            providers: [TestAccountRequestService],
-            exports: [AccountRequestModule]
+            providers: [TestDataService]
         }).compile();
 
         testApp = testAppModule.createNestApplication();
@@ -83,7 +82,7 @@ describe('Account request service', () => {
 
     beforeEach(async () => { 
         await clearData(); 
-        await addTestAccountRequests();
+        await addTestData();
     })
 
     afterAll(async () => {
