@@ -1,0 +1,20 @@
+------------------------------------------------------
+(página "Un endpoint para acceder a una modificación individual")
+El hilo general, el de la página.
+
+Lo que hicimos
+se puede ir mostrando el código.
+
+Nuevo endpoint
+se puede pensar desde el Postman, ¿qué pondríamos? Una especie de TDD sin escribir el test.
+Cómo identificar un recurso: decisión de arquitectura, que puede variar de proyecto en proyecto. Acá optamos por una fácil: si no hay un identificador claro, idealmente determinado por una autoridad externa (ponele, códigos de moneda) entonces usamos los ID de Mongo.
+Cómo describir la operación: al ponerle una URL fija, se le quiere dar entidad, una de las acciones posibles sobre una solicitud es pasarla a pendiente. 
+
+El servicio
+No más de lo que dice en el texto. Lo puedo ir armando.
+
+Hacerlo andar.
+Mostrar la repetición del código que pasa de AccountRequestMongoose a AccountRequest. Puntualizar que la función puede estar "suelta", no tiene por qué ser un método del provider. Idem con la que se arme en el controller.
+
+
+
