@@ -255,11 +255,23 @@ comentar que yo dejé las funciones dentro de la suite, ahora llaman al provider
 
 
 
+------------------------------------------------------
+(página "Variaciones y reflexiones")
+Esto es un picadito.
+
+Test de integración
+Viene bien contar de qué se trata, y que con los elementos que adquirimos, los podemos hacer.
+
+Refactor
+Si no están muy aburridos, háganlo. Es la mejor forma de entender cuál es el sentido de andar testeando.
+
+Opciones
+Recordar que para ejecutar test:watch, es npn run test:watch; npm test:watch no anda. Lo mismo para test:cov.
 
 
 
 -------------------------------------------------------
-A meter en algún lado
+Quedó afuera
 
 configuración de jest en package.json, al menos contar que existe y linkear con doc https://jestjs.io/docs/en/configuration.
 Probé con testPathIgnorePatterns.

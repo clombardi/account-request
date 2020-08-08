@@ -37,6 +37,34 @@ export class AccountRequestService {
         }})
     }
 
+    async getAccountRequestsLean(conditions: AccountRequestFilterConditions): Promise<AccountRequest[]> {
+        const findConditions: any = {}
+        if (conditions.status) {
+            findConditions.status = conditions.status
+        }
+        if (conditions.customer) {
+            findConditions.customer = { $regex: `.*${conditions.customer}.*`, $options: 'i' }
+        }
+        const mongooseData = await this.accountRequestModel.find(findConditions).lean();
+        return mongooseData.map(mongooseReq => {
+            return {
+                id: mongooseReq._id,
+                customer: mongooseReq.customer,
+                status: mongooseReq.status as Status,
+                // status: Status[mongooseReq.status.toUpperCase()],
+                /* this version does not work if either of TS compiler options "strict" or "noImplicitAny" are enabled
+                   since non-literal subscripts to search into an enum
+                   (or more generally, inta the set of keys of an object type)
+                   are not accepted.
+                 */
+                date: moment.utc(mongooseReq.date),
+                requiredApprovals: mongooseReq.requiredApprovals,
+                month: mongooseReq.month(),
+                isDecided: mongooseReq.isDecided
+            }
+        })
+    }
+
     async getAccountRequestsFixed(): Promise<AccountRequest[]> {
         const requests: AccountRequest[] = [{
             id: '41',
