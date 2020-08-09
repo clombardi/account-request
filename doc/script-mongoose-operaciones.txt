@@ -15,6 +15,22 @@ No más de lo que dice en el texto. Lo puedo ir armando.
 
 Hacerlo andar.
 Mostrar la repetición del código que pasa de AccountRequestMongoose a AccountRequest. Puntualizar que la función puede estar "suelta", no tiene por qué ser un método del provider. Idem con la que se arme en el controller.
+Entre paréntesis: la de "make it work / make it right / make it fast" ¿la tenían, no?
+Podemos mostrarlo de c2, https://proxy.c2.com/cgi/wiki?MakeItWorkMakeItRightMakeItFast , así los presentamos a los amigos C.
+
+Otro ejercicio.
+Ojalá lo hagan, o al menos lo empiecen. Depende de cómo andemos de tiempo, lo puedo arrancar. Es interesante ver cómo se marcan los errores, esto para hacer propaganda de que tipen.
+
+
+
+------------------------------------------------------
+(página "Modificación masiva")
+Lo que dice la página.
+
+Se podría armar un modelito de empleados para probar lo que se indica. Con hacerlo un rato antes alcanza. Meterlo en una app distinta para no hacer lío. Si no se hizo antes, crear una app de "pruebitas". Se puede agregar un virtual de "esCapo" si la categoría es > 2.
+
+Comentar que de paso seguimos aprendiendo opciones sobre las búsquedas en Mongo/Mongoose.
+
 
 
 

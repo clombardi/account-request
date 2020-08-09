@@ -16,7 +16,7 @@ import { Model, Connection } from 'mongoose';
 @Injectable()
 class TestDataService {
     constructor(
-        @InjectModel('AccountRequest') private accountRequestModel: Model<AccountRequestMongoose>,
+        @InjectModel('AccountRequest') public accountRequestModel: Model<AccountRequestMongoose>,
         @InjectConnection() private readonly connection: Connection 
     ) {}
 
@@ -120,6 +120,28 @@ describe('Account request service', () => {
         expect(obtainedRequests.length).toBe(6);
         const lucia = (obtainedRequests.find(req => req.customer === 'Lucía Galluzo')) as AccountRequest;
         expect(lucia.id).toEqual(newId);
+    });
+
+    it('massive update', async () => {
+        const accountRequestService = testApp.get(AccountRequestService);
+        const modified = await accountRequestService.massiveIncrementRequiredApprovals();
+
+        expect(modified).toBe(2);
+        const obtainedRequests = await accountRequestService.getAccountRequests({})
+        const findByCustomer = (name) => obtainedRequests.find(req => req.customer === name);
+        expect(findByCustomer('Pedro Almodóvar')?.requiredApprovals).toBe(2);
+        expect(findByCustomer('Juana Azurduy')?.requiredApprovals).toBe(5);
+    });
+    // const undecidedRequests = await testService().accountRequestModel.find({ isDecided: false })
+
+    it('check filters', async () => {
+        // const undecidedRequests = await testService().accountRequestModel.find(
+        //     { status: {$in: [Status.ANALYSING, Status.PENDING]} }
+        // )
+        const undecidedRequests = await testService().accountRequestModel.find(
+            { $or: [{ status: Status.ANALYSING }, { status: Status.PENDING} ]}
+        )
+        expect(undecidedRequests.length).toBe(2);
     });
 
 });

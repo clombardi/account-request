@@ -40,7 +40,7 @@ export const AccountRequestSchema = new mongoose.Schema({
 })
 
 AccountRequestSchema.virtual('isDecided').get(
-    function(): boolean { return ['Accepted', 'Rejected'].includes(this.status) }
+    function(): boolean { return [Status.ACCEPTED, Status.REJECTED].includes(this.status) }
 );
 
 AccountRequestSchema.method({
