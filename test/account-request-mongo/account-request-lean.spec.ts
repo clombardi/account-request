@@ -1,7 +1,8 @@
 import { INestApplication } from "@nestjs/common";
 import { AccountRequestService } from "../../src/account-request/account-request.service";
 import { AccountRequest } from "../../src/account-request/interfaces/account-request.interfaces";
-import { AccountRequestMongoTestSupport, findByCustomerFor, createTestApp } from "./account-request-test-support";
+import { findByCustomerFor } from "../account-request/account-request-test-support";
+import { AccountRequestMongoTestSupport, createTestApp } from "./account-request-test-support";
 
 
 describe('Account request service - with and without lean', () => {

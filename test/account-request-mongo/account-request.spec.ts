@@ -1,7 +1,8 @@
 import { INestApplication } from "@nestjs/common";
 import { AccountRequestService } from "../../src/account-request/account-request.service";
 import { AccountRequestController } from "../../src/account-request/account-request.controller";
-import { AccountRequestMongoTestSupport, findByCustomerFor, createTestApp } from "./account-request-test-support";
+import { AccountRequestMongoTestSupport, createTestApp } from "./account-request-test-support";
+import { findByCustomerFor } from "../account-request/account-request-test-support";
 
 describe('Account request service - using mongo connection', () => {
     let testApp: INestApplication;
