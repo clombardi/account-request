@@ -1,7 +1,5 @@
 import moment = require("moment");
 import { Collection } from "mongodb";
-import { Test } from "@nestjs/testing";
-import { MongooseModule } from "@nestjs/mongoose";
 import { stdDateFormat } from "../../src/dates/dates.constants";
 import { Status } from "../../src/enums/status";
 import { AccountRequestModule } from "../../src/account-request/account-request.module";
@@ -22,22 +20,6 @@ export class AccountRequestMongoTestSupport extends MongoTestSupport {
         await this.addTestAccountRequest("Julieta Lanteri", Status.ACCEPTED, "2020-03-23")
         await this.addTestAccountRequest("Juanita Larrauri", Status.ANALYSING, "2020-07-19", 6)
     }
-}
 
-export async function createTestApp() { 
-    const mongoTestSupport = new AccountRequestMongoTestSupport();
-    await mongoTestSupport.init();
-
-    const testAppModule = await Test.createTestingModule({
-        imports: [
-            AccountRequestModule,
-            MongooseModule.forRoot(
-                mongoTestSupport.memoryMongoUri, { useNewUrlParser: true, useUnifiedTopology: true }
-            )
-        ]
-    }).compile();
-
-    const testApp = testAppModule.createNestApplication();
-    await testApp.init();
-    return { testApp, mongoTestSupport }
+    modules() { return [AccountRequestModule] }
 }

@@ -1,24 +1,28 @@
 import { INestApplication } from "@nestjs/common";
 import { AccountRequestService } from "../../src/account-request/account-request.service";
 import { AccountRequestController } from "../../src/account-request/account-request.controller";
-import { AccountRequestMongoTestSupport, createTestApp } from "./account-request-test-support";
+import { Status } from "../../src/enums/status";
+import { AccountRequestMongoTestSupport } from "./account-request-test-support";
 import { findByCustomerFor } from "../account-request/account-request-test-support";
+import { createTestApp } from "../utils/mongo-test-support";
 
 describe('Account request service - using mongo connection', () => {
     let testApp: INestApplication;
-    let mongoTestSupport: AccountRequestMongoTestSupport;
+    let testSupport: AccountRequestMongoTestSupport;
 
     beforeAll(async () => {
-        ({ testApp, mongoTestSupport } = await createTestApp());
+        ({ testApp, testSupport } = await createTestApp(AccountRequestMongoTestSupport));
+        // mongoTestSupport = new AccountRequestMongoTestSupport();
+        // testApp = await createTestApp(mongoTestSupport);
     });
 
     beforeEach(async () => {
-        await mongoTestSupport.clear();
+        await testSupport.clear();
     })
 
     afterAll(async () => {
         await testApp.close();
-        await mongoTestSupport.stop();
+        await testSupport.stop();
     });
 
     it('get test data through service', async () => {
@@ -37,6 +41,13 @@ describe('Account request service - using mongo connection', () => {
         const findByCustomer = findByCustomerFor(obtainedRequests);
         expect(findByCustomer("Juana Molina")).toBeDefined();
         expect(findByCustomer("Pierina Dealessi")).toBeUndefined();
+    });
+
+    it('check filters', async () => {
+        const undecidedRequests = await testSupport.mongoDirectConnection.db().collection('accountrequests').find(
+            { $or: [{ status: Status.ANALYSING }, { status: Status.PENDING }] }
+        ).toArray();
+        expect(undecidedRequests.length).toBe(2);
     });
 
 });

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import * as moment from 'moment';
 import { Status } from '../enums/status';
 import { AccountRequest, AccountRequestMongoose, AccountRequestMongooseData, AccountRequestProposal, AccountRequestFilterConditions } from './interfaces/account-request.interfaces';
@@ -138,17 +138,36 @@ export class AccountRequestService {
     }
 
     async setAsPending(id: string): Promise<AccountRequest> {
-        const possibleAccountRequestDb = await this.accountRequestModel.findOne({ _id: id });
-        if (!possibleAccountRequestDb) {
-            throw new NotFoundException(`Account request ${id} not found`);
-        }
-        const accountRequestDb = possibleAccountRequestDb as AccountRequestMongoose;
+        const accountRequestDb = await this.getMongooseAccountRequestById(id);
         if (accountRequestDb.status !== Status.ANALYSING) {
             throw new ForbiddenException(`Only Analysing account requests can be changed into Pending`);
         }
         accountRequestDb.status = Status.PENDING;
         await accountRequestDb.save()
         return mongooseToModel(accountRequestDb)
+    }
+
+    // notar que si saco el if, da error de tipos ¡magic!
+    async getMongooseAccountRequestById(id: string): Promise<AccountRequestMongoose> {
+        // const possibleAccountRequestDb = await this.accountRequestModel.findOne({ _id: id });
+        if (!id.match(/^[0-9A-F]{24}$/i)) {
+            throw new BadRequestException('Id must be an hex number having length 24');
+        }
+        const possibleAccountRequestDb = await this.accountRequestModel.findById(id);
+        if (!possibleAccountRequestDb) {
+            throw new NotFoundException(`Account request ${id} not found`);
+        }
+        return possibleAccountRequestDb;
+    }
+
+    async deleteAccountRequest(id: string): Promise<AccountRequest> {
+        const accountRequestDb = await this.getMongooseAccountRequestById(id);
+        const accountRequest = mongooseToModel(accountRequestDb);
+        if (accountRequest.status === Status.ACCEPTED) {
+            throw new ForbiddenException(`Accepted account requests cannot be deleted`);
+        }
+        await this.accountRequestModel.findByIdAndDelete(id);
+        return accountRequest;
     }
 }
 

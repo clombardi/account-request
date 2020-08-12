@@ -2,29 +2,30 @@ import { INestApplication } from "@nestjs/common";
 import { AccountRequestService } from "../../src/account-request/account-request.service";
 import { AccountRequest } from "../../src/account-request/interfaces/account-request.interfaces";
 import { findByCustomerFor } from "../account-request/account-request-test-support";
-import { AccountRequestMongoTestSupport, createTestApp } from "./account-request-test-support";
+import { AccountRequestMongoTestSupport } from "./account-request-test-support";
+import { createTestApp } from "../utils/mongo-test-support";
 
 
 describe('Account request service - with and without lean', () => {
     let testApp: INestApplication;
-    let mongoTestSupport: AccountRequestMongoTestSupport;
+    let testSupport: AccountRequestMongoTestSupport;
 
     beforeAll(async () => {
-        ({ testApp, mongoTestSupport } = await createTestApp());
+        ({ testApp, testSupport } = await createTestApp(AccountRequestMongoTestSupport));
     });
 
     beforeEach(async () => {
-        await mongoTestSupport.clear();
+        await testSupport.clear();
     })
 
     afterAll(async () => {
         await testApp.close();
-        await mongoTestSupport.stop();
+        await testSupport.stop();
     });
 
     it('test resources exist', async () => {
         expect(testApp).toBeDefined();
-        expect(mongoTestSupport).toBeDefined();
+        expect(testSupport).toBeDefined();
     });
 
     it('no-lean - get test data through service', async () => {

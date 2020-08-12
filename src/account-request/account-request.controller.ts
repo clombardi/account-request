@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Query, Patch, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Patch, Param, Delete } from '@nestjs/common';
 import * as moment from 'moment';
 
 import { AccountRequestService } from './account-request.service';
@@ -39,5 +39,10 @@ export class AccountRequestController {
     @Patch(':id/set-as-pending')
     async setAsPending(@Param("id") requestId: string): Promise<AccountRequestDTO> {
         return modelToDTO(await this.service.setAsPending(requestId));
+    }
+
+    @Delete(':id')
+    async deleteAccountRequest(@Param("id") requestId: string): Promise<AccountRequestDTO> {
+        return modelToDTO(await this.service.deleteAccountRequest(requestId));
     }
 }

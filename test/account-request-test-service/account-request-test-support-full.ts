@@ -1,5 +1,7 @@
-import { Injectable, Type } from "@nestjs/common";
-import { InjectModel, InjectConnection } from "@nestjs/mongoose";
+import { MongoMemoryServer } from "mongodb-memory-server";
+import { Test } from "@nestjs/testing";
+import { Injectable, INestApplication } from "@nestjs/common";
+import { InjectModel, InjectConnection, MongooseModule } from "@nestjs/mongoose";
 import { Connection, Model } from "mongoose";
 import moment = require("moment");
 import { AccountRequestMongoose, AccountRequestMongooseData } from "../../src/account-request/interfaces/account-request.interfaces";
@@ -7,14 +9,23 @@ import { AccountRequestProposalDTO } from "../../src/account-request/dto/account
 import { stdDateFormat } from "../../src/dates/dates.constants";
 import { AccountRequestModule } from "../../src/account-request/account-request.module";
 import { Status } from "../../src/enums/status";
-import { TestDataService, ModuleTestSupport } from "../utils/test-service-test-support";
+
 
 @Injectable()
-export class AccountRequestTestDataService extends TestDataService {
+export class AccountRequestTestDataService {
     constructor(
         @InjectModel('AccountRequest') public accountRequestModel: Model<AccountRequestMongoose>,
-        @InjectConnection() connection: Connection
-    ) { super(connection) }
+        @InjectConnection() readonly connection: Connection
+    ) {  }
+
+    async clearData(): Promise<void> {
+        const collections = this.connection.collections;
+
+        for (const key in collections) {
+            const collection = collections[key];
+            await collection.deleteMany({});
+        }
+    }
 
     async addAccountRequest(req: AccountRequestProposalDTO): Promise<string> {
         const dataForMongoose: AccountRequestMongooseData = {
@@ -30,13 +41,43 @@ export class AccountRequestTestDataService extends TestDataService {
 }
 
 
-export class AccountRequestTestSupport extends ModuleTestSupport<AccountRequestTestDataService> {
-    modules() {
-        return [AccountRequestModule];
+export class AccountRequestTestSupport {
+    public mongoServer: MongoMemoryServer;
+    public memoryMongoUri: string;
+    public testApp: INestApplication;
+
+    async init() {
+        this.mongoServer = new MongoMemoryServer();
+        this.memoryMongoUri = await this.mongoServer.getConnectionString();
+
+        const testAppModule = await Test.createTestingModule({
+            imports: [
+                AccountRequestModule,
+                MongooseModule.forRoot(
+                    this.memoryMongoUri, { useNewUrlParser: true, useUnifiedTopology: true }
+                )
+            ],
+            providers: [AccountRequestTestDataService]
+        }).compile();
+
+        this.testApp = testAppModule.createNestApplication();
+        await this.testApp.init();
     }
-    testServiceClass(): Type<AccountRequestTestDataService> {
-        return AccountRequestTestDataService;
+
+    testService() {
+        return this.testApp.get(AccountRequestTestDataService);
     }
+
+    async clear() {
+        await this.testService().clearData();
+        await this.addTestData();
+    }
+
+    async stop() {
+        await this.testApp.close();
+        await this.mongoServer.stop();
+    }
+
     async addTestData() {
         await this.addTestAccountRequest("Juana Molina", Status.ACCEPTED, "2020-04-08", 8)
         await this.addTestAccountRequest("Pedro Almodóvar", Status.REJECTED, "2020-06-15", 2)
@@ -49,5 +90,3 @@ export class AccountRequestTestSupport extends ModuleTestSupport<AccountRequestT
         await this.testService().addAccountRequest({ customer, status, date, requiredApprovals });
     }
 }
-
-

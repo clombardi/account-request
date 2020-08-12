@@ -1,7 +1,9 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { MongoClient } from "mongodb";
+import { Test } from "@nestjs/testing";
+import { MongooseModule } from "@nestjs/mongoose";
 
-export class MongoTestSupport {
+export abstract class MongoTestSupport {
     mongoServer: MongoMemoryServer;
     mongoDirectConnection: MongoClient;
     memoryMongoUri: string;
@@ -36,4 +38,24 @@ export class MongoTestSupport {
         await this.mongoDirectConnection.close();
         await this.mongoServer.stop();
     }
+
+    abstract modules()
+}
+
+
+export async function createTestApp<T extends MongoTestSupport>(testSupportClass: { new(): T }) {
+    const testSupport = new testSupportClass();
+    await testSupport.init();
+
+    const testAppModule = await Test.createTestingModule({
+        imports: [
+            MongooseModule.forRoot(
+                testSupport.memoryMongoUri, { useNewUrlParser: true, useUnifiedTopology: true }
+            )
+        ].concat(testSupport.modules())
+    }).compile();
+
+    const testApp = testAppModule.createNestApplication();
+    await testApp.init();
+    return { testApp, testSupport };
 }

@@ -56,19 +56,8 @@ describe('Account request service', () => {
         expect(lucia.id).toEqual(newId);
     });
 
-    it('massive update', async () => {
-        const accountRequestService = testSupport.testApp.get(AccountRequestService);
-        const modified = await accountRequestService.massiveIncrementRequiredApprovals();
-
-        expect(modified).toBe(2);
-        const obtainedRequests = await accountRequestService.getAccountRequests({})
-        const findByCustomer = findSureByCustomerFor(obtainedRequests);
-        expect(findByCustomer('Pedro Almodóvar').requiredApprovals).toBe(2);
-        expect(findByCustomer('Juana Azurduy').requiredApprovals).toBe(5);
-    });
-    // const undecidedRequests = await testService().accountRequestModel.find({ isDecided: false })
-
     it('check filters', async () => {
+        // const undecidedRequests = await testService().accountRequestModel.find({ isDecided: false })
         // const undecidedRequests = await testService().accountRequestModel.find(
         //     { status: {$in: [Status.ANALYSING, Status.PENDING]} }
         // )
