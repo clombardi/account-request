@@ -73,7 +73,7 @@
       "test"
     ],
     "testMatch": [
-      "**/account-request.spec.ts"
+      "**/account-request-mongo/*.spec.ts"
     ],
     "testPathIgnorePatterns": [
       "node_modules"

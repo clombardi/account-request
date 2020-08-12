@@ -54,9 +54,20 @@ ver secciones 13.6.7 (runtime semantics de la alternativa) y 7.1.2 (coerción a 
 Notar que "" es falsy, pero [] y {} son truthy.
 
 
+-------------------------(notas después de haber dado las clases)
+Otras cosas que aparecieron
+- qué es undefined
+- una función es un valor de primer orden
+- short-circuit evaluation
+-------------------------
+
 El || nos viene cómodo para definir valores por defecto.
 
 let persona = fnQuePuedeDevolverNull() || { nombre: "Carolina", apellido: "Casiraghi" }
+(acá como ejemplo usamos realHeight, algo parecido a alturaConBorde más abajo)
+
+Pregunta: si pepe es { a: 4, b: 5}
+¿qué diferencia hay entre pepe.c y pepe.c.d?
 
 Así podemos definir una función que resuelva el default
 function diasQueLlovio(periodo) {
@@ -64,9 +75,10 @@ function diasQueLlovio(periodo) {
 }
 
 Pensar por qué anda esto: {}.diasQueLlovio.
+(si se le pasa {} de parámetro a diasQueLlovio)
 
 ¿cómo haríamos cantidadDeDiasQueLlovio? Una forma
-function diasQueLlovio(periodo) {
+function cantidadDeDiasQueLlovio(periodo) {
     return (periodo.diasQueLlovio || []).length
 }
 
@@ -84,6 +96,7 @@ probar ... se va a romper con { apellido: [4] } ...
 ahora existe un apellido[0] pero eso no entiende toUpperCase() ... le agregamos que tenga un toUpperCase
 
 ¿oia? ¿qué es persona.apellido[0].toUpperCase? Es una función.
+(este se los dejé como desafío, estuvo bueno porque pensaron)
 
 
 Notar cómo se está usando que el || devuelve el primer valor significativo, y el && el último.
@@ -122,7 +135,8 @@ fn importeTotal(factura)
 
 
 
-Expresión ternaria: es una expresión, da un resultado (que no es undefined).
+Expresión ternaria: es una expresión, da un resultado (que no es undefined). 
+Resaltar la diferencia con el if, que no es una expresión, no genera un resultado.
 
 P.ej. 
 function minimoNoImponible(persona) {
