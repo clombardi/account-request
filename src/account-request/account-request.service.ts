@@ -25,6 +25,11 @@ function mongooseToModel(mongooseReq: AccountRequestMongoose): AccountRequest {
     }
 }
 
+function proposalToMongoose(proposal: AccountRequestProposal): AccountRequestMongooseData {
+    return {...proposal , date: proposal.date.valueOf() }
+}
+
+
 @Injectable()
 export class AccountRequestService {
     constructor(@InjectModel('AccountRequest') private accountRequestModel: Model<AccountRequestMongoose>) {}
@@ -92,13 +97,7 @@ export class AccountRequestService {
     }
 
     async addAccountRequest(req: AccountRequestProposal): Promise<string> {
-        const dataForMongoose: AccountRequestMongooseData = {
-            customer: req.customer,
-            status: req.status,
-            date: req.date.valueOf(),
-            requiredApprovals: req.requiredApprovals
-        }
-        const newMongooseRequest = new this.accountRequestModel(dataForMongoose)
+        const newMongooseRequest = new this.accountRequestModel(proposalToMongoose(req))
         // const savedRequest = await newMongooseRequest.save()
         // return savedRequest._id
         await newMongooseRequest.save()
@@ -147,13 +146,13 @@ export class AccountRequestService {
         return mongooseToModel(accountRequestDb)
     }
 
-    // notar que si saco el if, da error de tipos ¡magic!
     async getMongooseAccountRequestById(id: string): Promise<AccountRequestMongoose> {
-        // const possibleAccountRequestDb = await this.accountRequestModel.findOne({ _id: id });
         if (!id.match(/^[0-9A-F]{24}$/i)) {
             throw new BadRequestException('Id must be an hex number having length 24');
         }
+        // const possibleAccountRequestDb = await this.accountRequestModel.findOne({ _id: id });
         const possibleAccountRequestDb = await this.accountRequestModel.findById(id);
+        // notar que si saco el if, da error de tipos ¡magic!
         if (!possibleAccountRequestDb) {
             throw new NotFoundException(`Account request ${id} not found`);
         }
@@ -168,6 +167,12 @@ export class AccountRequestService {
         }
         await this.accountRequestModel.findByIdAndDelete(id);
         return accountRequest;
+    }
+
+    async addManyAccountRequests(requestsData: AccountRequestProposal[]): Promise<number> {
+        const mongooseRequestsData = requestsData.map(req => proposalToMongoose(req));
+        const mongooseResult = await this.accountRequestModel.insertMany(mongooseRequestsData);
+        return mongooseResult.length;
     }
 }
 

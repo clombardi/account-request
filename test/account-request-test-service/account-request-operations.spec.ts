@@ -1,7 +1,22 @@
+import moment = require("moment");
+import { ForbiddenException, NotFoundException, BadRequestException } from "@nestjs/common";
+import { stdDateFormat } from "../../src/dates/dates.constants";
+import { Status } from "../../src/enums/status";
+import { AccountRequestMassiveAdditionDTO } from "../../src/account-request/interfaces/account-request.interfaces";
 import { AccountRequestService } from "../../src/account-request/account-request.service";
+import { AccountRequestController } from "../../src/account-request/account-request.controller";
 import { AccountRequestTestSupport } from "./account-request-test-support";
 import { findSureByCustomerFor, findByCustomerFor } from "../account-request/account-request-test-support";
-import { ForbiddenException, NotFoundException } from "@nestjs/common";
+
+
+const massiveAdditionData: AccountRequestMassiveAdditionDTO = {
+    date: '2020-08-04', defaultRequiredApprovals: 6, 
+    requestDetails: [ 
+        { customer: 'Rómulo Berruti', requiredApprovals: 4 }, 
+        { customer: 'Ramona Galarza' },
+        { customer: 'Elsa Franco', requiredApprovals: 2 }
+    ]
+}
 
 describe('Account request service', () => {
     let testSupport: AccountRequestTestSupport;
@@ -41,7 +56,7 @@ describe('Account request service', () => {
         const accountRequestService = testSupport.testApp.get(AccountRequestService);
         const obtainedRequests = await accountRequestService.getAccountRequests({ customer: 'Juana Azurduy'});
         const juanaA = obtainedRequests[0];
-        const resultOfDeletion = await accountRequestService.deleteAccountRequest(juanaA.id);
+        const resultOfDeletion = await accountRequestService.deleteAccountRequest(String(juanaA.id));
 
         expect(resultOfDeletion).toEqual(juanaA);
 
@@ -59,7 +74,7 @@ describe('Account request service', () => {
         const obtainedRequests = await accountRequestService.getAccountRequests({ customer: 'Julieta Lanteri' });
         const julieta = obtainedRequests[0];
         // esto lo practicamos al ver test de controller
-        await expect(accountRequestService.deleteAccountRequest(julieta.id)).rejects.toThrow(ForbiddenException);
+        await expect(accountRequestService.deleteAccountRequest(String(julieta.id))).rejects.toThrow(ForbiddenException);
     });
 
     it('delete - non-existent id', async () => {
@@ -68,6 +83,30 @@ describe('Account request service', () => {
         // una opción más sofisticada es asignar a mano los ids a los objetos que se crean
         await expect(accountRequestService.deleteAccountRequest("000000000000000000000000")).rejects.toThrow(NotFoundException);
     });
+    
+    it('delete - malformed id', async () => {
+        const accountRequestService = testSupport.testApp.get(AccountRequestService);
+        // el string tiene que ser un hexa de 24 caracteres. Como se calcula a partir del timestamp, todos 0 no puede ser
+        // una opción más sofisticada es asignar a mano los ids a los objetos que se crean
+        await expect(accountRequestService.deleteAccountRequest("xxx")).rejects.toThrow(BadRequestException);
+    });
+
+    it('massive addition', async () => {
+        const accountRequestController = testSupport.testApp.get(AccountRequestController);
+        const accountRequestService = testSupport.testApp.get(AccountRequestService);
+        const serviceResult = await accountRequestController.accountRequestMassiveAddition(massiveAdditionData);
+        const additionDay = moment.utc(massiveAdditionData.date, stdDateFormat);
+        expect(serviceResult.addedRequestsCount).toBe(3);
+        const requestsAfter = await accountRequestService.getAccountRequests({});
+        expect(requestsAfter.length).toBe(8);
+        const findByCustomer = findSureByCustomerFor(requestsAfter);
+        const romulo = findByCustomer('Rómulo Berruti');
+        expect(romulo.requiredApprovals).toBe(4);
+        expect(romulo.date.valueOf()).toEqual(additionDay.valueOf());
+        const ramona = findByCustomer('Ramona Galarza');
+        expect(ramona.requiredApprovals).toBe(6);
+        expect(ramona.status).toEqual(Status.PENDING);
+    })
 
     // este no anda
     it.skip('delete - accepted request cannot be deleted - 2', async () => {

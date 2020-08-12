@@ -32,6 +32,19 @@ export interface AccountRequestMongoose extends mongoose.Document, AccountReques
     isDecided: boolean
 }
 
+export interface AccountRequestMassiveAdditionDTO {
+    date: string,
+    defaultRequiredApprovals?: number,
+    requestDetails: {
+        customer: string,
+        requiredApprovals?: number
+    }[]
+}
+
+export interface AccountRequestMassiveAdditionResultDTO {
+    addedRequestsCount: number
+}
+
 export const AccountRequestSchema = new mongoose.Schema({
     customer: { type: String, required: true },
     status: { type: String, enum: Object.values(Status) },
