@@ -108,6 +108,18 @@ describe('Account request service', () => {
         expect(ramona.status).toEqual(Status.PENDING);
     })
 
+    it('findByIdAndDelete with inexistent id', async () => {
+        // const undecidedRequests = await testService().accountRequestModel.find({ isDecided: false })
+        // const undecidedRequests = await testService().accountRequestModel.find(
+        //     { status: {$in: [Status.ANALYSING, Status.PENDING]} }
+        // )
+        const operationResult = await testSupport.testService().accountRequestModel.findByIdAndDelete("000000000000000000000000");
+        expect(operationResult).toBeNull();
+        const accountRequestService = testSupport.testApp.get(AccountRequestService);
+        const requestsAfter = await accountRequestService.getAccountRequests({});
+        expect(requestsAfter.length).toBe(5);
+    });
+
     // este no anda
     it.skip('delete - accepted request cannot be deleted - 2', async () => {
         const accountRequestService = testSupport.testApp.get(AccountRequestService);

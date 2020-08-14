@@ -134,6 +134,31 @@ fn importeTotal(factura)
   (sigue siendo imposible anular el iva)
 
 
+esta es la que juega by Chucho
+
+const importeTotal=(factura)=>{
+  let neto = factura.neto || 0
+
+  let iva = factura.iva 
+      // detalle importante: si factura.porcIva no está definido,
+      // entonces la cuenta da NaN que es falsy, por eso pasa
+      // a la siguiente opción!!
+      || (factura.neto * factura.porcIva/100)
+      // si factura.neto no está definido, tanto el de arriba como este
+      // dan NaN
+      || (factura.neto * 0.2) 
+      || 0
+
+  let descuento = factura.descuento 
+      // vale para factura.porcDescuento lo mismo dicho arriba
+      // para factura.porcIva
+      || (factura.porcDescuento/100 * factura.neto) 
+      || 0
+
+  return neto+iva-descuento
+}
+
+
 
 Expresión ternaria: es una expresión, da un resultado (que no es undefined). 
 Resaltar la diferencia con el if, que no es una expresión, no genera un resultado.

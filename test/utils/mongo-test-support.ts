@@ -3,7 +3,7 @@ import { MongoClient } from "mongodb";
 import { Test } from "@nestjs/testing";
 import { MongooseModule } from "@nestjs/mongoose";
 
-export abstract class MongoTestSupport {
+export class ProtoMongoTestSupport {
     mongoServer: MongoMemoryServer;
     mongoDirectConnection: MongoClient;
     memoryMongoUri: string;
@@ -38,7 +38,9 @@ export abstract class MongoTestSupport {
         await this.mongoDirectConnection.close();
         await this.mongoServer.stop();
     }
+}
 
+export abstract class MongoTestSupport extends ProtoMongoTestSupport {
     abstract modules()
 }
 
@@ -59,3 +61,4 @@ export async function createTestApp<T extends MongoTestSupport>(testSupportClass
     await testApp.init();
     return { testApp, testSupport };
 }
+

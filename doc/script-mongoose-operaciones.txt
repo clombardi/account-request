@@ -32,5 +32,39 @@ Se podría armar un modelito de empleados para probar lo que se indica. Con hace
 Comentar que de paso seguimos aprendiendo opciones sobre las búsquedas en Mongo/Mongoose.
 
 
+------------------------------------------------------
+(página "Baja")
+Lo que dice la página.
+
+Focos
+- métodos de Mongoose: findById / findByIdAndDelete. Podemos probar que el findByIdAndDelete devuelve null, armé un test.
+- probar que con un id mal formado se rompe, esto se puede hacer con el postman comentando el chequeo
+- expresiones regulares
+- refactor para unificar la búsqueda de una solicitud, que ya la tenemos en la modificación
+- posibles errores
+- cuatro tests
 
 
+------------------------------------------------------
+(página "Alta masiva")
+Lo que dice la página.
+
+Focos
+- insertMany, se pueden repasar las opciones de la doc de Mongoose, aclarando que no probamos.
+- hace falta una transformación, quién la hace
+- función aparte, hacer y testear
+- después es coser y cantar
+
+
+
+------------------------------------------------------
+(página "Extra - refactor en los tests")
+Lo que dice la página.
+
+La evolución está en la carpeta test/account-request-mongo-intermedio. 
+
+Conviene muchisimo ir haciéndolo y que lo vean. Insistir en lo de código genérico.
+
+Los chiches (clase abstracta, destructuring, clase) probar las variantes que no andan y mostrar qué es lo que no compila.
+
+Chiche fuera de programa: funciones findByCustomerFor y findSureByCustomerFor. Interesante tiparlas para que anden tanto para AccountRequest como para AccountRequestDTO.

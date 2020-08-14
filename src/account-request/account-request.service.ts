@@ -34,19 +34,19 @@ function proposalToMongoose(proposal: AccountRequestProposal): AccountRequestMon
 export class AccountRequestService {
     constructor(@InjectModel('AccountRequest') private accountRequestModel: Model<AccountRequestMongoose>) {}
 
-    async getAccountRequests(conditions: AccountRequestFilterConditions): Promise<AccountRequest[]> {
-        const findConditions: any = {}
-        if (conditions.status) {
-            findConditions.status = conditions.status
-        }
-        if (conditions.customer) {
-            findConditions.customer = { $regex: `.*${conditions.customer}.*`, $options: 'i'}
-        }
-        const mongooseData = await this.accountRequestModel.find(findConditions);
-        return mongooseData.map(mongooseToModel)
-    }
+    // async getAccountRequests(conditions: AccountRequestFilterConditions): Promise<AccountRequest[]> {
+    //     const findConditions: any = {}
+    //     if (conditions.status) {
+    //         findConditions.status = conditions.status
+    //     }
+    //     if (conditions.customer) {
+    //         findConditions.customer = { $regex: `.*${conditions.customer}.*`, $options: 'i'}
+    //     }
+    //     const mongooseData = await this.accountRequestModel.find(findConditions);
+    //     return mongooseData.map(mongooseToModel)
+    // }
 
-    async getAccountRequestsLean(conditions: AccountRequestFilterConditions): Promise<AccountRequest[]> {
+    async getAccountRequests(conditions: AccountRequestFilterConditions): Promise<AccountRequest[]> {
         const findConditions: any = {}
         if (conditions.status) {
             findConditions.status = conditions.status
@@ -150,13 +150,13 @@ export class AccountRequestService {
         if (!id.match(/^[0-9A-F]{24}$/i)) {
             throw new BadRequestException('Id must be an hex number having length 24');
         }
-        // const possibleAccountRequestDb = await this.accountRequestModel.findOne({ _id: id });
-        const possibleAccountRequestDb = await this.accountRequestModel.findById(id);
+        // const accountRequestDb = await this.accountRequestModel.findOne({ _id: id });
+        const accountRequestDb = await this.accountRequestModel.findById(id);
         // notar que si saco el if, da error de tipos ¡magic!
-        if (!possibleAccountRequestDb) {
+        if (!accountRequestDb) {
             throw new NotFoundException(`Account request ${id} not found`);
         }
-        return possibleAccountRequestDb;
+        return accountRequestDb;
     }
 
     async deleteAccountRequest(id: string): Promise<AccountRequest> {

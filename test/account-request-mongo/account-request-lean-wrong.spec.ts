@@ -1,22 +1,17 @@
 import { INestApplication } from "@nestjs/common";
-import { AccountRequestLeanModule } from "../../src/account-request-lean/account-request-lean.module";
-import { AccountRequestService } from "../../src/account-request-lean/account-request-lean.service";
-import { AccountRequest } from "../../src/account-request-lean/account-request-lean.interfaces";
+import { AccountRequestService } from "../../src/account-request/account-request.service";
+import { AccountRequest } from "../../src/account-request/interfaces/account-request.interfaces";
 import { findByCustomerFor } from "../account-request/account-request-test-support";
 import { AccountRequestMongoTestSupport } from "./account-request-test-support";
 import { createTestApp } from "../utils/mongo-test-support";
 
-export class AccountRequestLeanMongoTestSupport extends AccountRequestMongoTestSupport {
-    modules() { return [AccountRequestLeanModule] }
-}
 
-
-describe('Account request service - lean right way', () => {
+describe('Account request service - using lean the bad way', () => {
     let testApp: INestApplication;
     let testSupport: AccountRequestMongoTestSupport;
 
     beforeAll(async () => {
-        ({ testApp, testSupport } = await createTestApp(AccountRequestLeanMongoTestSupport));
+        ({ testApp, testSupport } = await createTestApp(AccountRequestMongoTestSupport));
     });
 
     beforeEach(async () => {
@@ -28,9 +23,9 @@ describe('Account request service - lean right way', () => {
         await testSupport.stop();
     });
 
-    it('get test data through service', async () => {
+    it('lean - get test data through service', async () => {
         const accountRequestService = testApp.get(AccountRequestService);
-        const obtainedRequests = await accountRequestService.getAccountRequests()
+        const obtainedRequests = await accountRequestService.getAccountRequestsLean({})
         expect(obtainedRequests.length).toBe(5);
         const findByCustomer = findByCustomerFor(obtainedRequests);
         expect(findByCustomer("Juana Molina")).toBeDefined();
@@ -42,4 +37,5 @@ describe('Account request service - lean right way', () => {
         expect(larrauri.month).toBe(7);
         expect(larrauri.isDecided).toBeFalsy();
     });
+
 });

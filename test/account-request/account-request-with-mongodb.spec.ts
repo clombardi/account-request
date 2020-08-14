@@ -24,7 +24,9 @@ describe('Account request service', () => {
             await collection.deleteMany({});
         }
     }
-    const addTestAccountRequest = async (customer: string, status: string, dateAsString: string, requiredApprovals = 3) => {
+    const addTestAccountRequest = async (
+        customer: string, status: string, dateAsString: string, requiredApprovals = 3
+    ) => {
         const collection: Collection = await mongoDirectConnection.db().collection('accountrequests');
         await collection.insertOne({ customer, status, requiredApprovals, date: moment(dateAsString, stdDateFormat).valueOf(),});
     }
@@ -39,7 +41,9 @@ describe('Account request service', () => {
     beforeAll(async () => {
         mongoServer = new MongoMemoryServer();
         const memoryMongoUri = await mongoServer.getConnectionString();
-        mongoDirectConnection = await MongoClient.connect(memoryMongoUri, { useNewUrlParser: true, useUnifiedTopology: true });
+        mongoDirectConnection = await MongoClient.connect(
+            memoryMongoUri, { useNewUrlParser: true, useUnifiedTopology: true }
+        );
 
         const testAppModule = await Test.createTestingModule({
             imports: [
