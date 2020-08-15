@@ -63,6 +63,10 @@ Invocando a getByTextSearch o a getByTextSearch2 en el controller, se puede usar
 Y creo que eso es todo amigos, con estas indicaciones y siguiendo des-pa-ci-to lo que dice la página, deberíamos estar. I hope.
 
 
+------------------------------------------------------
+(página "Proyección - incluir solamente algunos atributos")
+Este rapidito. Hay un par de ejercicios lindos para recuperar algunas cosas vistas antes.
+
 
 
 

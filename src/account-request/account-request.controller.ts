@@ -37,6 +37,11 @@ export class AccountRequestController {
         return requests.map(modelToDTO);
     }
 
+    @Get('/customers')
+    async getAccountRequestsCustomers(): Promise<{ customer: string }[]> {
+        return this.service.getCustomers();
+    }
+
     @Post()
     async addAccountApplication(@Body() newRequestData: AccountRequestProposalDTO): Promise<AddResponseDTO> {
         const newApplication: AccountRequestProposal = {

@@ -74,6 +74,10 @@ export class AccountRequestService {
         })
     }
 
+    async getCustomers(): Promise<{ customer: string }[]> {
+        return (await this.accountRequestModel.find({}, { customer: true , _id: false}).lean());
+    }
+
     async getAccountRequestsFixed(): Promise<AccountRequest[]> {
         const requests: AccountRequest[] = [{
             id: '41',
