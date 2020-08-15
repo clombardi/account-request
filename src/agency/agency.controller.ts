@@ -1,10 +1,15 @@
-import { Controller, Get, Param, Post, Body } from "@nestjs/common";
+import { Controller, Get, Param, Post, Body, Query } from "@nestjs/common";
 import { AgencyService } from "./agency.service"
 import { AgencyDTO, Agency } from "./agency.interface";
 
 @Controller('agencies')
 export class AgencyController {
     constructor(private readonly service: AgencyService) { }
+
+    @Get("/byText")
+    async getAgencyByTextSearch(@Query("q") queryString: string): Promise<Agency[]> {
+        return this.service.getByTextSearch(queryString);
+    }
 
     @Get()
     async getAgencies(): Promise<AgencyDTO[]> {

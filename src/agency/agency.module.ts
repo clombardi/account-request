@@ -6,7 +6,7 @@ import { AgencyService } from "./agency.service";
 
 @Module({
     imports: [MongooseModule.forFeature([
-        { name: 'manyagency', schema: AgencySchema }
+        { name: 'manyagencies', schema: AgencySchema }
     ])],
     controllers: [AgencyController],
     providers: [AgencyService]

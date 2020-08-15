@@ -1,0 +1,68 @@
+------------------------------------------------------
+(página "Performance usando Mongo/Mongoose - resumen de técnicas")
+El hilo es el de la página
+
+Intro: vamos a trabajar un poco sobre performance. 
+Qué es performance.
+Dónde podemos actuar, de afuera para adentro.
+- en nuestra aplicación
+- en Mongoose
+- en la base
+Hay técnicas que implican tocar en varios de estos niveles.
+
+Repasamos la lista.
+
+1. Selectividad en la búsqueda. 
+   Entre formas distintas de obtener la misma info, usamos la más eficiente.
+   Esto se puede combinar con índices y configuración de la base.
+   Podemos repasar filtros, y aprovechar para introducir a la consola de MongoDB.
+
+2. Operaciones masivas.
+
+3. Lean, este es bien de Mongoose.
+
+4. Indices, acá la configuración es en Mongo pero para aprovecharlos, hay que combinar con la selectividad que se define en la app.
+
+5. Select.
+
+
+Aparte de las que listamos, comentamos que otra técnica difundida es la de usar caches. Eso lo veremos más adelante.
+
+
+------------------------------------------------------
+(página "Lean - Mongoose se corre a un costado")
+Acá alcanza con seguir el hilo de la página. 
+Creo que es mega importante repasar antes y repetir los ejemplos, para tenerlos frescos.
+
+
+
+------------------------------------------------------
+(página "Uso de índices de BD para acelerar consultas")
+Otra vez, el hilo está bien.
+
+Creo que garpa detenerse un toque en la intro, sobre todo si el público no está familiarizado.
+Insistir mucho en que los índices son un mundo, que vamos a ver un poquito así.
+
+Presentar el mongo shell, usarlo, show dbs, use <db>, show collections, tirar queries, agregar un documento. Jugarlo un poco.
+
+Recordar que hay tres colecciones cargadas
+- manyagencies: tiene los índices creados
+- manyagencies2: no tiene los índices creados, sirve para mostrar el comportamiento sin índices.
+- manyagencies3: no tiene los índices creados, se puede usar para agregarlos y quitarlos.
+Las tres tienen 9 millones y pico de documentos.
+
+**OJOOOOOOOOOOOO**
+Para cambiar la colección, hay que tocar en **dos** lugares: módulo y servicio.
+
+El script para agregar sucursales está en /utils/agencyMassiveCreation.js.
+Para agregar un par, hay un endpoint POST /massiveAddition
+
+En el servicio hay un método getByTextSearch2 que es la búsqueda usando regex.
+Invocando a getByTextSearch o a getByTextSearch2 en el controller, se puede usar uno u otro método de búsqueda en texto.
+
+Y creo que eso es todo amigos, con estas indicaciones y siguiendo des-pa-ci-to lo que dice la página, deberíamos estar. I hope.
+
+
+
+
+

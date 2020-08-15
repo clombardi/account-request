@@ -10,10 +10,10 @@ function mongooseToModel(mongooseAgency: AgencyMongoose): Agency {
 
 @Injectable()
 export class AgencyService {
-    constructor(@InjectModel('manyagency') private agencyModel: Model<AgencyMongoose>) { }
+    constructor(@InjectModel('manyagencies') private agencyModel: Model<AgencyMongoose>) { }
 
     async getAgencies(): Promise<Agency[]> {
-        return (await this.agencyModel.find({})).map(mongooseToModel)
+        return (await this.agencyModel.find({}).limit(500)).map(mongooseToModel)
     }
 
     async getByCode(code: string): Promise<Agency> {
@@ -50,6 +50,18 @@ export class AgencyService {
         result.push(await agency(codeAsNumber + 8))
         result.push(await agency(codeAsNumber + 9))
         return result
+    }
+
+    async getByTextSearch(queryString: string): Promise<Agency[]> {
+        const dbResult = await this.agencyModel.find({ $text: { $search: queryString } }).limit(500)
+        return dbResult.map(mongooseToModel)       
+    }
+
+    async getByTextSearch2(queryString: string): Promise<Agency[]> {
+        const dbResult = await this.agencyModel.find(
+            { $or: [{ name: { $regex: `.*${queryString}.*` } }, { address: { $regex: `.*${queryString}.*` } }] }
+        ).limit(500)
+        return dbResult.map(mongooseToModel)
     }
 
     async addManyAgencies(proposals: AgencyProposal[]): Promise<number> {
