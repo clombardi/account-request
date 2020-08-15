@@ -1,0 +1,41 @@
+[
+    { "code": "0001", "name": "Ceres", "address": "Av. San Martín 384", "area": 250 },
+    { "code": "0002", "name": "Rafaela", "address": "Reconquista 843", "area": 800},
+    { "code": "0003", "name": "Amstrong", "address": "Grito de Alcorta 28", "area": 1200},
+    {
+        "code": "0004",
+        "name": "Venado Tuerto",
+        "address": "Av. San Martín 1403",
+        "area": 3000
+    },
+    {
+        "code": "0005",
+        "name": "Monte Maíz",
+        "address": "Defensa 32",
+        "area": 600
+    },
+    {
+        "code": "0006",
+        "name": "Reconquista",
+        "address": "Av. Eva Perón 904",
+        "area": 350
+    },
+    {
+        "code": "0007",
+        "name": "Bell Ville",
+        "address": "Av. Tau 190",
+        "area": 840
+    },
+    {
+        "code": "0021",
+        "name": "Villa María",
+        "address": "Belgrano 231",
+        "area": 350
+    },
+    {
+        "code": "0022",
+        "name": "Leones",
+        "address": "Tosco 24",
+        "area": 1100
+    }
+]

@@ -108,6 +108,30 @@ describe('Account request service', () => {
         expect(ramona.status).toEqual(Status.PENDING);
     })
 
+    it('massive addition with no requested approvals', async () => {
+        const accountRequestController = testSupport.testApp.get(AccountRequestController);
+        const accountRequestService = testSupport.testApp.get(AccountRequestService);
+        const justOneAccountRequest = {
+            date: '2020-08-04',  requestDetails: [ { customer: 'Ramona Galarza' } ]
+        }
+        const serviceResult = await accountRequestController.accountRequestMassiveAddition(justOneAccountRequest);
+        expect(serviceResult.addedRequestsCount).toBe(1);
+        const requestsAfter = await accountRequestService.getAccountRequests({});
+        expect(requestsAfter.length).toBe(6);
+        const findByCustomer = findSureByCustomerFor(requestsAfter);
+        const ramona = findByCustomer('Ramona Galarza');
+        expect(ramona.requiredApprovals).toBe(3);
+        expect(ramona.status).toEqual(Status.PENDING);
+    })
+
+    it('massive addition with wrong data', async () => {
+        const accountRequestController = testSupport.testApp.get(AccountRequestController);
+        const justOneAccountRequest: AccountRequestMassiveAdditionDTO = {
+            date: '2020-08-04', requestDetails: [{ customer: 'Ramona Galarza', requiredApprovals: 2000 }]
+        }
+        await expect(accountRequestController.accountRequestMassiveAddition(justOneAccountRequest)).rejects.toThrow();
+    })
+
     it('findByIdAndDelete with inexistent id', async () => {
         // const undecidedRequests = await testService().accountRequestModel.find({ isDecided: false })
         // const undecidedRequests = await testService().accountRequestModel.find(

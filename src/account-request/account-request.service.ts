@@ -34,19 +34,19 @@ function proposalToMongoose(proposal: AccountRequestProposal): AccountRequestMon
 export class AccountRequestService {
     constructor(@InjectModel('AccountRequest') private accountRequestModel: Model<AccountRequestMongoose>) {}
 
-    // async getAccountRequests(conditions: AccountRequestFilterConditions): Promise<AccountRequest[]> {
-    //     const findConditions: any = {}
-    //     if (conditions.status) {
-    //         findConditions.status = conditions.status
-    //     }
-    //     if (conditions.customer) {
-    //         findConditions.customer = { $regex: `.*${conditions.customer}.*`, $options: 'i'}
-    //     }
-    //     const mongooseData = await this.accountRequestModel.find(findConditions);
-    //     return mongooseData.map(mongooseToModel)
-    // }
-
     async getAccountRequests(conditions: AccountRequestFilterConditions): Promise<AccountRequest[]> {
+        const findConditions: any = {}
+        if (conditions.status) {
+            findConditions.status = conditions.status
+        }
+        if (conditions.customer) {
+            findConditions.customer = { $regex: `.*${conditions.customer}.*`, $options: 'i'}
+        }
+        const mongooseData = await this.accountRequestModel.find(findConditions);
+        return mongooseData.map(mongooseToModel)
+    }
+
+    async getAccountRequestsLean(conditions: AccountRequestFilterConditions): Promise<AccountRequest[]> {
         const findConditions: any = {}
         if (conditions.status) {
             findConditions.status = conditions.status
@@ -172,6 +172,7 @@ export class AccountRequestService {
     async addManyAccountRequests(requestsData: AccountRequestProposal[]): Promise<number> {
         const mongooseRequestsData = requestsData.map(req => proposalToMongoose(req));
         const mongooseResult = await this.accountRequestModel.insertMany(mongooseRequestsData);
+        // const mongooseResult = await (this.accountRequestModel as any).insertMany(mongooseRequestsData, { lean: true });
         return mongooseResult.length;
     }
 }

@@ -6,6 +6,7 @@ import { DateModule } from './dates/dates.module';
 import { ExpensesModule } from './expenses/expenses.module';
 import { AccountRequestUntypedModule } from './account-request-untyped/account-request-untyped.module';
 import { AccountRequestLeanModule } from './account-request-lean/account-request-lean.module';
+import { AgencyModule } from './agency/agency.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { AccountRequestLeanModule } from './account-request-lean/account-request
     ),
     CountryDataModule,
     DateModule,
-    ExpensesModule
+    ExpensesModule,
+    AgencyModule
   ],
   controllers: [],
   providers: [],

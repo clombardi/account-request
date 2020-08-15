@@ -49,7 +49,7 @@ export const AccountRequestSchema = new mongoose.Schema({
     customer: { type: String, required: true },
     status: { type: String, enum: Object.values(Status) },
     date: Number,
-    requiredApprovals: { type: Number, default: 3 }
+    requiredApprovals: { type: Number, default: 3, max: 1000 }
 })
 
 AccountRequestSchema.virtual('isDecided').get(
