@@ -6,6 +6,7 @@ import { AddResponseDTO, AccountRequestDTO, AccountRequestProposalDTO } from './
 import { AccountRequestProposal, AccountRequestFilterConditions, AccountRequest, AccountRequestMassiveAdditionDTO, AccountRequestMassiveAdditionResultDTO } from './interfaces/account-request.interfaces';
 import { Status } from '../enums/status';
 import { stdDateFormat } from '../dates/dates.constants';
+import { ApiBody } from '@nestjs/swagger';
 
 
 function modelToDTO(accountRequest: AccountRequest) {

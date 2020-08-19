@@ -1,13 +1,22 @@
-export interface AccountRequestProposalDTO {
-    customer: string,
-    status: string,
-    date: string,
+import { ApiProperty } from "@nestjs/swagger"
+
+export class AccountRequestProposalDTO {
+    @ApiProperty()
+    customer: string
+
+    @ApiProperty()
+    status: string
+
+    @ApiProperty()
+    date: string
+
+    @ApiProperty()
     requiredApprovals: number
 }
 
-export interface AccountRequestDTO extends AccountRequestProposalDTO {
-    id: string,
-    month: number,
+export class AccountRequestDTO extends AccountRequestProposalDTO {
+    id: string
+    month: number
     isDecided: boolean
 }
 
