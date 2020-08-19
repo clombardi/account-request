@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Query, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Patch, Param, Delete, HttpStatus } from '@nestjs/common';
 import * as moment from 'moment';
 
 import { AccountRequestService } from './account-request.service';
@@ -6,7 +6,7 @@ import { AddResponseDTO, AccountRequestDTO, AccountRequestProposalDTO } from './
 import { AccountRequestProposal, AccountRequestFilterConditions, AccountRequest, AccountRequestMassiveAdditionDTO, AccountRequestMassiveAdditionResultDTO } from './interfaces/account-request.interfaces';
 import { Status } from '../enums/status';
 import { stdDateFormat } from '../dates/dates.constants';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiResponse } from '@nestjs/swagger';
 
 
 function modelToDTO(accountRequest: AccountRequest) {
@@ -34,6 +34,7 @@ export class AccountRequestController {
     constructor(private readonly service: AccountRequestService) { }
 
     @Get()
+    @ApiResponse({ status: HttpStatus.OK, description: 'Data delivered', type: AccountRequestDTO })
     async getAccountRequests(@Query() conditions: AccountRequestFilterConditions): Promise<AccountRequestDTO[]> {
         const requests = await this.service.getAccountRequests(conditions);
         return requests.map(modelToDTO);

@@ -18,8 +18,7 @@ import { BadBadCountryExceptionFilter } from 'src/errors/particularExceptionFilt
 import { BadBadCountryException } from 'src/errors/customExceptions';
 import { ForbidDangerousCountries } from './middleware/country-data.guards';
 import { SumPopulationSmartInterceptor, SumPopulationInterceptor } from './middleware/country-data.interceptors';
-import { get } from 'lodash';
-import { ApiTags, ApiHeader, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiHeader, ApiResponse, getSchemaPath, ApiExtraModels } from '@nestjs/swagger';
 
 function transformCountryRawDataIntoShortSummary(countryRawData: CountryRawData): CountryShortSummary {
     return {
@@ -64,6 +63,7 @@ const countryRepresentations = [
 ]
 
 @ApiTags('Countries')
+@ApiExtraModels(CountryLongSummary, CountryShortSummary)
 @Controller('countries')
 // @UseInterceptors(new SumPopulationSmartInterceptor())
 export class CountryDataController {
@@ -76,13 +76,25 @@ export class CountryDataController {
         this.countryDataService = service
     }
 
+    @ApiHeader({
+        name: 'Accept',
+        description: 'Desired response representation',
+        enum: [
+            'application/vnd.bdsol.countryShortSummary+json',
+            'application/vnd.bdsol.countryTextDescription+json',
+            'application/vnd.bdsol.countryLongSummary+json'
+        ] 
+    })
+    // @ApiResponse({ status: HttpStatus.OK, description: 'short summary', type: CountryShortSummary })
+    @ApiResponse({ status: HttpStatus.OK, description: 'long summary', type: CountryLongSummary })
+    // @ApiResponse({ status: HttpStatus.OK, description: 'text description', type: 'string' })
     @Get(':countryCode')
     async getCountryData(@Headers() headers, @Req() request, @Param("countryCode") countryCode: string): Promise<any> {
         const representation = countryRepresentations.find(repr => repr.applies(request));
         if (representation) {
             return representation.resolve(this, countryCode);
         } else {
-            throw new NotAcceptableException('I can only produce json responses');
+            throw new NotAcceptableException('I cannot handle the requested representation');
         }
     }
 

@@ -19,8 +19,13 @@ export class AccountRequestProposalDTO {
 }
 
 export class AccountRequestDTO extends AccountRequestProposalDTO {
+    @ApiProperty()
     id: string
+
+    @ApiProperty()
     month: number
+
+    @ApiProperty()
     isDecided: boolean
 }
 
