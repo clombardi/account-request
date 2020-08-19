@@ -1,16 +1,20 @@
-import { ApiProperty } from "@nestjs/swagger"
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
+import { Status } from "src/enums/status"
 
 export class AccountRequestProposalDTO {
-    @ApiProperty()
+    @ApiProperty({
+        description: 'Customer full name',
+        example: 'Juana Molina'
+    })
     customer: string
 
-    @ApiProperty()
+    @ApiProperty({ enum: Status })
     status: string
 
     @ApiProperty()
     date: string
 
-    @ApiProperty()
+    @ApiPropertyOptional()
     requiredApprovals: number
 }
 

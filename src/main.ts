@@ -6,6 +6,9 @@ import { LogEndpointInterceptor } from './middleware/general.interceptors';
 import { INestApplication } from '@nestjs/common';
 
 
+declare const module: any;
+
+
 function setupSwagger(app: INestApplication) {
   const options = new DocumentBuilder()
     .setTitle('Example NestJS App')
@@ -25,6 +28,12 @@ async function bootstrap() {
 
   // Swagger config in a separate function
   setupSwagger(app);
+
+  // webpack-related instructions for hot reload 
+  if (module.hot) {
+    module.hot.accept();
+    module.hot.dispose(() => app.close());
+  }
 
   // done with the config
   await app.listen(3001);

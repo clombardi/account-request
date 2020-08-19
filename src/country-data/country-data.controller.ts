@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query, UseFilters, UseGuards, UseInterceptors, Headers, Req, NotAcceptableException } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseFilters, UseGuards, UseInterceptors, Headers, Req, NotAcceptableException, HttpStatus } from '@nestjs/common';
 import * as _ from 'lodash'
 import * as moment from 'moment';
 import * as accepts from 'accepts';
@@ -19,6 +19,7 @@ import { BadBadCountryException } from 'src/errors/customExceptions';
 import { ForbidDangerousCountries } from './middleware/country-data.guards';
 import { SumPopulationSmartInterceptor, SumPopulationInterceptor } from './middleware/country-data.interceptors';
 import { get } from 'lodash';
+import { ApiTags, ApiHeader, ApiResponse } from '@nestjs/swagger';
 
 function transformCountryRawDataIntoShortSummary(countryRawData: CountryRawData): CountryShortSummary {
     return {
@@ -62,6 +63,7 @@ const countryRepresentations = [
     )
 ]
 
+@ApiTags('Countries')
 @Controller('countries')
 // @UseInterceptors(new SumPopulationSmartInterceptor())
 export class CountryDataController {
@@ -93,6 +95,12 @@ export class CountryDataController {
     }
 
     @Get(':countryCode/shortSummary')
+    @ApiHeader({
+        name: 'userId',
+        description: 'Id of the user who makes the request'
+    })
+    @ApiResponse({ status: HttpStatus.OK, description: 'Data delivered', type: CountryShortSummary })
+    @ApiResponse({ status: HttpStatus.NOT_ACCEPTABLE, description: 'Info about a very bad country is requested' })
     @UseFilters(BadBadCountryExceptionFilter)
     @UseGuards(ForbidDangerousCountries)
     async getShortSummaryEndpoint(@Param() params: { countryCode: string }): Promise<CountryShortSummary> {
@@ -123,6 +131,7 @@ export class CountryDataController {
         return transformCountryRawDataIntoShortSummary(countryData)
     }
 
+    @ApiTags('Countries + Covid')
     @Get(':countryCode/longSummary')
     async getLongSummary(@Param() params: { countryCode: string }): Promise<CountryLongSummary> {
         const transformNeighbor: ((rawData: CountryRawData) => NeighborDataInLongSummary) = 
@@ -157,6 +166,7 @@ export class CountryDataController {
         return result
     }
 
+    @ApiTags('Countries + Covid')
     @Get(':countryCode/infoWithCovid')
     async getInfoWithCovid(@Param("countryCode") countryCode: string): Promise<CountryInfoWithCovidDataDTO> {
         const [countryData, covidData] = await Promise.all<CountryInfo, CovidRecord | undefined>([
@@ -187,6 +197,7 @@ export class CountryDataController {
         )
     }
 
+    @ApiTags('Countries + Covid')
     @Get(':countryCode/covid')
     async getCovidData(
         @Param('countryCode') countryCode: string, 
