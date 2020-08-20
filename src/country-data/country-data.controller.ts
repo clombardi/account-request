@@ -18,7 +18,7 @@ import { BadBadCountryExceptionFilter } from 'src/errors/particularExceptionFilt
 import { BadBadCountryException } from 'src/errors/customExceptions';
 import { ForbidDangerousCountries } from './middleware/country-data.guards';
 import { SumPopulationSmartInterceptor, SumPopulationInterceptor } from './middleware/country-data.interceptors';
-import { ApiTags, ApiHeader, ApiResponse, ApiExtraModels, ApiOperation, ApiOkResponse } from '@nestjs/swagger';
+import { ApiTags, ApiHeader, ApiResponse, ApiExtraModels, ApiOperation, ApiOkResponse, getSchemaPath } from '@nestjs/swagger';
 
 function transformCountryRawDataIntoShortSummary(countryRawData: CountryRawData): CountryShortSummary {
     return {
@@ -76,18 +76,12 @@ export class CountryDataController {
         this.countryDataService = service
     }
 
-    @ApiHeader({
-        name: 'Accept',
-        description: 'Desired response representation',
-        enum: [
-            'application/vnd.bdsol.countryShortSummary+json',
-            'application/vnd.bdsol.countryTextDescription+json',
-            'application/vnd.bdsol.countryLongSummary+json'
-        ] 
-    })
-    // @ApiResponse({ status: HttpStatus.OK, description: 'short summary', type: CountryShortSummary })
-    @ApiResponse({ status: HttpStatus.OK, description: 'Data delivered', type: CountryLongSummary })
-    // @ApiResponse({ status: HttpStatus.OK, description: 'text description', type: 'string' })
+    @ApiResponse({ 
+        status: HttpStatus.OK, description: 'Data delivered', content: { 
+            'application/vnd.bdsol.countryShortSummary+json': { schema: {$ref: getSchemaPath(CountryShortSummary) } } ,
+            'application/vnd.bdsol.countryLongSummary+json': { schema: { $ref: getSchemaPath(CountryLongSummary) } } ,
+            'application/vnd.bdsol.countryTextDescription+json': { schema: { type: 'string' } }
+        } })
     @ApiOperation({ description: 'Get data about a specific country, representation can be chosen among several options'})
     @Get(':countryCode')
     async getCountryData(@Headers() headers, @Req() request, @Param("countryCode") countryCode: string): Promise<any> {
