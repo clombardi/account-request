@@ -14,7 +14,7 @@ export class AccountRequestProposalDTO {
 
     @ApiProperty({ 
         description: 'Date in which the request was recorded', 
-        type: 'date', format: 'YYYY-MM-DD', example: '2020-07-01'
+        type: 'string', format: 'YYYY-MM-DD', example: '2020-07-01'
     })
     date: string
 
