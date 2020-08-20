@@ -102,10 +102,14 @@ export class AccountRequestService {
 
     async addAccountRequest(req: AccountRequestProposal): Promise<string> {
         const newMongooseRequest = new this.accountRequestModel(proposalToMongoose(req))
+        try {
+            await newMongooseRequest.save()
+            return newMongooseRequest._id
+        } catch (err) {
+            throw new BadRequestException(err.message || 'Invalid data')
+        }
         // const savedRequest = await newMongooseRequest.save()
         // return savedRequest._id
-        await newMongooseRequest.save()
-        return newMongooseRequest._id
     }
 
     async massiveIncrementRequiredApprovalsNaive(): Promise<number> {
