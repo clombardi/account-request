@@ -1,0 +1,43 @@
+openapi: 3.0.0
+info:
+    title: Agencies
+    version: 0.0.1
+    description: Manage agencies
+    contact: {}
+paths:
+    '/agencies/{code}':
+        get:
+            tags:
+                - Agencies
+            parameters:
+                -
+                    example: '0004'
+                    name: code
+                    description: Business code of the agency being searched
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            description: Get the data for one agency
+            responses:
+                '200':
+                    description: Data delivered
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    id:
+                                        description: DB-created id
+                                        type: string
+                                        example: 5f347eedf461eb20f419633e
+                                    code:
+                                        description: Business code of the agency
+                                        type: string
+                                        example: '0004'
+                                    name:
+                                        description: Name given to the agency by the bank
+                                        type: string
+                                        example: Yavi Oeste
+                '404':
+                    description: There is no agency having the given code
