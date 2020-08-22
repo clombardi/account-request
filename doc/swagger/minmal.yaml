@@ -9,6 +9,7 @@ paths:
         get:
             tags:
                 - Agencies
+            description: Get the data for one agency
             parameters:
                 -
                     example: '0004'
@@ -18,7 +19,6 @@ paths:
                         type: string
                     in: path
                     required: true
-            description: Get the data for one agency
             responses:
                 '200':
                     description: Data delivered

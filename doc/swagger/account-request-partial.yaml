@@ -1,0 +1,469 @@
+openapi: 3.0.0
+info:
+    title: Account requests
+    version: 0.0.1
+    description: Manage account requests
+    contact: {}
+paths:
+    /account-requests:
+        get:
+            tags:
+                - Account Requests
+            parameters:
+                -
+                    example: Rejected
+                    name: status
+                    description: Status
+                    schema:
+                        enum:
+                            - Pending
+                            - Analysing
+                            - Accepted
+                            - Rejected
+                        type: string
+                    in: query
+                    required: false
+                -
+                    example: Molina
+                    name: customer
+                    description: Part of the customer name
+                    schema:
+                        type: string
+                    in: query
+                    required: false
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/AccountRequestDTO'
+                    description: Data delivered
+            operationId: AccountRequestController_getAccountRequests
+            description: Get account requests that satisfy the given filter conditions
+        post:
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AccountRequestProposalDTO'
+                required: true
+            tags:
+                - Account Requests
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/AddResponseDTO'
+                    description: Account request added
+                '400':
+                    description: |-
+                        **Invalid data**, e.g.
+                        - customer not defined
+                        - invalid date format
+                        - `requiredApprovals` out of range
+            operationId: AccountRequestController_addAccountApplication
+            description: Add a single account request having the given data; validations apply
+    '/account-requests/{id}/set-as-pending':
+        patch:
+            tags:
+                - Account Requests
+            parameters:
+                -
+                    name: id
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '200':
+                    description: ''
+            operationId: AccountRequestController_setAsPending
+    '/countries/{id}':
+        get:
+            tags:
+                - Countries
+            parameters:
+                -
+                    examples:
+                        Argentina:
+                            value: ARG
+                    name: id
+                    description: 'Id of the queried country, in ISO-3 format'
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '200':
+                    content:
+                        application/vnd.bdsol.countryShortSummary+json:
+                            schema:
+                                $ref: '#/components/schemas/CountryShortSummary'
+                        application/vnd.bdsol.countryTextDescription+json:
+                            schema:
+                                type: string
+                        application/vnd.bdsol.countryLongSummary+json:
+                            schema:
+                                $ref: '#/components/schemas/CountryLongSummary'
+                    description: Data delivered
+            description: 'Get data about a specific country, representation can be chosen among several options'
+    '/agencies/{code}':
+        get:
+            tags:
+                - Agencies
+            parameters:
+                -
+                    examples:
+                        'Agency ':
+                            value: '0004'
+                    name: code
+                    description: Business code of the agency being searched
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/AgencyDTO'
+                    description: Data delivered
+                '404':
+                    description: There is no agency having the given code
+            description: Get the data for one agency
+    /agencies:
+        post:
+            requestBody:
+                description: Data of the agency to be added
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AgencyProposalDTO'
+                required: true
+            tags:
+                - Agencies
+            responses:
+                '201':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/JustId'
+                    description: Agency created
+            description: Add an agency
+    '/account-requests/{id}':
+        delete:
+            tags:
+                - Account Requests
+            parameters:
+                -
+                    example: 5f347eedf461eb20f419633e
+                    name: id
+                    description: DB-created id of the request to be deleted
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+                -
+                    name: la
+                    description: li
+                    schema:
+                        type: array
+                        items:
+                            type: string
+                    in: query
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/AccountRequestDTO'
+                    description: Account request deleted
+                '400':
+                    description: Malformed id
+                '403':
+                    description: Accepted requests cannot be deleted
+                '404':
+                    description: No account request found for the given id
+            operationId: AccountRequestController_deleteAccountRequest
+            description: Delete a specific account request
+components:
+    schemas:
+        AccountRequestDTO:
+            required:
+                - customer
+                - status
+                - date
+                - id
+                - month
+                - isDecided
+            type: object
+            properties:
+                customer:
+                    description: Customer full name
+                    type: string
+                    example: Juana Molina
+                status:
+                    description: Status of the request
+                    enum:
+                        - Pending
+                        - Analysing
+                        - Accepted
+                        - Rejected
+                    type: string
+                    example: Accepted
+                date:
+                    description: Date in which the request was recorded
+                    type: string
+                    example: '2020-07-01'
+                requiredApprovals:
+                    description: How many positive opininos are required to approve the request
+                    default: 3
+                    maximum: 1000
+                    minimum: 2
+                    type: number
+                    example: 5
+                id:
+                    description: 'DB-created id '
+                    type: string
+                    example: 5f347eedf461eb20f419633e
+                month:
+                    description: 'month of request record, 1-based (ie, January is 1)'
+                    type: number
+                    example: 5
+                isDecided:
+                    description: whether a decision (approval or rejection) has been taken for this request
+                    type: boolean
+                    example: false
+        AccountRequestProposalDTO:
+            required:
+                - customer
+                - status
+                - date
+            type: object
+            properties:
+                customer:
+                    description: Customer full name
+                    type: string
+                    example: Juana Molina
+                status:
+                    description: Status of the request
+                    enum:
+                        - Pending
+                        - Analysing
+                        - Accepted
+                        - Rejected
+                    type: string
+                    example: Accepted
+                date:
+                    description: Date in which the request was recorded
+                    type: string
+                    example: '2020-07-01'
+                requiredApprovals:
+                    description: How many positive opininos are required to approve the request
+                    default: 3
+                    maximum: 1000
+                    minimum: 2
+                    type: number
+                    example: 5
+        AddResponseDTO:
+            required:
+                - id
+            type: object
+            properties:
+                id:
+                    description: DB-created id for the just-added request
+                    type: string
+                    example: 5f347eedf461eb20f419633e
+        CountryBasicData:
+            required:
+                - countryCode
+                - countryName
+                - population
+            type: object
+            properties:
+                countryCode:
+                    description: ISO-3 code of the country
+                    type: string
+                    example: ARG
+                countryName:
+                    description: Country name in Spanish
+                    type: string
+                    example: Argentina
+                population:
+                    description: Country population as of recent estimate
+                    type: number
+                    example: 45200000
+        CountryLongSummary:
+            required:
+                - countryCode
+                - countryName
+                - population
+                - internetDomain
+                - currency
+                - neighbors
+                - totalNeighborPopulation
+            type: object
+            properties:
+                countryCode:
+                    description: ISO-3 code of the country
+                    type: string
+                    example: ARG
+                countryName:
+                    description: Country name in Spanish
+                    type: string
+                    example: Argentina
+                population:
+                    description: Country population as of recent estimate
+                    type: number
+                    example: 45200000
+                internetDomain:
+                    description: Main internet domain assigned to this country
+                    type: string
+                    example: .ar
+                currency:
+                    description: Data about the main currency of the country
+                    type: object
+                    properties:
+                        code:
+                            description: Currency ISO code
+                            type: string
+                            example: ARS
+                        name:
+                            description: Currency name
+                            type: string
+                            example: Peso argentino
+                        byUSD:
+                            description: Rate in units for one US Dollar
+                            type: number
+                            example: 82.5
+                neighbors:
+                    description: Data about the neighbor countries
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/CountryBasicData'
+                totalNeighborPopulation:
+                    description: Sum of the population of the neighbors has this country
+                    type: number
+                    example: 280000000
+                covid19LastRecord:
+                    description: Last record of COVID-related information
+                    type: object
+                    properties:
+                        confirmed:
+                            description: Total confirmed cases
+                            type: number
+                            example: 200000
+                        active:
+                            description: Currently active cases
+                            type: number
+                            example: 45000
+                        recovered:
+                            description: Persons that have been recovered from Covid
+                            type: number
+                            example: 152000
+                        deaths:
+                            description: Persons dead of Covid
+                            type: number
+                            example: 3000
+                        date:
+                            format: YYYY-MM-DD
+                            description: Covid report date
+                            type: string
+                            example: '2020-05-28'
+        CountryShortSummary:
+            required:
+                - countryCode
+                - countryName
+                - population
+                - internetDomain
+                - currencyCode
+                - neighborCountryCount
+            type: object
+            properties:
+                countryCode:
+                    description: ISO-3 code of the country
+                    type: string
+                    example: ARG
+                countryName:
+                    description: Country name in Spanish
+                    type: string
+                    example: Argentina
+                population:
+                    description: Country population as of recent estimate
+                    type: number
+                    example: 45200000
+                internetDomain:
+                    description: Main internet domain assigned to this country
+                    type: string
+                    example: .ar
+                currencyCode:
+                    description: ISO code of the main currency of the country
+                    type: string
+                    example: ARS
+                neighborCountryCount:
+                    description: How many neighbors has this country
+                    type: number
+                    example: 5
+        AgencyDTO:
+            description: Data about one agency
+            required:
+                - id
+                - code
+            type: object
+            properties:
+                id:
+                    description: DB-created id
+                    type: string
+                    example: 5f347eedf461eb20f419633e
+                code:
+                    description: Business code of the agency
+                    type: string
+                    example: '0004'
+                name:
+                    description: Name given to the agency by the bank
+                    type: string
+                    example: Yavi Oeste
+                address:
+                    description: Street address of the agency
+                    type: string
+                    example: Fernández Campero 843
+                area:
+                    description: 'Covered surface of the agency, in square meters'
+                    type: number
+                    example: 520
+        AgencyProposalDTO:
+            description: Data about one agency
+            required:
+                - code
+            type: object
+            properties:
+                code:
+                    description: Business code of the agency
+                    type: string
+                    example: '0004'
+                name:
+                    description: Name given to the agency by the bank
+                    type: string
+                    example: Yavi Oeste
+                address:
+                    description: Street address of the agency
+                    type: string
+                    example: Fernández Campero 843
+                area:
+                    description: 'Covered surface of the agency, in square meters'
+                    type: number
+                    example: 520
+        JustId:
+            description: Data about one agency
+            required:
+                - id
+            type: object
+            properties:
+                id:
+                    description: DB-created id
+                    type: string
+                    example: 5f347eedf461eb20f419633e
