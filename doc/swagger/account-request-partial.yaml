@@ -12,7 +12,7 @@ paths:
             parameters:
                 -
                     example: Rejected
-                    name: status
+                    name: Status
                     description: Status
                     schema:
                         enum:
@@ -20,6 +20,7 @@ paths:
                             - Analysing
                             - Accepted
                             - Rejected
+                            - Wonderful
                         type: string
                     in: query
                     required: false
@@ -246,9 +247,9 @@ components:
             type: object
             properties:
                 customer:
-                    description: Customer full name
+                    description: Customer full name 
                     type: string
-                    example: Juana Molina
+                    example: Juana Molina Sanders
                 status:
                     description: Status of the request
                     enum:

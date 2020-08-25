@@ -43,9 +43,19 @@ export class CountryShortSummary extends CountryBasicDataPlusInternet {
 }
 
 
+// class CurrencyDescription {
+//     @ApiProperty({ description: 'Currency ISO code', example: 'ARS', type: 'string' })
+//     code: string
+//     @ApiProperty({ description: 'Currency name', example: 'Peso argentino', type: 'string' })
+//     name: string 
+//     @ApiProperty({ description: 'Rate in units for one US Dollar', example: 82.50, type: 'number' })
+//     byUSD: number
+// }
+
 export class CountryLongSummary extends CountryBasicDataPlusInternet {
     @ApiProperty({ 
         description: 'Data about the main currency of the country', 
+        // type: CurrencyDescription
         properties: { 
             code: {description: 'Currency ISO code', example: 'ARS', type: 'string' },
             name: { description: 'Currency name', example: 'Peso argentino', type: 'string' },

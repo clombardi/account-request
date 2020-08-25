@@ -18,7 +18,7 @@ import { BadBadCountryExceptionFilter } from 'src/errors/particularExceptionFilt
 import { BadBadCountryException } from 'src/errors/customExceptions';
 import { ForbidDangerousCountries } from './middleware/country-data.guards';
 import { SumPopulationSmartInterceptor, SumPopulationInterceptor } from './middleware/country-data.interceptors';
-import { ApiTags, ApiHeader, ApiResponse, ApiExtraModels, ApiOperation, ApiOkResponse, getSchemaPath } from '@nestjs/swagger';
+import { ApiTags, ApiHeader, ApiResponse, ApiExtraModels, ApiOperation, ApiOkResponse, getSchemaPath, ApiParam } from '@nestjs/swagger';
 
 function transformCountryRawDataIntoShortSummary(countryRawData: CountryRawData): CountryShortSummary {
     return {
@@ -76,13 +76,15 @@ export class CountryDataController {
         this.countryDataService = service
     }
 
+
+    @ApiOperation({ description: 'Get data about a specific country, representation can be chosen among several options' })
     @ApiResponse({ 
         status: HttpStatus.OK, description: 'Data delivered', content: { 
             'application/vnd.bdsol.countryShortSummary+json': { schema: {$ref: getSchemaPath(CountryShortSummary) } } ,
             'application/vnd.bdsol.countryLongSummary+json': { schema: { $ref: getSchemaPath(CountryLongSummary) } } ,
             'application/vnd.bdsol.countryTextDescription+json': { schema: { type: 'string' } }
         } })
-    @ApiOperation({ description: 'Get data about a specific country, representation can be chosen among several options'})
+    @ApiParam({ name: 'countryCode', type: 'string', description: 'Id of the queried country, in ISO-3 format'})
     @Get(':countryCode')
     async getCountryData(@Headers() headers, @Req() request, @Param("countryCode") countryCode: string): Promise<any> {
         const representation = countryRepresentations.find(repr => repr.applies(request));

@@ -36,8 +36,8 @@ export function transformIntoAccountRequestProposal(
 export class AccountRequestController {
     constructor(private readonly service: AccountRequestService) { }
 
-    @Get()
     @ApiResponse({ status: HttpStatus.OK, description: 'Data delivered', type: AccountRequestDTO, isArray: true })
+    @ApiOperation({ description: 'Get account requests that satisfy the given filter conditions' })
     @ApiQuery({ 
         name: 'customer', required: false, example: 'Molina', type: 'string',
         description: 'Part of the customer name'
@@ -46,7 +46,7 @@ export class AccountRequestController {
         name: 'status', required: false, example: 'Rejected', enum: Status,
         description: 'Status'
     })
-    @ApiOperation({ description: 'Get account requests that satisfy the given filter conditions'})
+    @Get()
     async getAccountRequests(@Query() conditions: AccountRequestFilterConditions): Promise<AccountRequestDTO[]> {
         const requests = await this.service.getAccountRequests(conditions);
         return requests.map(modelToDTO);
@@ -57,9 +57,14 @@ export class AccountRequestController {
         return this.service.getCustomers();
     }
 
-    @ApiOkResponse({ description: 'Account request added', type: AddResponseDTO })
-    @ApiBadRequestResponse({ description: invalidDataInAddDescription })
     @ApiOperation({ description: 'Add a single account request having the given data; validations apply' })
+    @ApiOkResponse({ description: 'Account request added', type: AddResponseDTO })
+    @ApiBadRequestResponse({ description: 
+        [
+            '**Invalid data**, e.g.', '- customer not defined', 
+            '- invalid date format', '- `requiredApprovals` out of range'
+        ].join('\n') 
+    })
     @Post()
     async addAccountApplication(@Body() newRequestData: AccountRequestProposalDTO): Promise<AddResponseDTO> {
         const newApplication: AccountRequestProposal = {
@@ -80,12 +85,12 @@ export class AccountRequestController {
         return modelToDTO(await this.service.setAsPending(requestId));
     }
 
+    @ApiOperation({ description: 'Delete a specific account request' })
+    @ApiParam({...idApiDocSpec('of the request to be deleted'), name: 'id'})
     @ApiResponse({ status: HttpStatus.OK, description: 'Account request deleted', type: AccountRequestDTO })
     @ApiBadRequestResponse({ description: 'Malformed id' })
     @ApiNotFoundResponse({ description: 'No account request found for the given id' })
     @ApiForbiddenResponse({ description: 'Accepted requests cannot be deleted' })
-    @ApiParam({...idApiDocSpec('of the request to be deleted'), name: 'id'})
-    @ApiOperation({ description: 'Delete a specific account request' })
     @Delete(':id')
     async deleteAccountRequest(@Param("id") requestId: string): Promise<AccountRequestDTO> {
         return modelToDTO(await this.service.deleteAccountRequest(requestId));

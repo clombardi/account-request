@@ -32,9 +32,9 @@ export interface AccountRequestMongoose extends mongoose.Document, AccountReques
     isDecided: boolean
 }
 
-export interface AccountRequestMassiveAdditionDTO {
-    date: string,
-    defaultRequiredApprovals?: number,
+export class AccountRequestMassiveAdditionDTO {
+    date: string
+    defaultRequiredApprovals?: number
     requestDetails: {
         customer: string,
         requiredApprovals?: number

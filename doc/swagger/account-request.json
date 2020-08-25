@@ -297,6 +297,9 @@
     "paths": {
         "/account-requests": {
             "get": {
+                "tags": [
+                    "Account Requests"
+                ],
                 "operationId": "AccountRequestController_getAccountRequests",
                 "summary": "",
                 "description": "Get account requests that satisfy the given filter conditions",
@@ -342,10 +345,7 @@
                             }
                         }
                     }
-                },
-                "tags": [
-                    "Account Requests"
-                ]
+                }
             },
             "post": {
                 "operationId": "AccountRequestController_addAccountApplication",
