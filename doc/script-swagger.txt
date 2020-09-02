@@ -1,0 +1,1 @@
+(acá va el texto para acompañar las sesiones sobre Swagger)

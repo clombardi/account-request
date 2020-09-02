@@ -1,4 +1,5 @@
 import { CovidDto } from "../covid-data/covid-data.interfaces";
+import { ApiProperty } from "@nestjs/swagger";
 
 export interface CountryRawData {
     countryCode: string,
@@ -15,12 +16,23 @@ export interface CountryExtendedData extends CountryRawData {
     neighbors: CountryRawData[]
 }
 
-export interface CountryShortSummary {
-    countryCode: string,
-    countryName: string,
-    population: number,
-    currencyCode: string,
-    neighborCountryCount: number,
+export class CountryShortSummary {
+    @ApiProperty({ example: 'ARG' })
+    countryCode: string
+
+    @ApiProperty()
+    countryName: string
+
+    @ApiProperty()
+    population: number
+
+    @ApiProperty()
+    currencyCode: string
+
+    @ApiProperty()
+    neighborCountryCount: number
+
+    @ApiProperty()
     internetDomain: string
 }
 
