@@ -1,0 +1,103 @@
+openapi: 3.0.0
+info:
+    title: Agencies
+    version: 0.0.1
+    description: Manage agencies
+    contact: {}
+paths:
+    '/agencies/{code}':
+        get:
+            tags:
+                - Agencies
+            parameters:
+                -
+                    examples:
+                        'Agency ':
+                            value: '0004'
+                    name: code
+                    description: Business code of the agency being searched
+                    schema:
+                        type: string
+                    in: path
+                    required: true
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                description: Data about one agency
+                                required:
+                                    - id
+                                    - code
+                                type: object
+                                properties:
+                                    id:
+                                        description: DB-created id
+                                        type: string
+                                        example: 5f347eedf461eb20f419633e
+                                    code:
+                                        description: Business code of the agency
+                                        type: string
+                                        example: '0004'
+                                    name:
+                                        description: Name given to the agency by the bank
+                                        type: string
+                                        example: Yavi Oeste
+                                    address:
+                                        description: Street address of the agency
+                                        type: string
+                                        example: Fernández Campero 843
+                                    area:
+                                        description: 'Covered surface of the agency, in square meters'
+                                        type: number
+                                        example: 520
+                    description: Data delivered
+                '404':
+                    description: There is no agency having the given code
+            description: Get the data for one agency
+    /agencies:
+        post:
+            requestBody:
+                description: Data of the agency to be added
+                content:
+                    application/json:
+                        schema:
+                            description: Data to add an agency
+                            required:
+                                - code
+                            type: object
+                            properties:
+                                code:
+                                    description: Business code of the agency
+                                    type: string
+                                    example: '0004'
+                                name:
+                                    description: Name given to the agency by the bank
+                                    type: string
+                                    example: Yavi Oeste
+                                address:
+                                    description: Street address of the agency
+                                    type: string
+                                    example: Fernández Campero 843
+                                area:
+                                    description: 'Covered surface of the agency, in square meters'
+                                    type: number
+                                    example: 520
+                required: true
+            tags:
+                - Agencies
+            responses:
+                '201':
+                    content:
+                        application/json:
+                            schema:
+                                required:
+                                    - id
+                                type: object
+                                properties:
+                                    id:
+                                        description: DB-created id
+                                        type: string
+                                        example: 5f347eedf461eb20f419633e
+                    description: Agency created
+            description: Add an agency

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Query, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Patch, Param, Delete, HttpStatus } from '@nestjs/common';
 import * as moment from 'moment';
 
 import { AccountRequestService } from './account-request.service';
@@ -6,7 +6,10 @@ import { AddResponseDTO, AccountRequestDTO, AccountRequestProposalDTO } from './
 import { AccountRequestProposal, AccountRequestFilterConditions, AccountRequest, AccountRequestMassiveAdditionDTO, AccountRequestMassiveAdditionResultDTO } from './interfaces/account-request.interfaces';
 import { Status } from '../enums/status';
 import { stdDateFormat } from '../dates/dates.constants';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiResponse, ApiQuery, ApiOkResponse, ApiBadRequestResponse, ApiParam, ApiNotFoundResponse, ApiForbiddenResponse, ApiOperation } from '@nestjs/swagger';
+import { invalidDataInAddDescription, idApiDocSpec } from './account-request.constants';
+
+
 
 
 function modelToDTO(accountRequest: AccountRequest) {
@@ -33,6 +36,16 @@ export function transformIntoAccountRequestProposal(
 export class AccountRequestController {
     constructor(private readonly service: AccountRequestService) { }
 
+    @ApiResponse({ status: HttpStatus.OK, description: 'Data delivered', type: AccountRequestDTO, isArray: true })
+    @ApiOperation({ description: 'Get account requests that satisfy the given filter conditions' })
+    @ApiQuery({ 
+        name: 'customer', required: false, example: 'Molina', type: 'string',
+        description: 'Part of the customer name'
+    })
+    @ApiQuery({
+        name: 'status', required: false, example: 'Rejected', enum: Status,
+        description: 'Status'
+    })
     @Get()
     async getAccountRequests(@Query() conditions: AccountRequestFilterConditions): Promise<AccountRequestDTO[]> {
         const requests = await this.service.getAccountRequests(conditions);
@@ -44,6 +57,14 @@ export class AccountRequestController {
         return this.service.getCustomers();
     }
 
+    @ApiOperation({ description: 'Add a single account request having the given data; validations apply' })
+    @ApiOkResponse({ description: 'Account request added', type: AddResponseDTO })
+    @ApiBadRequestResponse({ description: 
+        [
+            '**Invalid data**, e.g.', '- customer not defined', 
+            '- invalid date format', '- `requiredApprovals` out of range'
+        ].join('\n') 
+    })
     @Post()
     async addAccountApplication(@Body() newRequestData: AccountRequestProposalDTO): Promise<AddResponseDTO> {
         const newApplication: AccountRequestProposal = {
@@ -64,6 +85,12 @@ export class AccountRequestController {
         return modelToDTO(await this.service.setAsPending(requestId));
     }
 
+    @ApiOperation({ description: 'Delete a specific account request' })
+    @ApiParam({...idApiDocSpec('of the request to be deleted'), name: 'id'})
+    @ApiResponse({ status: HttpStatus.OK, description: 'Account request deleted', type: AccountRequestDTO })
+    @ApiBadRequestResponse({ description: 'Malformed id' })
+    @ApiNotFoundResponse({ description: 'No account request found for the given id' })
+    @ApiForbiddenResponse({ description: 'Accepted requests cannot be deleted' })
     @Delete(':id')
     async deleteAccountRequest(@Param("id") requestId: string): Promise<AccountRequestDTO> {
         return modelToDTO(await this.service.deleteAccountRequest(requestId));

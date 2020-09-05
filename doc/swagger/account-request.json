@@ -1,0 +1,1031 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Example NestJS App",
+        "description": "Example NestJS application, with several modules",
+        "version": "0.0.1",
+        "contact": {}
+    },
+    "tags": [],
+    "servers": [],
+    "components": {
+        "schemas": {
+            "AccountRequestDTO": {
+                "type": "object",
+                "properties": {
+                    "customer": {
+                        "type": "string",
+                        "description": "Customer full name",
+                        "example": "Juana Molina"
+                    },
+                    "status": {
+                        "type": "string",
+                        "description": "Status of the request",
+                        "enum": [
+                            "Pending",
+                            "Analysing",
+                            "Accepted",
+                            "Rejected"
+                        ],
+                        "example": "Accepted"
+                    },
+                    "date": {
+                        "type": "string",
+                        "description": "Date in which the request was recorded",
+                        "format": "YYYY-MM-DD",
+                        "example": "2020-07-01"
+                    },
+                    "requiredApprovals": {
+                        "type": "number",
+                        "description": "How many positive opininos are required to approve the request",
+                        "minimum": 2,
+                        "maximum": 1000,
+                        "example": 5,
+                        "default": 3
+                    },
+                    "id": {
+                        "type": "string",
+                        "description": "DB-created id ",
+                        "example": "5f347eedf461eb20f419633e"
+                    },
+                    "month": {
+                        "type": "number",
+                        "description": "month of request record, 1-based (ie, January is 1)",
+                        "example": 5
+                    },
+                    "isDecided": {
+                        "type": "boolean",
+                        "description": "whether a decision (approval or rejection) has been taken for this request",
+                        "example": false
+                    }
+                },
+                "required": [
+                    "customer",
+                    "status",
+                    "date",
+                    "id",
+                    "month",
+                    "isDecided"
+                ]
+            },
+            "AccountRequestProposalDTO": {
+                "type": "object",
+                "properties": {
+                    "customer": {
+                        "type": "string",
+                        "description": "Customer full name",
+                        "example": "Juana Molina"
+                    },
+                    "status": {
+                        "type": "string",
+                        "description": "Status of the request",
+                        "enum": [
+                            "Pending",
+                            "Analysing",
+                            "Accepted",
+                            "Rejected"
+                        ],
+                        "example": "Accepted"
+                    },
+                    "date": {
+                        "type": "string",
+                        "description": "Date in which the request was recorded",
+                        "format": "YYYY-MM-DD",
+                        "example": "2020-07-01"
+                    },
+                    "requiredApprovals": {
+                        "type": "number",
+                        "description": "How many positive opininos are required to approve the request",
+                        "minimum": 2,
+                        "maximum": 1000,
+                        "example": 5,
+                        "default": 3
+                    }
+                },
+                "required": [
+                    "customer",
+                    "status",
+                    "date"
+                ]
+            },
+            "AddResponseDTO": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "DB-created id for the just-added request",
+                        "example": "5f347eedf461eb20f419633e"
+                    }
+                },
+                "required": [
+                    "id"
+                ]
+            },
+            "CountryBasicData": {
+                "type": "object",
+                "properties": {
+                    "countryCode": {
+                        "type": "string",
+                        "description": "ISO-3 code of the country",
+                        "example": "ARG"
+                    },
+                    "countryName": {
+                        "type": "string",
+                        "description": "Country name in Spanish",
+                        "example": "Argentina"
+                    },
+                    "population": {
+                        "type": "number",
+                        "description": "Country population as of recent estimate",
+                        "example": 45200000
+                    }
+                },
+                "required": [
+                    "countryCode",
+                    "countryName",
+                    "population"
+                ]
+            },
+            "CountryLongSummary": {
+                "type": "object",
+                "properties": {
+                    "countryCode": {
+                        "type": "string",
+                        "description": "ISO-3 code of the country",
+                        "example": "ARG"
+                    },
+                    "countryName": {
+                        "type": "string",
+                        "description": "Country name in Spanish",
+                        "example": "Argentina"
+                    },
+                    "population": {
+                        "type": "number",
+                        "description": "Country population as of recent estimate",
+                        "example": 45200000
+                    },
+                    "internetDomain": {
+                        "type": "string",
+                        "description": "Main internet domain assigned to this country",
+                        "example": ".ar"
+                    },
+                    "currency": {
+                        "type": "object",
+                        "description": "Data about the main currency of the country",
+                        "properties": {
+                            "code": {
+                                "description": "Currency ISO code",
+                                "example": "ARS",
+                                "type": "string"
+                            },
+                            "name": {
+                                "description": "Currency name",
+                                "example": "Peso argentino",
+                                "type": "string"
+                            },
+                            "byUSD": {
+                                "description": "Rate in units for one US Dollar",
+                                "example": 82.5,
+                                "type": "number"
+                            }
+                        }
+                    },
+                    "neighbors": {
+                        "description": "Data about the neighbor countries",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CountryBasicData"
+                        }
+                    },
+                    "totalNeighborPopulation": {
+                        "type": "number",
+                        "description": "Sum of the population of the neighbors has this country",
+                        "example": 280000000
+                    },
+                    "covid19LastRecord": {
+                        "type": "object",
+                        "description": "Last record of COVID-related information",
+                        "properties": {
+                            "confirmed": {
+                                "description": "Total confirmed cases",
+                                "example": 200000,
+                                "type": "number"
+                            },
+                            "active": {
+                                "description": "Currently active cases",
+                                "example": 45000,
+                                "type": "number"
+                            },
+                            "recovered": {
+                                "description": "Persons that have been recovered from Covid",
+                                "example": 152000,
+                                "type": "number"
+                            },
+                            "deaths": {
+                                "description": "Persons dead of Covid",
+                                "example": 3000,
+                                "type": "number"
+                            },
+                            "date": {
+                                "description": "Covid report date",
+                                "example": "2020-05-28",
+                                "type": "string",
+                                "format": "YYYY-MM-DD"
+                            }
+                        }
+                    }
+                },
+                "required": [
+                    "countryCode",
+                    "countryName",
+                    "population",
+                    "internetDomain",
+                    "currency",
+                    "neighbors",
+                    "totalNeighborPopulation"
+                ]
+            },
+            "CountryShortSummary": {
+                "type": "object",
+                "properties": {
+                    "countryCode": {
+                        "type": "string",
+                        "description": "ISO-3 code of the country",
+                        "example": "ARG"
+                    },
+                    "countryName": {
+                        "type": "string",
+                        "description": "Country name in Spanish",
+                        "example": "Argentina"
+                    },
+                    "population": {
+                        "type": "number",
+                        "description": "Country population as of recent estimate",
+                        "example": 45200000
+                    },
+                    "internetDomain": {
+                        "type": "string",
+                        "description": "Main internet domain assigned to this country",
+                        "example": ".ar"
+                    },
+                    "currencyCode": {
+                        "type": "string",
+                        "description": "ISO code of the main currency of the country",
+                        "example": "ARS"
+                    },
+                    "neighborCountryCount": {
+                        "type": "number",
+                        "description": "How many neighbors has this country",
+                        "example": 5
+                    }
+                },
+                "required": [
+                    "countryCode",
+                    "countryName",
+                    "population",
+                    "internetDomain",
+                    "currencyCode",
+                    "neighborCountryCount"
+                ]
+            },
+            "AddExpenseRequestDTO": {
+                "type": "object",
+                "properties": {}
+            }
+        }
+    },
+    "paths": {
+        "/account-requests": {
+            "get": {
+                "tags": [
+                    "Account Requests"
+                ],
+                "operationId": "AccountRequestController_getAccountRequests",
+                "summary": "",
+                "description": "Get account requests that satisfy the given filter conditions",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "required": false,
+                        "in": "query",
+                        "example": "Rejected",
+                        "description": "Status",
+                        "schema": {
+                            "enum": [
+                                "Pending",
+                                "Analysing",
+                                "Accepted",
+                                "Rejected"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "customer",
+                        "required": false,
+                        "in": "query",
+                        "example": "Molina",
+                        "description": "Part of the customer name",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Data delivered",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/AccountRequestDTO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "operationId": "AccountRequestController_addAccountApplication",
+                "summary": "",
+                "description": "Add a single account request having the given data; validations apply",
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AccountRequestProposalDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Account request added",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AddResponseDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "**Invalid data**, e.g.\n- customer not defined\n- invalid date format\n- `requiredApprovals` out of range"
+                    }
+                },
+                "tags": [
+                    "Account Requests"
+                ]
+            }
+        },
+        "/account-requests/customers": {
+            "get": {
+                "operationId": "AccountRequestController_getAccountRequestsCustomers",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Account Requests"
+                ]
+            }
+        },
+        "/account-requests/massive-increment-required-approvals": {
+            "post": {
+                "operationId": "AccountRequestController_massiveIncrementRequiredApprovals",
+                "parameters": [],
+                "responses": {
+                    "201": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Account Requests"
+                ]
+            }
+        },
+        "/account-requests/{id}/set-as-pending": {
+            "patch": {
+                "operationId": "AccountRequestController_setAsPending",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Account Requests"
+                ]
+            }
+        },
+        "/account-requests/{id}": {
+            "delete": {
+                "operationId": "AccountRequestController_deleteAccountRequest",
+                "summary": "",
+                "description": "Delete a specific account request",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "required": true,
+                        "in": "path",
+                        "description": "DB-created id of the request to be deleted",
+                        "example": "5f347eedf461eb20f419633e",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Account request deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountRequestDTO"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Malformed id"
+                    },
+                    "403": {
+                        "description": "Accepted requests cannot be deleted"
+                    },
+                    "404": {
+                        "description": "No account request found for the given id"
+                    }
+                },
+                "tags": [
+                    "Account Requests"
+                ]
+            }
+        },
+        "/account-requests/massiveAddition": {
+            "post": {
+                "operationId": "AccountRequestController_accountRequestMassiveAddition",
+                "parameters": [],
+                "responses": {
+                    "201": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Account Requests"
+                ]
+            }
+        },
+        "/account-requests-untyped": {
+            "get": {
+                "operationId": "AccountRequestUntypedController_getAccountApplications",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/account-requests-lean": {
+            "get": {
+                "operationId": "AccountRequestController_getAccountRequests",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/countries/{countryCode}": {
+            "get": {
+                "operationId": "CountryDataController_getCountryData",
+                "summary": "",
+                "description": "Get data about a specific country, representation can be chosen among several options",
+                "parameters": [
+                    {
+                        "name": "countryCode",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Data delivered",
+                        "content": {
+                            "application/vnd.bdsol.countryShortSummary+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CountryShortSummary"
+                                }
+                            },
+                            "application/vnd.bdsol.countryLongSummary+json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CountryLongSummary"
+                                }
+                            },
+                            "application/vnd.bdsol.countryTextDescription+json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Countries"
+                ]
+            }
+        },
+        "/countries/{countryCode}/textDescription": {
+            "get": {
+                "operationId": "CountryDataController_getTextDescription",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Countries"
+                ]
+            }
+        },
+        "/countries/{countryCode}/shortSummary": {
+            "get": {
+                "operationId": "CountryDataController_getShortSummaryEndpoint",
+                "summary": "",
+                "description": "Get limited data about a specific country",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "header",
+                        "description": "Id of the user who makes the request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Data delivered",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CountryShortSummary"
+                                }
+                            }
+                        }
+                    },
+                    "406": {
+                        "description": "Info about a very bad country is requested"
+                    }
+                },
+                "tags": [
+                    "Countries"
+                ]
+            }
+        },
+        "/countries/many/{countryCodes}/shortSummary": {
+            "get": {
+                "operationId": "CountryDataController_getManyCountriesShortSummary",
+                "parameters": [
+                    {
+                        "name": "countryCodes",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Countries"
+                ]
+            }
+        },
+        "/countries/{countryCode}/info": {
+            "get": {
+                "operationId": "CountryDataController_getInfo",
+                "parameters": [
+                    {
+                        "name": "countryCode",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Countries"
+                ]
+            }
+        },
+        "/countries/{countryCode}/longSummary": {
+            "get": {
+                "operationId": "CountryDataController_getLongSummary",
+                "summary": "",
+                "description": "Get extended data about a specific country, including the last available Covid record",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Data delivered",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CountryLongSummary"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Countries",
+                    "Countries + Covid"
+                ]
+            }
+        },
+        "/countries/{countryCode}/infoWithCovid": {
+            "get": {
+                "operationId": "CountryDataController_getInfoWithCovid",
+                "parameters": [
+                    {
+                        "name": "countryCode",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Countries",
+                    "Countries + Covid"
+                ]
+            }
+        },
+        "/countries/{countryCode}/neighbors": {
+            "get": {
+                "operationId": "CountryDataController_getNeighborsShortSummary",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Countries"
+                ]
+            }
+        },
+        "/countries/{countryCode}/covid": {
+            "get": {
+                "operationId": "CountryDataController_getCovidData",
+                "parameters": [
+                    {
+                        "name": "countryCode",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "fromDate",
+                        "required": true,
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "toDate",
+                        "required": true,
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "Countries",
+                    "Countries + Covid"
+                ]
+            }
+        },
+        "/dates/today": {
+            "get": {
+                "operationId": "DateController_getToday",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/dates/{date}/weekday": {
+            "get": {
+                "operationId": "DateController_getWeekday",
+                "parameters": [
+                    {
+                        "name": "date",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/dates/{date}/info": {
+            "get": {
+                "operationId": "DateController_getDateInfo",
+                "parameters": [
+                    {
+                        "name": "date",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/dates/{date}/plus3/{days}": {
+            "get": {
+                "operationId": "DateController_getDatePlusDays3",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/dates/{date}/plus2/{days}": {
+            "get": {
+                "operationId": "DateController_getDatePlusDays2",
+                "parameters": [
+                    {
+                        "name": "days",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/dates/{date}/plus/{days}": {
+            "get": {
+                "operationId": "DateController_getDatePlusDays",
+                "parameters": [
+                    {
+                        "name": "days",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/dates/{date}/daysUntil/{futureDate}": {
+            "get": {
+                "operationId": "DateController_getDaysUntil",
+                "parameters": [
+                    {
+                        "name": "date",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "futureDate",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/expenses": {
+            "post": {
+                "operationId": "ExpensesController_addExpense",
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AddExpenseRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/expenses/check": {
+            "post": {
+                "operationId": "ExpensesController_checkExpense",
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AddExpenseRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/agencies/byText": {
+            "get": {
+                "operationId": "AgencyController_getAgencyByTextSearch",
+                "parameters": [
+                    {
+                        "name": "q",
+                        "required": true,
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/agencies": {
+            "get": {
+                "operationId": "AgencyController_getAgencies",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            },
+            "post": {
+                "operationId": "AgencyController_addAgency",
+                "parameters": [],
+                "responses": {
+                    "201": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/agencies/{code}": {
+            "get": {
+                "operationId": "AgencyController_getAgencyByCode",
+                "parameters": [
+                    {
+                        "name": "code",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/agencies/{code}/range": {
+            "get": {
+                "operationId": "AgencyController_getAgencyByCodeRange",
+                "parameters": [
+                    {
+                        "name": "code",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/agencies/massiveAddition": {
+            "post": {
+                "operationId": "AgencyController_agencyMassiveAddition",
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": ""
+                    }
+                }
+            }
+        }
+    }
+}

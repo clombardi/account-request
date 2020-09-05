@@ -5,11 +5,11 @@ import * as accepts from 'accepts';
 import { CountryDataService } from './country-data.service'
 import { 
     CountryRawData, CountryShortSummary, CountryExtendedData, CountryLongSummary, 
-    NeighborDataInLongSummary,
     CountryWithCovidDataDTO,
     CountryInfoDTO,
     CountryInfo,
-    CountryInfoWithCovidDataDTO
+    CountryInfoWithCovidDataDTO,
+    CountryBasicData
 } from './country-data.interfaces';
 import { MaybeCovidRecord, CovidRecord, CovidDto } from 'src/covid-data/covid-data.interfaces';
 import { CovidDataService } from 'src/covid-data/covid-data.service';
@@ -18,8 +18,7 @@ import { BadBadCountryExceptionFilter } from 'src/errors/particularExceptionFilt
 import { BadBadCountryException } from 'src/errors/customExceptions';
 import { ForbidDangerousCountries } from './middleware/country-data.guards';
 import { SumPopulationSmartInterceptor, SumPopulationInterceptor } from './middleware/country-data.interceptors';
-import { get } from 'lodash';
-import { ApiTags, ApiHeader, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiHeader, ApiResponse, ApiExtraModels, ApiOperation, ApiOkResponse, getSchemaPath, ApiParam } from '@nestjs/swagger';
 
 function transformCountryRawDataIntoShortSummary(countryRawData: CountryRawData): CountryShortSummary {
     return {
@@ -64,6 +63,7 @@ const countryRepresentations = [
 ]
 
 @ApiTags('Countries')
+@ApiExtraModels(CountryLongSummary, CountryShortSummary)
 @Controller('countries')
 // @UseInterceptors(new SumPopulationSmartInterceptor())
 export class CountryDataController {
@@ -76,13 +76,22 @@ export class CountryDataController {
         this.countryDataService = service
     }
 
+
+    @ApiOperation({ description: 'Get data about a specific country, representation can be chosen among several options' })
+    @ApiResponse({ 
+        status: HttpStatus.OK, description: 'Data delivered', content: { 
+            'application/vnd.bdsol.countryShortSummary+json': { schema: {$ref: getSchemaPath(CountryShortSummary) } } ,
+            'application/vnd.bdsol.countryLongSummary+json': { schema: { $ref: getSchemaPath(CountryLongSummary) } } ,
+            'application/vnd.bdsol.countryTextDescription+json': { schema: { type: 'string' } }
+        } })
+    @ApiParam({ name: 'countryCode', type: 'string', description: 'Id of the queried country, in ISO-3 format'})
     @Get(':countryCode')
     async getCountryData(@Headers() headers, @Req() request, @Param("countryCode") countryCode: string): Promise<any> {
         const representation = countryRepresentations.find(repr => repr.applies(request));
         if (representation) {
             return representation.resolve(this, countryCode);
         } else {
-            throw new NotAcceptableException('I can only produce json responses');
+            throw new NotAcceptableException('I cannot handle the requested representation');
         }
     }
 
@@ -94,15 +103,16 @@ export class CountryDataController {
             `  - limita con ${countryData.neighborCountryCodes.length} países`
     }
 
-    @Get(':countryCode/shortSummary')
     @ApiHeader({
         name: 'userId',
         description: 'Id of the user who makes the request'
     })
     @ApiResponse({ status: HttpStatus.OK, description: 'Data delivered', type: CountryShortSummary })
     @ApiResponse({ status: HttpStatus.NOT_ACCEPTABLE, description: 'Info about a very bad country is requested' })
+    @ApiOperation({ description: 'Get limited data about a specific country' })
     @UseFilters(BadBadCountryExceptionFilter)
     @UseGuards(ForbidDangerousCountries)
+    @Get(':countryCode/shortSummary')
     async getShortSummaryEndpoint(@Param() params: { countryCode: string }): Promise<CountryShortSummary> {
         if (params.countryCode === 'PRK') {
             throw new BadBadCountryException()
@@ -132,9 +142,11 @@ export class CountryDataController {
     }
 
     @ApiTags('Countries + Covid')
+    @ApiOkResponse({ description: 'Data delivered', type: CountryLongSummary })
+    @ApiOperation({ description: 'Get extended data about a specific country, including the last available Covid record' })
     @Get(':countryCode/longSummary')
     async getLongSummary(@Param() params: { countryCode: string }): Promise<CountryLongSummary> {
-        const transformNeighbor: ((rawData: CountryRawData) => NeighborDataInLongSummary) = 
+        const transformNeighbor: ((rawData: CountryRawData) => CountryBasicData) = 
             (rawData) => Object.assign(
                 {}, _.pick(rawData, ["countryCode", "population"]), 
                 { countryName: rawData.countryNames.es }
